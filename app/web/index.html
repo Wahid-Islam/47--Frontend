@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    Replaced by the value of `flutter build web --base-href`. Keep the
+    leading and trailing slash. Firebase Hosting and Vercel both serve the
+    app from the domain root, so the default "/" is correct there.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="mysihat gives Malaysians aged 40-60 a personalised Health Age based on national mortality statistics, plus a preventive action roadmap.">
+  <meta name="theme-color" content="#1B7A4E">
+  <meta name="color-scheme" content="light">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="mysihat — Understand today. Act for tomorrow.">
+  <meta property="og:description" content="A personalised Health Age and preventive action roadmap grounded in Malaysian mortality data.">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="mysihat">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>mysihat — Personalised health insights for Malaysians</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!--
+    Flutter web repaints the whole canvas only after the engine and fonts
+    load, which can take a few seconds on a cold cache. This splash is
+    plain CSS so it paints immediately, then removes itself from
+    `flutter_bootstrap.js`'s onEntrypointLoaded hook below.
+  -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #F7FBF8;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    #boot-splash {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background-color: #F7FBF8;
+      color: #14532D;
+      transition: opacity 250ms ease-out;
+      /* Must sit above the flutter-view element the engine injects. */
+      z-index: 9999;
+    }
+
+    #boot-splash.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #boot-splash .wordmark {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    #boot-splash .tagline {
+      font-size: 16px;
+      color: #4B6357;
+    }
+
+    #boot-splash .spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid #D8EFE1;
+      border-top-color: #1B7A4E;
+      border-radius: 50%;
+      animation: boot-spin 800ms linear infinite;
+    }
+
+    @keyframes boot-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #boot-splash .spinner { animation-duration: 2400ms; }
+      #boot-splash { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="boot-splash" role="status" aria-live="polite">
+    <div class="wordmark">mysihat</div>
+    <div class="spinner"></div>
+    <div class="tagline">Understand today. Act for tomorrow.</div>
+  </div>
+
+  <script>
+    // The engine fires `flutter-first-frame` once Dart has painted, so the
+    // default flutter_bootstrap.js stays untouched.
+    window.addEventListener('flutter-first-frame', function () {
+      const splash = document.getElementById('boot-splash');
+      if (!splash) return;
+      splash.classList.add('is-hidden');
+      splash.addEventListener('transitionend', () => splash.remove(), { once: true });
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
