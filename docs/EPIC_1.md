@@ -1,6 +1,6 @@
 # Epic 1.0 — Personalised Health Risk Understanding
 
-**App:** `app/` (Flutter, package `mysihat`, display name **mysihat**), web-first
+**App:** Flutter at the repository root (package `mysihat`, display name **mysihat**), web-first
 **Design:** mysihat Personal Insights + Action Roadmap, green/white wellness palette, Variation 1 sidebar on wide screens.
 
 This document maps each user story to the screens, data, and acceptance

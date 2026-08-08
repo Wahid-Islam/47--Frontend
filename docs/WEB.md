@@ -8,14 +8,14 @@ a desktop browser window and then verified to degrade cleanly to a phone.
 
 Epic 1.0 — questionnaire, Health Age, national comparison, Action Roadmap —
 is implemented once in Dart and compiles to both web and Android. The risk
-engine (`app/lib/controller/services/risk_engine.dart`) runs on-device, so
+engine (`lib/controller/services/risk_engine.dart`) runs on-device, so
 the web build needs no application server: it is a static bundle plus
 Supabase.
 
 A separate React web client was scaffolded early on and then removed; see
 [CLEANUP.md](CLEANUP.md).
 
-## Entry point: `app/web/index.html`
+## Entry point: `web/index.html`
 
 Three things in there matter:
 
@@ -43,13 +43,13 @@ sending unknown paths to `/index.html` — that rewrite is already in both
 `firebase.json` and `vercel.json`.
 
 Each route also sets the document title through `PageTitle`
-(`app/lib/core/widgets/page_title.dart`), which wraps Flutter's `Title`
+(`lib/core/widgets/page_title.dart`), which wraps Flutter's `Title`
 widget. Without it, every browser history entry and bookmark would read
 "mysihat"; with it they read "Personal Insights · mysihat".
 
 ## PWA
 
-`app/web/manifest.json` declares the name, `#1B7A4E` theme colour,
+`web/manifest.json` declares the name, `#1B7A4E` theme colour,
 `#F7FBF8` background, `start_url: /`, `scope: /`, `lang: en-MY` and
 `orientation: any`. Orientation is deliberately not locked to portrait —
 this is a desktop-first app.
@@ -92,7 +92,7 @@ cd app
 flutter build web --release
 ```
 
-Output goes to `app/build/web`. To check it as a real static site:
+Output goes to `build/web`. To check it as a real static site:
 
 ```powershell
 cd app\build\web

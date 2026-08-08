@@ -10,11 +10,11 @@ already hosted — nothing to deploy there beyond migrations.
 ## Build
 
 ```powershell
-cd D:\S2-2026\W1-W3\app
+cd D:\S2-2026\W1-W3\frontend
 flutter build web --release
 ```
 
-Output: `app/build/web`. Both host configs at the repo root point there.
+Output: `build/web`. Both host configs at the repo root point there.
 
 ## Two things every host must do
 
@@ -38,7 +38,7 @@ Both configs in this repo already do both.
 ```json
 {
   "hosting": {
-    "public": "app/build/web",
+    "public": "build/web",
     "rewrites": [{ "source": "**", "destination": "/index.html" }]
   }
 }
@@ -53,7 +53,7 @@ Deploy:
 ```powershell
 firebase login
 firebase use --add          # pick or create the Firebase project, once
-cd D:\S2-2026\W1-W3\app
+cd D:\S2-2026\W1-W3\frontend
 flutter build web --release
 cd ..
 firebase deploy --only hosting
@@ -72,7 +72,7 @@ your machine or in CI, so the host never needs a Flutter toolchain.
 ```json
 {
   "buildCommand": "cd app && flutter build web --release",
-  "outputDirectory": "app/build/web",
+  "outputDirectory": "build/web",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
@@ -85,7 +85,7 @@ The catch is that Vercel's build image has no Flutter SDK, so
   re-downloads on every build.
 - **Build locally or in CI, deploy the output** — run
   `flutter build web --release` yourself and point Vercel at
-  `app/build/web` as a pre-built static directory. Simpler and faster.
+  `build/web` as a pre-built static directory. Simpler and faster.
 
 The security headers set in `firebase.json` are **not** replicated in
 `vercel.json`. If you deploy to Vercel, add a `headers` block — see
@@ -94,7 +94,7 @@ The security headers set in `firebase.json` are **not** replicated in
 ## Configuration and secrets
 
 The Supabase URL and **anon (publishable)** key are compiled into the
-bundle from `app/lib/core/config/supabase_config.dart`. That is expected and
+bundle from `lib/core/config/supabase_config.dart`. That is expected and
 safe: the anon key grants the `anon` Postgres role and authorises nothing on
 its own, because Row Level Security is the enforcement layer.
 

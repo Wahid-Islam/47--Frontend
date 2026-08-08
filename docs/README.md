@@ -10,6 +10,7 @@ behaviour, update the relevant doc **and** append an entry to
 |---|---|
 | [REPO_STRUCTURE.md](REPO_STRUCTURE.md) | What every folder and file in the repo is for |
 | [RUNBOOK.md](RUNBOOK.md) | Every command: run, test, format, build, deploy |
+| [API_MIGRATION.md](API_MIGRATION.md) | Moving this app off Supabase onto the new backend API |
 
 ## Product
 
@@ -40,6 +41,6 @@ behaviour, update the relevant doc **and** append an entry to
 
 ## Conventions used across these docs
 
-- Paths are relative to the repo root, so the Flutter app is always `app/`.
+- Paths are relative to the repo root, where the Flutter project lives.
 - Code identifiers are written as `RiskEngine.compute` or `profiles.user_id`.
 - "US 1.2" style references point at [EPIC_1.md](EPIC_1.md).

@@ -4,9 +4,9 @@
 .pub-cache/
 .pub/
 build/
-app/.flutter-plugins
-app/.flutter-plugins-dependencies
-app/.metadata
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
 
 # Env & secrets
 .env

@@ -1,6 +1,6 @@
 # Architecture
 
-The Flutter app at `app/` uses **MVC adapted for Flutter**, with **Cubit
+This Flutter app uses **MVC adapted for Flutter**, with **Cubit
 (flutter_bloc)** as the controller-layer state management, **Supabase** as
 the backend, and **go_router** for navigation.
 

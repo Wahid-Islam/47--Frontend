@@ -13,7 +13,7 @@ Every command you need, in one place. All paths assume the repo root
 ## Run the web app
 
 ```powershell
-cd D:\S2-2026\W1-W3\app
+cd D:\S2-2026\W1-W3\frontend
 flutter pub get
 flutter run -d chrome
 ```
@@ -24,7 +24,7 @@ to skip straight to a fully populated profile.
 To check the release bundle as a real static site:
 
 ```powershell
-cd D:\S2-2026\W1-W3\app
+cd D:\S2-2026\W1-W3\frontend
 flutter build web --release
 cd build\web
 python -m http.server 8081 --bind 127.0.0.1
@@ -35,7 +35,7 @@ Then open <http://127.0.0.1:8081/>.
 ## Run on Android (secondary)
 
 ```powershell
-cd D:\S2-2026\W1-W3\app
+cd D:\S2-2026\W1-W3\frontend
 flutter devices
 flutter run -d <device-id>
 ```
@@ -43,7 +43,7 @@ flutter run -d <device-id>
 ## Quality gates
 
 ```powershell
-cd D:\S2-2026\W1-W3\app
+cd D:\S2-2026\W1-W3\frontend
 flutter analyze          # must print "No issues found!"
 flutter test             # must be all green
 dart format .            # uses page_width: 110 from analysis_options.yaml
@@ -60,7 +60,7 @@ reports.
 See [HOSTING.md](HOSTING.md) for the full walkthrough.
 
 ```powershell
-cd D:\S2-2026\W1-W3\app
+cd D:\S2-2026\W1-W3\frontend
 flutter build web --release
 cd ..
 firebase deploy --only hosting
@@ -69,7 +69,7 @@ firebase deploy --only hosting
 ## Supabase
 
 - Dashboard: <https://supabase.com/dashboard/project/loqwoiizinnshwrgaunj>
-- Client config: `app/lib/core/config/supabase_config.dart`
+- Client config: `lib/core/config/supabase_config.dart`
 - Schema and RLS reference: [DATABASE.md](DATABASE.md)
 
 After any schema change, re-check the security advisors in the dashboard and
@@ -78,9 +78,9 @@ update [DATABASE.md](DATABASE.md).
 ## Troubleshooting
 
 **"The process cannot access the file because it is being used by another
-process"** when renaming or deleting `app/`. A Dart analysis server or a
-terminal whose working directory is inside `app/` holds a handle on it.
-Close terminals in that folder, then:
+process"** when renaming or deleting a project directory. A Dart analysis
+server, or a terminal whose working directory is inside it, holds a handle on
+it. Close terminals in that folder, then:
 
 ```powershell
 Get-Process dart, dartvm -ErrorAction SilentlyContinue | Stop-Process -Force
@@ -92,7 +92,7 @@ The IDE restarts the analysis server automatically.
 directories and reinstall:
 
 ```powershell
-cd D:\S2-2026\W1-W3\app
+cd D:\S2-2026\W1-W3\frontend
 Remove-Item -Recurse -Force .dart_tool, build -ErrorAction SilentlyContinue
 flutter pub get
 ```

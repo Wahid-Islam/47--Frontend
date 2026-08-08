@@ -7,7 +7,7 @@ only enforcement point**.
 
 ## What is in the client bundle, and why that's fine
 
-`app/lib/core/config/supabase_config.dart` contains the Supabase project
+`lib/core/config/supabase_config.dart` contains the Supabase project
 URL and the **anon (publishable)** key. Both are compiled into
 `main.dart.js` and readable by anyone who opens DevTools. That is the
 intended design: the anon key only identifies the project and grants the
@@ -92,7 +92,7 @@ Keep the history committed so reviews work.
 
 ## Checklist before deploying
 
-- [ ] `service_role` key appears nowhere in `app/` or `docs/`
+- [ ] `service_role` key appears nowhere in `lib/` or `docs/`
 - [ ] Supabase advisors show no new warnings
 - [ ] Every new table has RLS enabled and owner-scoped policies
 - [ ] New `UPDATE` policies have both `USING` and `WITH CHECK`

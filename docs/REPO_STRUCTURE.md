@@ -1,31 +1,16 @@
 # Repository structure
 
-```
-D:\S2-2026\W1-W3\
-├─ app/                     The Flutter application (web-first)
-├─ docs/                    All documentation — index at docs/README.md
-├─ design-system/           Generated design tokens and UX guidelines
-├─ firebase.json            Firebase Hosting config → serves app/build/web
-├─ vercel.json              Vercel config → builds and serves app/build/web
-├─ README.md                Project front door
-├─ .gitignore
-├─ HealthPath_Bridging_the_Malaysian_Health_Data_Gap.pdf   Source brief
-├─ f02d1a98-...png          Source UI design sheet (mysihat "Variation 1")
-└─ st.docx                  Source requirements document
-```
+This repository is the **frontend only**. The backend API lives in a
+separate repository, [47--Backend](https://github.com/Wahid-Islam/47--Backend).
+See [API_MIGRATION.md](API_MIGRATION.md) for how the two relate.
 
-The three source files at the root are the original inputs the product was
-built from. They are kept because the design and copy decisions trace back
-to them.
-
-## `app/`
-
-The Dart package is named **`mysihat`**, so internal imports read
-`package:mysihat/...`. The folder is called `app/` rather than `mobile/`
-because web is the primary target.
+The Flutter project sits at the repository root — there is no `app/`
+subfolder, so `pubspec.yaml`, `lib/` and `web/` are top-level. The Dart
+package is named **`mysihat`**, so internal imports read
+`package:mysihat/...`.
 
 ```
-app/
+47--Frontend/
 ├─ lib/
 │  ├─ main.dart             Init Supabase, path URL strategy, runApp
 │  ├─ app.dart              Provides every Cubit, owns the GoRouter
@@ -47,9 +32,22 @@ app/
 ├─ test/                    Mirrors lib/ one-for-one
 ├─ web/                     Web entry point: index.html, manifest.json, icons
 ├─ android/                 Secondary target
+├─ docs/                    All documentation — index at docs/README.md
+├─ design-system/           Generated design tokens and UX guidelines
 ├─ pubspec.yaml
-└─ analysis_options.yaml    flutter_lints + formatter page_width: 110
+├─ analysis_options.yaml    flutter_lints + formatter page_width: 110
+├─ firebase.json            Firebase Hosting config → serves build/web
+├─ vercel.json              Vercel config → builds and serves build/web
+├─ README.md                Project front door
+├─ .gitignore
+├─ HealthPath_Bridging_the_Malaysian_Health_Data_Gap.pdf   Source brief
+├─ f02d1a98-...png          Source UI design sheet (mysihat "Variation 1")
+└─ st.docx                  Source requirements document
 ```
+
+The three source files at the root are the original inputs the product was
+built from. They are kept because the design and copy decisions trace back
+to them.
 
 ### `lib/core/widgets/`
 
@@ -68,6 +66,9 @@ app/
 | `dosm_data.dart` | Baseline mortality curves derived from DOSM statistics |
 | `action_catalog.dart` | Static catalog of preventive actions and daily habits |
 
+The risk engine stays on-device deliberately, so scoring has exactly one
+implementation. The backend persists its output but never computes it.
+
 ### `test/`
 
 Mirrors `lib/`, so `lib/core/widgets/centered_pane.dart` is tested by
@@ -75,23 +76,26 @@ Mirrors `lib/`, so `lib/core/widgets/centered_pane.dart` is tested by
 
 ## What is deliberately absent
 
-There is **no application server**. There is no `backend/`, no
-`docker-compose.yml`, and no separate JavaScript web client — see
-[CLEANUP.md](CLEANUP.md) for what was removed and why. The client talks to
-Supabase directly and Row Level Security enforces access.
+**No server code.** This repository builds to a static bundle. The API that
+replaced the deleted Node/Mongo backend is a separate repository — see
+[CLEANUP.md](CLEANUP.md) for what was removed and why.
+
+**Still talking to Supabase.** The app currently reaches Supabase directly,
+with Row Level Security enforcing per-user access. The move to the new API is
+documented but not yet done: [API_MIGRATION.md](API_MIGRATION.md).
 
 ## Generated directories
 
-These are ignored by git and safe to delete at any time; `flutter pub get`
-and `flutter build` recreate them.
+Ignored by git and safe to delete at any time; `flutter pub get` and
+`flutter build` recreate them.
 
 | Path | Recreate with |
 |---|---|
-| `app/.dart_tool/` | `flutter pub get` |
-| `app/build/` | `flutter build web` |
-| `app/.flutter-plugins-dependencies` | `flutter pub get` |
+| `.dart_tool/` | `flutter pub get` |
+| `build/` | `flutter build web` |
+| `.flutter-plugins-dependencies` | `flutter pub get` |
 
-If Windows refuses to rename or delete `app/`, a Dart analysis server or a
-terminal sitting in that directory is holding a handle on it. Close
-terminals in that folder, or stop the `dart.exe` analysis server processes;
-the IDE restarts them automatically.
+If Windows refuses to rename or delete one of these, a Dart analysis server
+or a terminal sitting in that directory is holding a handle on it. Close
+terminals in that folder, or stop the `dart.exe` processes; the IDE restarts
+them automatically.

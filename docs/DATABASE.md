@@ -31,7 +31,7 @@ backend has been deleted entirely — see [CLEANUP.md](CLEANUP.md).
 Policies: `questionnaire_insert_own` (`INSERT`, `authenticated`, `WITH CHECK auth.uid() = user_id`),
 `questionnaire_select_own` (`SELECT`, `authenticated`, `USING auth.uid() = user_id`). One row is
 inserted per profile-wizard "finish" via `QuestionnaireRepository.submit()`
-(`app/lib/controller/repositories/questionnaire_repository.dart`) — the mutable `profiles` row
+(`lib/controller/repositories/questionnaire_repository.dart`) — the mutable `profiles` row
 still holds the *current* answers; this table is an immutable audit trail of every submission.
 
 `insights.payload` (jsonb) gained new fields for Epic 1.0 US 1.2/1.3 —

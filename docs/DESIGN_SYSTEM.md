@@ -1,6 +1,6 @@
 # Design system
 
-**`app/lib/core/theme/app_theme.dart` is the source of truth.** Every token
+**`lib/core/theme/app_theme.dart` is the source of truth.** Every token
 below is a `static const` in that file, so if the code and this document
 disagree, the code wins and this document is out of date.
 

@@ -1,5 +1,34 @@
 # HealthPath Changelog
 
+## 2026-08-08 — Split into frontend and backend repositories
+
+### Two repositories
+- This repository is now **frontend only**, pushed to
+  [47--Frontend](https://github.com/Wahid-Islam/47--Frontend). The new API
+  lives in [47--Backend](https://github.com/Wahid-Islam/47--Backend).
+- **Hoisted the Flutter project from `app/` to the repository root**, which
+  is the convention for a dedicated Flutter repo. `pubspec.yaml`, `lib/`,
+  `web/`, `test/` and `android/` are now top-level. Git history was preserved.
+- `firebase.json` now serves `build/web` and `vercel.json` builds at the root,
+  both dropping the `app/` prefix.
+- Every doc path updated accordingly. Earlier changelog entries below still
+  say `app/` because that was accurate when they were written.
+
+### Database moving to Neon, but not yet
+- The project's database is moving to **Neon Postgres on Vercel**. The backend
+  API for it is built, typechecked and unit-tested.
+- **This app deliberately still runs on Supabase.** Neon exposes a
+  full-privilege `DATABASE_URL`, which can never ship in a browser bundle, so
+  the app cannot talk to Neon directly — the API has to be deployed and
+  verified first. Keeping Supabase live means nothing breaks in the meantime,
+  and rollback stays a single revert.
+- Added [API_MIGRATION.md](API_MIGRATION.md): why the move needs a backend,
+  what changes (only `lib/controller/repositories/`), and the two parts that
+  are not a straight swap — `onAuthStateChange` has no HTTP equivalent, and
+  token storage on web is a real security decision.
+- The API returns the **same `snake_case` shape Supabase did**, so
+  `Profile.fromJson` and the other models need no changes at cutover.
+
 ## 2026-08-07 — Web-first pivot, repo cleanup, full documentation set
 
 ### Web is now the primary target

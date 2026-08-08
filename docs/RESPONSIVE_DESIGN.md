@@ -7,7 +7,7 @@ below exists to prevent that.
 
 ## Breakpoints
 
-`app/lib/core/responsive/breakpoints.dart`:
+`lib/core/responsive/breakpoints.dart`:
 
 | Name | Width | Meaning |
 |---|---|---|
@@ -29,7 +29,7 @@ window can be resized to any width at any moment.
 
 ### `ResponsiveShell` — authenticated screens
 
-`app/lib/core/widgets/responsive_shell.dart` wraps the `go_router`
+`lib/core/widgets/responsive_shell.dart` wraps the `go_router`
 `StatefulShellRoute.indexedStack` so each tab keeps its own navigation
 stack and scroll position.
 
@@ -49,7 +49,7 @@ widget-tested without constructing a real `StatefulNavigationShell`.
 
 ### `CenteredPane` — everything outside the shell
 
-`app/lib/core/widgets/centered_pane.dart` caps and centres a single column.
+`lib/core/widgets/centered_pane.dart` caps and centres a single column.
 Every top-level route that is *not* inside `ResponsiveShell` — onboarding,
 login, register, the questionnaire — wraps its body in it.
 
@@ -88,12 +88,12 @@ cannot drift apart between the two layouts.
 
 ## Tests
 
-`app/test/core/widgets/centered_pane_test.dart` resizes the test window
+`test/core/widgets/centered_pane_test.dart` resizes the test window
 with `setSurfaceSize` and asserts the child is capped at 460px on a 1600px
 window, horizontally centred, allowed to fill a 320px window, and able to
 honour a wider explicit `maxWidth`.
 
-`app/test/core/widgets/responsive_shell_test.dart` covers `BrandedSidebar`
+`test/core/widgets/responsive_shell_test.dart` covers `BrandedSidebar`
 rendering every destination label and reporting the tapped index.
 
 Note for future tests: the default test window is 800×600, so a

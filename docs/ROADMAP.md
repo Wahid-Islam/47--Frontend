@@ -67,7 +67,7 @@ Kotlin source directories and breaking upgrades for anyone who has the app
 installed, so it was deliberately left alone.
 
 **No iOS target.** The `ios/` platform folder has never been generated.
-`flutter create --platforms=ios .` inside `app/` would add it.
+`flutter create --platforms=ios .` at the repo root would add it.
 
 ## Operations
 

@@ -11,7 +11,7 @@ Removed roughly **227 MB** across four items, and renamed the app folder.
 
 An Express + MongoDB API. It was superseded when the project moved to
 Supabase: the risk-scoring logic was ported to Dart in
-`app/lib/controller/services/risk_engine.dart`, and the client now talks to
+`lib/controller/services/risk_engine.dart`, and the client now talks to
 Postgres directly. The folder had already been marked deprecated with a
 `DEPRECATED.md` and was dead code for two changes running.
 
@@ -20,9 +20,9 @@ deletion:
 
 | Was | Is now |
 |---|---|
-| `backend/src/services/riskEngine.js` | `app/lib/controller/services/risk_engine.dart` |
-| `backend/src/data/dosm.js` | `app/lib/controller/services/dosm_data.dart` |
-| `backend/src/data/actions.js` | `app/lib/controller/services/action_catalog.dart` |
+| `backend/src/services/riskEngine.js` | `lib/controller/services/risk_engine.dart` |
+| `backend/src/data/dosm.js` | `lib/controller/services/dosm_data.dart` |
+| `backend/src/data/actions.js` | `lib/controller/services/action_catalog.dart` |
 
 ### `web/` — deleted (121 MB)
 
@@ -68,10 +68,10 @@ existing installs, so it was left alone deliberately — see
 
 | File | Change |
 |---|---|
-| `firebase.json` | `public` → `app/build/web` |
+| `firebase.json` | `public` → `build/web` |
 | `vercel.json` | build command and `outputDirectory` → `app/...` |
 | `docs/*.md` | every `mobile/` path → `app/` |
-| `app/test/**` | every `package:healthpath_mobile/` → `package:mysihat/` |
+| `test/**` | every `package:healthpath_mobile/` → `package:mysihat/` |
 
 ## Verification after cleanup
 
