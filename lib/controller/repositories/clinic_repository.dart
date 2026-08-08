@@ -1,17 +1,15 @@
-import 'package:supabase_flutter/supabase_flutter.dart' show SupabaseClient;
-
-import '../../core/config/supabase_config.dart';
+import '../../core/config/api_client.dart';
 import '../../model/clinic.dart';
 
-/// Data access for the public `public.clinics` table (readable by anyone,
-/// including anonymous/unauthenticated users, per RLS policy).
+/// Data access for public `GET /api/clinics`.
 class ClinicRepository {
-  ClinicRepository({SupabaseClient? client}) : _client = client ?? SupabaseConfig.client;
+  ClinicRepository({ApiClient? client}) : _client = client ?? apiClient;
 
-  final SupabaseClient _client;
+  final ApiClient _client;
 
   Future<List<Clinic>> getClinics() async {
-    final rows = await _client.from('clinics').select();
-    return (rows as List).map((r) => Clinic.fromJson(Map<String, dynamic>.from(r as Map))).toList();
+    final json = await _client.getJson('/api/clinics');
+    final rows = json?['clinics'] as List? ?? const [];
+    return rows.map((r) => Clinic.fromJson(Map<String, dynamic>.from(r as Map))).toList();
   }
 }

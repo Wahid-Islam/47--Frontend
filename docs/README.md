@@ -9,8 +9,9 @@ behaviour, update the relevant doc **and** append an entry to
 | Doc | Covers |
 |---|---|
 | [REPO_STRUCTURE.md](REPO_STRUCTURE.md) | What every folder and file in the repo is for |
+| [HOW_TO_RUN_AND_DEPLOY.md](HOW_TO_RUN_AND_DEPLOY.md) | Run locally and deploy online |
 | [RUNBOOK.md](RUNBOOK.md) | Every command: run, test, format, build, deploy |
-| [API_MIGRATION.md](API_MIGRATION.md) | Moving this app off Supabase onto the new backend API |
+| [API_MIGRATION.md](API_MIGRATION.md) | How the app talks to the Neon backend API |
 
 ## Product
 

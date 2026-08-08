@@ -1,82 +1,113 @@
-import 'package:supabase_flutter/supabase_flutter.dart' as supa;
-
-import '../../core/config/supabase_config.dart';
+import '../../core/config/api_client.dart';
 import '../../model/profile.dart';
 import '../services/risk_engine.dart';
 import 'insights_repository.dart';
 import 'profile_repository.dart';
 
-/// Auth + onboarding bootstrap on top of Supabase Auth.
+/// Auth session against the mysihat backend API.
 ///
-/// A Postgres trigger auto-creates a `profiles` row on signup, but this
-/// repository still performs a safety-net upsert after register/demo
-/// sign-in so the app never depends on trigger timing.
+/// Tokens are stored via [ApiClient] (`shared_preferences` / localStorage on
+/// web). There is no push stream equivalent of Supabase's `onAuthStateChange`
+/// — [AuthCubit] calls [restoreSession] once at startup and emits state from
+/// its own login/register/logout methods.
 class AuthRepository {
   AuthRepository({
-    supa.SupabaseClient? client,
+    ApiClient? client,
     ProfileRepository? profileRepository,
     InsightsRepository? insightsRepository,
-  }) : _client = client ?? SupabaseConfig.client,
-       _profileRepository = profileRepository ?? ProfileRepository(client: client ?? SupabaseConfig.client),
+  }) : _client = client ?? apiClient,
+       _profileRepository = profileRepository ?? ProfileRepository(client: client ?? apiClient),
        _insightsRepository =
-           insightsRepository ?? InsightsRepository(client: client ?? SupabaseConfig.client);
+           insightsRepository ?? InsightsRepository(client: client ?? apiClient);
 
-  final supa.SupabaseClient _client;
+  final ApiClient _client;
   final ProfileRepository _profileRepository;
   final InsightsRepository _insightsRepository;
 
   static const String demoEmail = 'lim.weijian@healthpath.demo';
   static const String demoPassword = 'demo1234';
 
-  Stream<supa.AuthState> get onAuthStateChange => _client.auth.onAuthStateChange;
-
-  supa.User? get currentUser => _client.auth.currentUser;
-
-  Future<supa.AuthResponse> signIn({required String email, required String password}) {
-    return _client.auth.signInWithPassword(email: email, password: password);
+  /// Restores a previous session from the stored token, or returns null.
+  Future<AuthSession?> restoreSession() async {
+    if (!_client.hasToken) return null;
+    try {
+      final json = await _client.getJson('/api/auth/me');
+      if (json == null) return null;
+      return AuthSession.fromJson(json);
+    } on ApiException catch (e) {
+      if (e.statusCode == 401) {
+        await _client.clearToken();
+        return null;
+      }
+      rethrow;
+    }
   }
 
-  Future<supa.AuthResponse> register({
+  Future<AuthSession> signIn({required String email, required String password}) async {
+    final json = await _client.postJson('/api/auth/login', {
+      'email': email,
+      'password': password,
+    });
+    return _persistSession(json);
+  }
+
+  Future<AuthSession> register({
     required String email,
     required String password,
     required String fullName,
   }) async {
-    final response = await _client.auth.signUp(email: email, password: password);
-    final user = response.user;
-    if (user != null) {
-      final existing = await _profileRepository.getProfile(user.id);
-      final base = existing ?? Profile.empty(user.id, email: email);
-      await _profileRepository.upsertProfile(base.copyWith(fullName: fullName, email: email));
-    }
-    return response;
+    final json = await _client.postJson('/api/auth/register', {
+      'email': email,
+      'password': password,
+      'full_name': fullName,
+    });
+    return _persistSession(json);
   }
 
-  /// Signs in as the canned demo user (creating the account on first use),
-  /// applies the Lim Wei Jian profile, and recalculates + saves insights.
-  Future<supa.AuthResponse> demoSignIn() async {
-    supa.AuthResponse response;
-    try {
-      response = await signIn(email: demoEmail, password: demoPassword);
-    } on supa.AuthException {
-      response = await _client.auth.signUp(email: demoEmail, password: demoPassword);
-    }
+  /// Signs in as the shared demo account, then ensures insights exist for it.
+  Future<AuthSession> demoSignIn() async {
+    final json = await _client.postJson('/api/auth/demo');
+    final session = await _persistSession(json);
 
-    final user = response.user;
-    if (user != null) {
-      await _bootstrapDemoProfile(user.id);
-    }
-    return response;
-  }
-
-  Future<void> _bootstrapDemoProfile(String userId) async {
-    final existing = await _profileRepository.getProfile(userId);
-    // Preserve a previously-customised demo account instead of clobbering it.
-    final profile = (existing != null && existing.onboardingComplete)
-        ? existing
-        : await _profileRepository.upsertProfile(Profile.demo(userId, email: demoEmail));
+    final existing = await _profileRepository.getProfile(session.userId);
+    final profile = existing ?? Profile.demo(session.userId, email: demoEmail);
     final insights = RiskEngine.compute(profile);
-    await _insightsRepository.upsertInsights(userId, insights);
+    await _insightsRepository.upsertInsights(session.userId, insights);
+
+    return session;
   }
 
-  Future<void> signOut() => _client.auth.signOut();
+  Future<void> signOut() => _client.clearToken();
+
+  Future<AuthSession> _persistSession(Map<String, dynamic>? json) async {
+    if (json == null) throw ApiException(500, 'Empty auth response');
+    final token = json['token']?.toString();
+    if (token == null || token.isEmpty) throw ApiException(500, 'Auth response missing token');
+    await _client.setToken(token);
+    return AuthSession.fromJson(json);
+  }
+}
+
+class AuthSession {
+  const AuthSession({
+    required this.userId,
+    required this.email,
+    this.profile,
+  });
+
+  final String userId;
+  final String email;
+  final Profile? profile;
+
+  factory AuthSession.fromJson(Map<String, dynamic> json) {
+    final user = Map<String, dynamic>.from(json['user'] as Map? ?? const {});
+    final profileJson = json['profile'];
+    return AuthSession(
+      userId: user['id']?.toString() ?? '',
+      email: user['email']?.toString() ?? '',
+      profile: profileJson is Map
+          ? Profile.fromJson(Map<String, dynamic>.from(profileJson))
+          : null,
+    );
+  }
 }

@@ -1,5 +1,15 @@
 # HealthPath Changelog
 
+## 2026-08-08 — Wired frontend to Neon backend API
+
+- Removed `supabase_flutter`. All repositories now call the REST API via
+  `ApiClient` (`package:http` + bearer token in `shared_preferences`).
+- `AuthCubit` restores sessions with `GET /api/auth/me` instead of a Supabase
+  auth stream.
+- Default API URL is `http://localhost:3000`; override with
+  `--dart-define=API_BASE_URL=...`.
+- Added [HOW_TO_RUN_AND_DEPLOY.md](HOW_TO_RUN_AND_DEPLOY.md).
+
 ## 2026-08-08 — Split into frontend and backend repositories
 
 ### Two repositories

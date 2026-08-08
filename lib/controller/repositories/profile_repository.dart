@@ -1,23 +1,29 @@
-import 'package:supabase_flutter/supabase_flutter.dart' show SupabaseClient;
-
-import '../../core/config/supabase_config.dart';
+import '../../core/config/api_client.dart';
 import '../../model/profile.dart';
 
-/// Data access for the `public.profiles` table. Row Level Security scopes
-/// every query to `auth.uid()`, so callers only ever see their own row.
+/// Data access for `GET` / `PUT /api/profile`.
 class ProfileRepository {
-  ProfileRepository({SupabaseClient? client}) : _client = client ?? SupabaseConfig.client;
+  ProfileRepository({ApiClient? client}) : _client = client ?? apiClient;
 
-  final SupabaseClient _client;
+  final ApiClient _client;
 
   Future<Profile?> getProfile(String userId) async {
-    final row = await _client.from('profiles').select().eq('id', userId).maybeSingle();
-    if (row == null) return null;
-    return Profile.fromJson(row);
+    final json = await _client.getJson('/api/profile');
+    if (json == null) return null;
+    // The API always returns the caller's profile; [userId] is kept for
+    // call-site compatibility with the previous Supabase signature.
+    final profile = Profile.fromJson(json);
+    if (profile.id != userId && userId.isNotEmpty) {
+      // Defensive: never surface another user's row if the token somehow
+      // disagreed (should be impossible with the current API).
+      return null;
+    }
+    return profile;
   }
 
   Future<Profile> upsertProfile(Profile profile) async {
-    final row = await _client.from('profiles').upsert(profile.toJson()).select().single();
-    return Profile.fromJson(row);
+    final json = await _client.putJson('/api/profile', profile.toJson());
+    if (json == null) throw ApiException(500, 'Empty profile response');
+    return Profile.fromJson(json);
   }
 }
