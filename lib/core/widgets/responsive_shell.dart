@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../view/widgets/design_accents.dart';
 import '../responsive/breakpoints.dart';
 import '../theme/app_theme.dart';
 
@@ -23,7 +24,7 @@ class ResponsiveShell extends StatelessWidget {
     required this.navigationShell,
     required this.destinations,
     this.brandName = 'MySihat',
-    this.tagline = 'Small changes today.\nBetter years tomorrow.',
+    this.tagline = 'Small changes today, healthier tomorrow.',
   });
 
   final StatefulNavigationShell navigationShell;
@@ -105,7 +106,7 @@ class BrandedSidebar extends StatelessWidget {
     required this.selectedIndex,
     required this.destinations,
     required this.onSelect,
-    this.tagline = 'Small changes today.\nBetter years tomorrow.',
+    this.tagline = 'Small changes today, healthier tomorrow.',
   });
 
   final String brandName;
@@ -207,19 +208,7 @@ class BrandedSidebar extends StatelessWidget {
               },
             ),
           ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF7FBF0),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppTheme.border),
-            ),
-            child: Text(
-              tagline,
-              style: const TextStyle(fontSize: 12, height: 1.45, color: AppTheme.textSecondary, fontWeight: FontWeight.w600),
-            ),
-          ),
+          SidebarPromoCard(message: tagline),
         ],
       ),
     );

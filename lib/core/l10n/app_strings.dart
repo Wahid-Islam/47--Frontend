@@ -8,6 +8,12 @@ class AppStrings {
   static const Map<String, Map<String, String>> _map = {
     'appName': {'en': 'MySihat', 'bm': 'MySihat'},
     'tagline': {'en': 'Understand today. Act for tomorrow.', 'bm': 'Fahami hari ini. Bertindak untuk esok.'},
+    'sidebarPromo': {
+      'en': 'Small changes today, healthier tomorrow.',
+      'bm': 'Perubahan kecil hari ini, lebih sihat esok.',
+    },
+    'ofDeaths': {'en': 'of deaths', 'bm': 'daripada kematian'},
+    'lastUpdated': {'en': 'Last updated: 29 July 2025', 'bm': 'Kemas kini terakhir: 29 Julai 2025'},
     'getStarted': {'en': 'Get Started', 'bm': 'Mulakan'},
     'haveAccount': {'en': 'I already have an account', 'bm': 'Saya sudah ada akaun'},
     'demoLogin': {'en': 'Try demo (Lim Wei Jian)', 'bm': 'Cuba demo (Lim Wei Jian)'},

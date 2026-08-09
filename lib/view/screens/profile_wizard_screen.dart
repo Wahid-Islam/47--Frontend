@@ -14,6 +14,7 @@ import '../../core/widgets/banners.dart';
 import '../../core/widgets/buttons.dart';
 import '../../core/widgets/centered_pane.dart';
 import '../../core/widgets/chips.dart';
+import '../../core/widgets/scroll_number_field.dart';
 import '../../model/profile.dart';
 
 /// Post-registration questionnaire.
@@ -33,9 +34,9 @@ class ProfileWizardScreen extends StatefulWidget {
 class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   final _formKey = GlobalKey<FormState>();
   int step = 0;
-  late final TextEditingController _age;
-  late final TextEditingController _height;
-  late final TextEditingController _weight;
+  late int _ageValue;
+  late double _heightValue;
+  late double _weightValue;
   late final TextEditingController _sleep;
   String? gender;
   String activity = 'moderate';
@@ -50,17 +51,16 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   void initState() {
     super.initState();
     final seed = context.read<ProfileCubit>().state.profile;
-    _age = TextEditingController(text: seed != null && seed.onboardingComplete ? seed.age.toString() : '');
-    _height = TextEditingController(
-      text: seed != null && seed.onboardingComplete ? seed.heightCm.toStringAsFixed(0) : '',
-    );
-    _weight = TextEditingController(
-      text: seed != null && seed.onboardingComplete ? seed.weightKg.toStringAsFixed(1) : '',
-    );
+    final editing = seed != null && seed.onboardingComplete;
+    _ageValue = editing ? seed.age.clamp(18, 90) : 30;
+    _heightValue = editing ? seed.heightCm.clamp(100, 250).roundToDouble() : 165;
+    _weightValue = editing ? seed.weightKg.clamp(30, 250) : 65;
+    // Keep half-kilogram steps for weight scrolling.
+    _weightValue = (_weightValue * 2).round() / 2;
     _sleep = TextEditingController(
-      text: seed != null && seed.onboardingComplete ? seed.sleepHours.toString() : '',
+      text: editing ? seed.sleepHours.toString() : '',
     );
-    gender = seed?.onboardingComplete == true ? seed!.gender : null;
+    gender = editing ? seed.gender : null;
     activity = seed?.activityLevel ?? 'moderate';
     diet = seed?.dietHabit ?? 'average';
     alcohol = seed?.alcohol ?? 'none';
@@ -69,9 +69,6 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
   @override
   void dispose() {
-    _age.dispose();
-    _height.dispose();
-    _weight.dispose();
     _sleep.dispose();
     super.dispose();
   }
@@ -98,9 +95,9 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     final current =
         context.read<ProfileCubit>().state.profile ?? Profile.empty(userId, email: authState.email);
 
-    final age = int.tryParse(_age.text.trim()) ?? current.age;
-    final height = _parseDecimal(_height.text) ?? current.heightCm;
-    final weight = _parseDecimal(_weight.text) ?? current.weightKg;
+    final age = _ageValue;
+    final height = _heightValue;
+    final weight = _weightValue;
     final sleep = _parseDecimal(_sleep.text) ?? current.sleepHours;
     final bmi = Profile.bmiFromHeightWeight(height, weight) ?? current.bmi;
 
@@ -267,17 +264,15 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextFormField(
-          controller: _age,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(labelText: AppStrings.t('age', locale)),
+        ScrollNumberField(
+          label: AppStrings.t('age', locale),
+          value: _ageValue.toDouble(),
+          min: 18,
+          max: 90,
+          step: 1,
+          onChanged: (v) => setState(() => _ageValue = v.round()),
           validator: (v) {
-            final trimmed = v?.trim() ?? '';
-            if (trimmed.isEmpty) return AppStrings.t('validationRequired', locale);
-            final parsed = int.tryParse(trimmed);
-            if (parsed == null || parsed < 18 || parsed > 90) {
-              return AppStrings.t('validationAgeRange', locale);
-            }
+            if (v < 18 || v > 90) return AppStrings.t('validationAgeRange', locale);
             return null;
           },
         ),
@@ -316,26 +311,31 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           onChanged: (v) => setState(() => smoking = v),
         ),
         const SizedBox(height: 8),
-        TextFormField(
-          controller: _height,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(labelText: AppStrings.t('heightCm', locale)),
+        ScrollNumberField(
+          label: AppStrings.t('heightCm', locale),
+          value: _heightValue,
+          min: 100,
+          max: 250,
+          step: 1,
+          suffix: 'cm',
+          onChanged: (v) => setState(() => _heightValue = v),
           validator: (v) {
-            final parsed = _parseDecimal(v ?? '');
-            if (parsed == null) return AppStrings.t('validationRequired', locale);
-            if (parsed < 100 || parsed > 250) return AppStrings.t('validationHeightRange', locale);
+            if (v < 100 || v > 250) return AppStrings.t('validationHeightRange', locale);
             return null;
           },
         ),
         const SizedBox(height: 14),
-        TextFormField(
-          controller: _weight,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(labelText: AppStrings.t('weightKg', locale)),
+        ScrollNumberField(
+          label: AppStrings.t('weightKg', locale),
+          value: _weightValue,
+          min: 30,
+          max: 250,
+          step: 0.5,
+          decimals: 1,
+          suffix: 'kg',
+          onChanged: (v) => setState(() => _weightValue = v),
           validator: (v) {
-            final parsed = _parseDecimal(v ?? '');
-            if (parsed == null) return AppStrings.t('validationRequired', locale);
-            if (parsed < 30 || parsed > 250) return AppStrings.t('validationWeightRange', locale);
+            if (v < 30 || v > 250) return AppStrings.t('validationWeightRange', locale);
             return null;
           },
         ),

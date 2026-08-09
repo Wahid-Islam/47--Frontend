@@ -19,6 +19,7 @@ class HomeShell extends StatelessWidget {
     return ResponsiveShell(
       navigationShell: navigationShell,
       brandName: AppStrings.t('appName', locale),
+      tagline: AppStrings.t('sidebarPromo', locale),
       destinations: [
         ShellDestination(
           icon: Icons.favorite_border,

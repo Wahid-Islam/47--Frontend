@@ -49,7 +49,18 @@ class PageHeader extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
+          IconButton(
+            tooltip: 'Notifications',
+            onPressed: () {},
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white,
+              side: const BorderSide(color: Color(0xFFE2E8E4)),
+              fixedSize: const Size(40, 40),
+            ),
+            icon: const Icon(Icons.notifications_none_rounded, size: 20, color: Color(0xFF334154)),
+          ),
+          const SizedBox(width: 8),
           CircleAvatar(
             radius: 19,
             backgroundColor: AppTheme.softGreen,

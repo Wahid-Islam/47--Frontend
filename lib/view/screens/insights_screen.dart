@@ -9,6 +9,7 @@ import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/cards.dart';
 import '../../model/insights.dart';
+import '../widgets/design_accents.dart';
 import '../widgets/health_age_dual_gauge.dart';
 import '../widgets/page_header.dart';
 
@@ -39,17 +40,19 @@ class InsightsScreen extends StatelessWidget {
           final group = MortalityInsights.ageGroupLabel(insights.actualAge);
           final killers = MortalityInsights.fromInsights(insights);
 
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-            children: [
-              PageHeader(
-                title: AppStrings.t('healthGlanceTitle', locale),
-                subtitle: AppStrings.t('healthGlanceSubtitle', locale),
-              ),
-              _HeroCard(insights: insights, factors: factors, locale: locale),
-              const SizedBox(height: 18),
-              _MortalityCard(ageGroup: group, killers: killers, locale: locale),
-            ],
+          return KlWatermarkBackdrop(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+              children: [
+                PageHeader(
+                  title: AppStrings.t('healthGlanceTitle', locale),
+                  subtitle: AppStrings.t('healthGlanceSubtitle', locale),
+                ),
+                _HeroCard(insights: insights, factors: factors, locale: locale),
+                const SizedBox(height: 18),
+                _MortalityCard(ageGroup: group, killers: killers, locale: locale),
+              ],
+            ),
           );
         },
       ),
@@ -350,6 +353,10 @@ class _MortalityCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 2, right: 8),
+                child: MalaysiaFlagMark(size: 16),
+              ),
               Expanded(
                 child: Text(
                   AppStrings.t('mortalityTitle', locale).replaceAll('{group}', ageGroup),
@@ -372,7 +379,7 @@ class _MortalityCard extends StatelessWidget {
             Column(
               children: [
                 for (final k in tiles) ...[
-                  _KillerTile(data: k),
+                  _KillerTile(data: k, ofDeathsLabel: AppStrings.t('ofDeaths', locale)),
                   const SizedBox(height: 12),
                 ],
               ],
@@ -383,7 +390,12 @@ class _MortalityCard extends StatelessWidget {
               children: [
                 for (var i = 0; i < tiles.length; i++) ...[
                   if (i > 0) const SizedBox(width: 14),
-                  Expanded(child: _KillerTile(data: tiles[i])),
+                  Expanded(
+                    child: _KillerTile(
+                      data: tiles[i],
+                      ofDeathsLabel: AppStrings.t('ofDeaths', locale),
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -391,9 +403,19 @@ class _MortalityCard extends StatelessWidget {
           const Divider(height: 1, color: Color(0xFFE8ECEE)),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text(
-              AppStrings.t('mortalitySource', locale),
-              style: const TextStyle(fontSize: 10.5, color: Color(0xFF727D88)),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    AppStrings.t('mortalitySource', locale),
+                    style: const TextStyle(fontSize: 10.5, color: Color(0xFF727D88)),
+                  ),
+                ),
+                Text(
+                  AppStrings.t('lastUpdated', locale),
+                  style: const TextStyle(fontSize: 10.5, color: Color(0xFF9AA3AD)),
+                ),
+              ],
             ),
           ),
         ],
@@ -403,7 +425,7 @@ class _MortalityCard extends StatelessWidget {
 }
 
 class _KillerTile extends StatelessWidget {
-  const _KillerTile({required this.data});
+  const _KillerTile({required this.data, required this.ofDeathsLabel});
 
   final ({
     String rank,
@@ -416,44 +438,79 @@ class _KillerTile extends StatelessWidget {
     Color pctColor,
     String meta,
   }) data;
+  final String ofDeathsLabel;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minHeight: 205),
-      padding: const EdgeInsets.all(17),
+      constraints: const BoxConstraints(minHeight: 250),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.78),
-        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE7EBED)),
+        boxShadow: const [BoxShadow(color: Color(0x0F223948), blurRadius: 18, offset: Offset(0, 8))],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
         children: [
-          Container(
-            width: 28,
-            height: 28,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(color: data.rankBg, borderRadius: BorderRadius.circular(8)),
-            child: Text(data.rank, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: data.rankFg)),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 88,
+            child: IgnorePointer(
+              child: CustomPaint(painter: const KlSkylinePainter(opacity: 0.12)),
+            ),
           ),
-          const SizedBox(height: 8),
-          Icon(data.icon, size: 28, color: data.rankFg),
-          const SizedBox(height: 8),
-          Text(data.title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 7),
-          Text(data.body, style: const TextStyle(fontSize: 12, height: 1.45, color: AppTheme.textSecondary)),
-          const SizedBox(height: 13),
-          Text.rich(
-            TextSpan(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TextSpan(
-                  text: data.pct,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: data.pctColor),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(color: data.rankBg, borderRadius: BorderRadius.circular(8)),
+                    child: Text(
+                      data.rank,
+                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: data.rankFg),
+                    ),
+                  ),
                 ),
-                TextSpan(
-                  text: ' · ${data.meta}',
-                  style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+                const SizedBox(height: 4),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: data.rankBg.withValues(alpha: 0.55),
+                  ),
+                  child: Icon(data.icon, size: 28, color: data.rankFg),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  data.title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, height: 1.25),
+                ),
+                const SizedBox(height: 7),
+                Text(
+                  data.body,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 12, height: 1.45, color: AppTheme.textSecondary),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  data.pct,
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: data.pctColor, height: 1),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  ofDeathsLabel,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF5F6B78)),
                 ),
               ],
             ),
