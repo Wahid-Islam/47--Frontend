@@ -1,26 +1,26 @@
 import '../../model/insights.dart';
 import '../../model/profile.dart';
 import 'dosm_data.dart';
+import 'health_age/health_age_model.dart';
 import 'recommendation_engine.dart';
 
-/// Client-side port of `backend/src/services/riskEngine.js`.
+/// On-device insights engine.
 ///
-/// Runs entirely on-device so the mobile app no longer needs the
-/// Express/Mongo API: [compute] takes a [Profile] and returns the same
-/// shape of insights payload the old backend produced, ready to be
-/// persisted into `public.insights.payload`.
+/// Health Age follows the Model v1.0 mortality-equivalence specification
+/// (log-risk index × Malaysian `nmx` baseline → equivalent age).
+/// Cause-of-death cards remain educational DOSM-inspired illustrations
+/// scaled by the same relative risk index.
 class RiskEngine {
   RiskEngine._();
 
-  static const Map<String, double> _activityMod = {'low': 1.25, 'moderate': 1.0, 'high': 0.82};
-  static const Map<String, double> _dietMod = {'unhealthy': 1.22, 'average': 1.0, 'healthy': 0.85};
-
   static const String _disclaimer =
-      'MySihat provides population-based statistical insights for education and prevention planning. '
-      'It is not a medical diagnosis or clinical advice.';
+      'MySihat provides educational, population-based Health Age estimates using '
+      'your reported lifestyle and Malaysian mortality data. It is not a medical '
+      'diagnosis, biological-age measurement, or prediction of individual lifespan.';
   static const String _disclaimerBm =
-      'MySihat menyediakan pandangan statistik berasaskan populasi untuk pendidikan dan perancangan '
-      'pencegahan. Ia bukan diagnosis perubatan atau nasihat klinikal.';
+      'MySihat menyediakan anggaran Umur Kesihatan berasaskan populasi untuk '
+      'pendidikan menggunakan gaya hidup yang anda laporkan dan data kematian Malaysia. '
+      'Ia bukan diagnosis perubatan, ukuran umur biologi, atau ramalan jangka hayat individu.';
 
   static String _impactLabel(double score) {
     if (score >= 0.28) return 'high';
@@ -37,27 +37,12 @@ class RiskEngine {
   static Insights compute(Profile profile) {
     final age = profile.age;
     final gender = profile.gender == 'female' ? 'female' : 'male';
-    final activity = profile.activityLevel;
-    final diet = profile.dietHabit;
-    final smoking = profile.smoking;
-    final bmi = profile.bmi;
-    final highBp = profile.highBloodPressure;
-
-    final alcohol = profile.alcohol;
-    final sleepHours = profile.sleepHours;
-
-    final lifestyleMultiplier =
-        (_activityMod[activity] ?? 1.0) *
-        (_dietMod[diet] ?? 1.0) *
-        (smoking ? 1.35 : 1.0) *
-        (bmi >= 30 ? 1.2 : (bmi >= 25 ? 1.1 : 1.0)) *
-        (highBp ? 1.18 : 1.0) *
-        (alcohol == 'regular' ? 1.15 : alcohol == 'occasional' ? 1.05 : 1.0) *
-        (sleepHours < 6 ? 1.12 : sleepHours < 7 ? 1.05 : sleepHours > 9 ? 1.04 : 1.0);
+    final health = HealthAgeModel.calculate(profile);
+    final relativeRisk = health.riskIndex;
 
     final risks = DosmData.causes.map((cause) {
       final base = DosmData.baselineRate(cause.id, gender, age);
-      final personal = (base * lifestyleMultiplier).clamp(0.03, 0.75);
+      final personal = (base * relativeRisk).clamp(0.03, 0.75);
       return RiskItem(
         id: cause.id,
         name: cause.name,
@@ -67,140 +52,24 @@ class RiskEngine {
         level: _impactLabel(personal),
         deltaVsPeers: ((personal - base) * 1000).round() / 10,
       );
-    }).toList()..sort((a, b) => b.personalRisk.compareTo(a.personalRisk));
+    }).toList()
+      ..sort((a, b) => b.personalRisk.compareTo(a.personalRisk));
 
     final topRisk = risks.first;
     final overallScore = risks.fold<double>(0, (sum, r) => sum + r.personalRisk) / risks.length / 100;
 
-    var healthAgeOffset = 0;
-    if (activity == 'low') healthAgeOffset += 3;
-    if (activity == 'high') healthAgeOffset -= 2;
-    if (diet == 'unhealthy') healthAgeOffset += 2;
-    if (diet == 'healthy') healthAgeOffset -= 1;
-    if (smoking) healthAgeOffset += 5;
-    if (bmi >= 30) {
-      healthAgeOffset += 3;
-    } else if (bmi >= 25) {
-      healthAgeOffset += 1;
-    }
-    if (highBp) healthAgeOffset += 2;
-    if (alcohol == 'regular') {
-      healthAgeOffset += 3;
-    } else if (alcohol == 'occasional') {
-      healthAgeOffset += 1;
-    }
-    if (sleepHours < 6) {
-      healthAgeOffset += 2;
-    } else if (sleepHours < 7) {
-      healthAgeOffset += 1;
-    } else if (sleepHours > 9) {
-      healthAgeOffset += 1;
-    }
-    healthAgeOffset += ((topRisk.personalRisk - topRisk.nationalAverage) / 4).round();
-
-    final healthAge = (age + healthAgeOffset).clamp(age - 8, age + 15).toInt();
-    final lifeExpectancy = DosmData.nationalLifeExpectancy[gender] ?? 75.0;
-
-    final factors = <RiskFactor>[
-      RiskFactor(
-        id: 'physical_inactivity',
-        label: 'Physical Inactivity',
-        labelBm: 'Kurang Aktiviti Fizikal',
-        impact: activity == 'low'
-            ? 'high'
-            : activity == 'moderate'
-            ? 'medium'
-            : 'low',
-        score: activity == 'low'
-            ? 0.85
-            : activity == 'moderate'
-            ? 0.45
-            : 0.15,
-      ),
-      RiskFactor(
-        id: 'blood_pressure',
-        label: 'High Blood Pressure',
-        labelBm: 'Tekanan Darah Tinggi',
-        impact: highBp ? 'high' : 'low',
-        score: highBp ? 0.8 : 0.2,
-      ),
-      RiskFactor(
-        id: 'age_factor',
-        label: 'Age Factor',
-        labelBm: 'Faktor Umur',
-        impact: age >= 55
-            ? 'high'
-            : age >= 45
-            ? 'medium'
-            : 'low',
-        score: ((age - 35) / 35).clamp(0.1, 0.95).toDouble(),
-      ),
-      RiskFactor(
-        id: 'bmi',
-        label: 'BMI',
-        labelBm: 'BMI',
-        impact: bmi >= 30
-            ? 'high'
-            : bmi >= 25
-            ? 'medium'
-            : 'low',
-        score: ((bmi - 18) / 20).clamp(0.1, 0.95).toDouble(),
-      ),
-      RiskFactor(
-        id: 'smoking',
-        label: 'Smoking',
-        labelBm: 'Merokok',
-        impact: smoking ? 'high' : 'low',
-        score: smoking ? 0.9 : 0.1,
-      ),
-      RiskFactor(
-        id: 'diet',
-        label: 'Dietary Habits',
-        labelBm: 'Tabiat Pemakanan',
-        impact: diet == 'unhealthy'
-            ? 'high'
-            : diet == 'average'
-            ? 'medium'
-            : 'low',
-        score: diet == 'unhealthy'
-            ? 0.8
-            : diet == 'average'
-            ? 0.45
-            : 0.2,
-      ),
-      RiskFactor(
-        id: 'alcohol',
-        label: 'Alcohol',
-        labelBm: 'Alkohol',
-        impact: alcohol == 'regular'
-            ? 'high'
-            : alcohol == 'occasional'
-            ? 'medium'
-            : 'low',
-        score: alcohol == 'regular'
-            ? 0.75
-            : alcohol == 'occasional'
-            ? 0.4
-            : 0.1,
-      ),
-      RiskFactor(
-        id: 'sleep',
-        label: 'Sleep',
-        labelBm: 'Tidur',
-        impact: sleepHours < 6 || sleepHours > 9
-            ? 'high'
-            : sleepHours < 7
-            ? 'medium'
-            : 'low',
-        score: sleepHours < 6
-            ? 0.8
-            : sleepHours < 7
-            ? 0.5
-            : sleepHours > 9
-            ? 0.55
-            : 0.2,
-      ),
-    ]..sort((a, b) => b.score.compareTo(a.score));
+    final factors = health.factorContributions
+        .where((f) => f.id != 'diabetes' || f.multiplier > 1.0)
+        .map(
+          (f) => RiskFactor(
+            id: f.id,
+            label: f.label,
+            labelBm: f.labelBm,
+            impact: f.impact,
+            score: f.score,
+          ),
+        )
+        .toList();
 
     final peerComparison = _buildPeerText(topRisk, gender, age);
     final peerComparisonBm = _buildPeerTextBm(topRisk, gender, age);
@@ -214,15 +83,13 @@ class RiskEngine {
     );
     final habits = habitRecs.map((r) => r.habit).toList();
 
-    // MVP demographic baseline: the average-lifestyle peer in the same
-    // chronological age band has a Health Age close to their actual age,
-    // so the peer/national average Health Age defaults to `age`.
     final peerAverageHealthAge = age;
-    final healthAgeDelta = healthAge - age;
-    // Following the plan moves Health Age down toward chronological age
-    // (never pretending to go younger than actual age in the 12‑month view).
+    final healthAge = health.healthAge;
+    final healthAgeDelta = health.healthAgeDifference;
     final projectedHealthAgeFollowPlan = healthAge > age ? age : healthAge;
     final projectedHealthAgeNoChange = (healthAge + 8 < age + 15 ? healthAge + 8 : age + 15);
+
+    final lifeExpectancy = DosmData.nationalLifeExpectancy[gender] ?? 75.0;
 
     final nationalComparisonHeadline = _buildNationalHeadline(
       healthAge,
@@ -230,6 +97,8 @@ class RiskEngine {
       topRisk,
       gender: gender,
       isBm: false,
+      riskIndex: relativeRisk,
+      lifestyleScore: health.lifestyleScore,
     );
     final nationalComparisonHeadlineBm = _buildNationalHeadline(
       healthAge,
@@ -237,6 +106,8 @@ class RiskEngine {
       topRisk,
       gender: gender,
       isBm: true,
+      riskIndex: relativeRisk,
+      lifestyleScore: health.lifestyleScore,
     );
 
     return Insights(
@@ -270,6 +141,8 @@ class RiskEngine {
     RiskItem topRisk, {
     required String gender,
     required bool isBm,
+    required double riskIndex,
+    required double lifestyleScore,
   }) {
     final delta = healthAge - peerAverageHealthAge;
     if (isBm) {
@@ -279,9 +152,10 @@ class RiskEngine {
           : delta < 0
           ? '${delta.abs()} tahun lebih rendah daripada'
           : 'sama dengan';
-      return 'Umur Kesihatan anda ($healthAge) adalah $relation purata kebangsaan ($peerAverageHealthAge) untuk $sex '
-          'seusia anda. Risiko utama anda, ${topRisk.nameBm.toLowerCase()}, ialah ${topRisk.personalRisk}% '
-          'berbanding purata kebangsaan ${topRisk.nationalAverage}%.';
+      return 'Umur Kesihatan anda ($healthAge) adalah $relation umur sebenar ($peerAverageHealthAge) untuk $sex '
+          'seusia anda. Indeks risiko terlaras model ialah ${riskIndex.toStringAsFixed(2)} '
+          '(skor gaya hidup ${lifestyleScore.round()}/100). Risiko utama, ${topRisk.nameBm.toLowerCase()}, '
+          'ialah ${topRisk.personalRisk}% berbanding purata ${topRisk.nationalAverage}%.';
     }
     final sex = gender == 'female' ? 'women' : 'men';
     final relation = delta > 0
@@ -289,9 +163,10 @@ class RiskEngine {
         : delta < 0
         ? '${delta.abs()} years lower than'
         : 'in line with';
-    return 'Your Health Age ($healthAge) is $relation the national average ($peerAverageHealthAge) for $sex your age. '
-        'Your top risk, ${topRisk.name.toLowerCase()}, sits at ${topRisk.personalRisk}% vs a national average of '
-        '${topRisk.nationalAverage}%.';
+    return 'Your Health Age ($healthAge) is $relation your chronological age ($peerAverageHealthAge) for $sex your age. '
+        'The model’s adjusted risk index is ${riskIndex.toStringAsFixed(2)} '
+        '(lifestyle score ${lifestyleScore.round()}/100). Your top illustrated risk, '
+        '${topRisk.name.toLowerCase()}, sits at ${topRisk.personalRisk}% vs ${topRisk.nationalAverage}%.';
   }
 
   static String _buildPeerText(RiskItem topRisk, String gender, int age) {
@@ -313,6 +188,4 @@ class RiskEngine {
         '${topRisk.nameBm.toLowerCase()} anda kira-kira $abs mata peratusan $direction daripada purata '
         'demografi (${topRisk.nationalAverage}%).';
   }
-
 }
-

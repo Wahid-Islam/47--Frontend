@@ -46,10 +46,7 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
         return onWizard ? null : '/profile-wizard';
       }
 
-      // After questionnaire, land on My Health.
-      if (onWizard) {
-        return '/home';
-      }
+      // Completed users may reopen /profile-wizard to edit their answers.
       if (onSplash || onOnboarding || onAuthForm) {
         return '/home';
       }

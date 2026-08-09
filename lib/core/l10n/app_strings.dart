@@ -37,9 +37,9 @@ class AppStrings {
     'healthAgeAligned': {'en': 'aligned with your actual age.', 'bm': 'selaras dengan umur sebenar anda.'},
     'healthAgeDisclaimer': {
       'en':
-          'Health Age is an estimate based on your profile and Malaysian mortality trends. It is not a medical diagnosis.',
+          'Health Age is an educational age-equivalent estimate from your reported lifestyle and Malaysian population mortality data. It is not a medical diagnosis, biological age, or lifespan prediction.',
       'bm':
-          'Umur Kesihatan ialah anggaran berdasarkan profil anda dan trend kematian Malaysia. Ia bukan diagnosis perubatan.',
+          'Umur Kesihatan ialah anggaran setara umur untuk pendidikan berdasarkan gaya hidup yang dilapor dan data kematian populasi Malaysia. Ia bukan diagnosis perubatan, umur biologi, atau ramalan jangka hayat.',
     },
     'factorsInfluencingTitle': {
       'en': 'What’s influencing your Health Age?',

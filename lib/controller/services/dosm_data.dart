@@ -132,5 +132,6 @@ class DosmData {
     return bands.last.rate;
   }
 
-  static const Map<String, double> nationalLifeExpectancy = {'male': 72.5, 'female': 77.2};
+  /// DOSM 2025 life expectancy at birth (release notes).
+  static const Map<String, double> nationalLifeExpectancy = {'male': 73.1, 'female': 77.9};
 }

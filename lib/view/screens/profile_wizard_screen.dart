@@ -88,6 +88,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     final authState = context.read<AuthCubit>().state;
     final userId = authState.userId;
     if (userId == null) return;
+    final editingExisting = authState.onboardingComplete;
 
     setState(() {
       _submitting = true;
@@ -181,7 +182,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       await habitsCubit.refreshToday();
       authCubit.markOnboardingComplete();
       if (!mounted) return;
-      context.go('/home');
+      context.go(editingExisting ? '/home/profile' : '/home');
     } else {
       setState(() => step = 1);
     }
@@ -193,9 +194,24 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   Widget build(BuildContext context) {
     final locale = context.watch<LocaleCubit>().state;
 
+    final canLeave = context.read<AuthCubit>().state.onboardingComplete;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(step == 0 ? AppStrings.t('demographics', locale) : AppStrings.t('lifestyle', locale)),
+        leading: canLeave
+            ? IconButton(
+                icon: const Icon(Icons.close),
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                onPressed: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go('/home/profile');
+                  }
+                },
+              )
+            : null,
       ),
       body: SafeArea(
         child: CenteredPane(

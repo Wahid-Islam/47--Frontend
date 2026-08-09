@@ -22,6 +22,7 @@ class Profile extends Equatable {
     this.alcohol = 'none',
     this.sleepHours = 7,
     this.highBloodPressure = false,
+    this.diabetes = false,
     this.onboardingComplete = false,
     this.locale = 'en',
     this.activeActionIds = const [],
@@ -42,6 +43,7 @@ class Profile extends Equatable {
   final String alcohol; // none | occasional | regular
   final double sleepHours;
   final bool highBloodPressure;
+  final bool diabetes;
   final bool onboardingComplete;
   final String locale; // en | bm
   final List<String> activeActionIds;
@@ -98,6 +100,7 @@ class Profile extends Equatable {
       alcohol: json['alcohol']?.toString() ?? 'none',
       sleepHours: (json['sleep_hours'] as num?)?.toDouble() ?? 7,
       highBloodPressure: json['high_blood_pressure'] as bool? ?? false,
+      diabetes: json['diabetes'] as bool? ?? false,
       onboardingComplete: json['onboarding_complete'] as bool? ?? false,
       locale: json['locale']?.toString() ?? 'en',
       activeActionIds: (json['active_action_ids'] as List?)?.map((e) => e.toString()).toList() ?? const [],
@@ -121,6 +124,7 @@ class Profile extends Equatable {
       'alcohol': alcohol,
       'sleep_hours': sleepHours,
       'high_blood_pressure': highBloodPressure,
+      'diabetes': diabetes,
       'onboarding_complete': onboardingComplete,
       'locale': locale,
       'active_action_ids': activeActionIds,
@@ -143,6 +147,7 @@ class Profile extends Equatable {
     String? alcohol,
     double? sleepHours,
     bool? highBloodPressure,
+    bool? diabetes,
     bool? onboardingComplete,
     String? locale,
     List<String>? activeActionIds,
@@ -163,6 +168,7 @@ class Profile extends Equatable {
       alcohol: alcohol ?? this.alcohol,
       sleepHours: sleepHours ?? this.sleepHours,
       highBloodPressure: highBloodPressure ?? this.highBloodPressure,
+      diabetes: diabetes ?? this.diabetes,
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
       locale: locale ?? this.locale,
       activeActionIds: activeActionIds ?? this.activeActionIds,
@@ -186,6 +192,7 @@ class Profile extends Equatable {
     alcohol,
     sleepHours,
     highBloodPressure,
+    diabetes,
     onboardingComplete,
     locale,
     activeActionIds,
