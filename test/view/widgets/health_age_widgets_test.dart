@@ -28,8 +28,10 @@ void main() {
           home: Scaffold(
             body: HealthAgeProjectionChart(
               healthAge: 54,
+              actualAge: 48,
               projectedFollowPlan: 48,
               projectedNoChange: 62,
+              habitProgress: 0.5,
               locale: 'en',
             ),
           ),
@@ -38,7 +40,10 @@ void main() {
       await tester.pumpAndSettle();
 
       check(find.text('Follow the plan').evaluate().length).equals(1);
+      check(find.text('Actual age').evaluate().length).equals(1);
       check(find.text('No change').evaluate().length).equals(1);
+      // Y-axis should use clean 5-step labels, not orphan bounds like 24 next to 25.
+      check(find.text('24').evaluate().length).equals(0);
       check(tester.takeException()).isNull();
     });
   });

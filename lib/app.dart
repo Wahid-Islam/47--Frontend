@@ -74,7 +74,7 @@ class _HealthPathAppViewState extends State<_HealthPathAppView> {
           previous.userId != current.userId || previous.status != current.status,
       listener: _onAuthChanged,
       child: MaterialApp.router(
-        title: 'mysihat',
+        title: 'MySihat',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
         routerConfig: _router,

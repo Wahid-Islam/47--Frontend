@@ -1,6 +1,6 @@
 {
-    "name": "mysihat — Personalised health insights for Malaysians",
-    "short_name": "mysihat",
+    "name": "MySihat — Personalised health insights for Malaysians",
+    "short_name": "MySihat",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

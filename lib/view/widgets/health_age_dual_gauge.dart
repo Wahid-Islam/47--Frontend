@@ -1,12 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
 
-/// Side-by-side circular comparison of the computed Health Age vs. the
-/// user's actual (chronological) age, for the "Your Health Age" card on
-/// Personal Insights (US 1.2). Both rings share the same 0-100 scale so
-/// their relative fill length is directly comparable.
+/// Side-by-side Health Age vs Actual Age rings matching the Finalprototype.
 class HealthAgeDualGauge extends StatelessWidget {
   const HealthAgeDualGauge({
     super.key,
@@ -23,15 +22,29 @@ class HealthAgeDualGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final healthAgeColor = healthAge > actualAge ? AppTheme.riskModerate : AppTheme.primary;
+    final isBad = healthAge > actualAge;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _AgeCircle(value: healthAge, color: healthAgeColor, label: AppStrings.t('healthAge', locale)),
+        _AgeCircle(
+          value: healthAge,
+          progress: (healthAge / _scaleMax).clamp(0.0, 1.0),
+          accent: isBad ? AppTheme.riskHigh : AppTheme.primary,
+          track: isBad ? const Color(0xFFF5E3E2) : const Color(0xFFE7EFE9),
+          label: AppStrings.t('healthAge', locale),
+          labelColor: isBad ? AppTheme.riskHigh : const Color(0xFF16804C),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: Text('VS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF7C8794))),
+        ),
         _AgeCircle(
           value: actualAge,
-          color: AppTheme.secondaryCompare,
+          progress: (actualAge / _scaleMax).clamp(0.0, 1.0),
+          accent: AppTheme.secondaryCompare,
+          track: const Color(0xFFEDF0F2),
           label: AppStrings.t('actualAge', locale),
+          labelColor: const Color(0xFF566171),
         ),
       ],
     );
@@ -39,43 +52,96 @@ class HealthAgeDualGauge extends StatelessWidget {
 }
 
 class _AgeCircle extends StatelessWidget {
-  const _AgeCircle({required this.value, required this.color, required this.label});
+  const _AgeCircle({
+    required this.value,
+    required this.progress,
+    required this.accent,
+    required this.track,
+    required this.label,
+    required this.labelColor,
+  });
 
   final int value;
-  final Color color;
+  final double progress;
+  final Color accent;
+  final Color track;
   final String label;
+  final Color labelColor;
 
   @override
   Widget build(BuildContext context) {
-    final ratio = (value / HealthAgeDualGauge._scaleMax).clamp(0.0, 1.0).toDouble();
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          width: 120,
-          height: 120,
-          child: Stack(
-            alignment: Alignment.center,
-            fit: StackFit.expand,
-            children: [
-              CircularProgressIndicator(value: 1, strokeWidth: 12, color: AppTheme.border),
-              CircularProgressIndicator(
-                value: ratio,
-                strokeWidth: 12,
-                backgroundColor: Colors.transparent,
-                valueColor: AlwaysStoppedAnimation<Color>(color),
-                strokeCap: StrokeCap.round,
+          width: 150,
+          height: 150,
+          child: CustomPaint(
+            painter: _ConicRingPainter(progress: progress, accent: accent, track: track),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$value',
+                    style: const TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -2,
+                      color: AppTheme.foreground,
+                      height: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: labelColor)),
+                ],
               ),
-              Text('$value', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: 36)),
-            ],
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 15, color: AppTheme.textSecondary, fontWeight: FontWeight.w600),
         ),
       ],
     );
+  }
+}
+
+class _ConicRingPainter extends CustomPainter {
+  _ConicRingPainter({required this.progress, required this.accent, required this.track});
+
+  final double progress;
+  final Color accent;
+  final Color track;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.shortestSide / 2;
+    final stroke = 14.0;
+    final rect = Rect.fromCircle(center: center, radius: radius - stroke / 2);
+
+    final trackPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..color = track
+      ..strokeCap = StrokeCap.butt;
+    canvas.drawArc(rect, -math.pi / 2, math.pi * 2, false, trackPaint);
+
+    final accentPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..color = accent
+      ..strokeCap = StrokeCap.butt;
+    canvas.drawArc(rect, -math.pi / 2, math.pi * 2 * progress, false, accentPaint);
+
+    // Soft white inset ring.
+    final inset = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10
+      ..color = Colors.white.withValues(alpha: 0.78);
+    canvas.drawCircle(center, radius - stroke - 2, inset);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ConicRingPainter oldDelegate) {
+    return oldDelegate.progress != progress || oldDelegate.accent != accent || oldDelegate.track != track;
   }
 }

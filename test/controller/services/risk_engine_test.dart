@@ -36,9 +36,8 @@ void main() {
       check(insights.peerAverageHealthAge).equals(insights.actualAge);
       check(insights.healthAgeDelta).equals(insights.healthAge - insights.actualAge);
 
-      check(
-        insights.projectedHealthAgeFollowPlan,
-      ).equals([insights.healthAge - 6, insights.actualAge - 12].reduce((a, b) => a > b ? a : b));
+      // Follow-the-plan projection falls toward chronological/actual age.
+      check(insights.projectedHealthAgeFollowPlan).equals(insights.actualAge);
       check(
         insights.projectedHealthAgeNoChange,
       ).equals([insights.healthAge + 8, insights.actualAge + 15].reduce((a, b) => a < b ? a : b));

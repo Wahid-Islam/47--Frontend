@@ -4,40 +4,22 @@ import 'package:go_router/go_router.dart';
 
 import '../../controller/cubits/insights_cubit.dart';
 import '../../controller/cubits/locale_cubit.dart';
+import '../../controller/services/mortality_insights.dart';
 import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/buttons.dart';
 import '../../core/widgets/cards.dart';
 import '../../model/insights.dart';
 import '../widgets/health_age_dual_gauge.dart';
-import '../widgets/risk_bars.dart';
+import '../widgets/page_header.dart';
 
-/// US 1.2 + US 1.3: "Personal Insights" — the Health Age headline, the top
-/// 3 contributing factors, and the national/peer comparison — with a
-/// primary CTA that hands off to the Action Roadmap (`/home/plan`).
+/// My Health — Health Age hero, top lifestyle factors, and DOSM mortality cards.
 class InsightsScreen extends StatelessWidget {
   const InsightsScreen({super.key});
 
-  /// Prefers Activity ("physical_inactivity"), Diet, and Sleep factors
-  /// (per the mysihat Personal Insights spec) when present in
-  /// [insights.factors], falling back to the next-highest-scored factors
-  /// so the card always shows exactly 3 rows.
+  /// Highest-impact lifestyle factors from the user's computed insights.
   static List<RiskFactor> _topFactors(List<RiskFactor> factors) {
-    const preferredIds = ['physical_inactivity', 'diet', 'sleep'];
-    final byId = {for (final f in factors) f.id: f};
-    final selected = <RiskFactor>[
-      for (final id in preferredIds)
-        if (byId[id] != null) byId[id]!,
-    ];
-    if (selected.length < 3) {
-      final remaining = factors.where((f) => !selected.contains(f)).toList()
-        ..sort((a, b) => b.score.compareTo(a.score));
-      for (final f in remaining) {
-        if (selected.length >= 3) break;
-        selected.add(f);
-      }
-    }
-    return selected.take(3).toList();
+    final ranked = [...factors]..sort((a, b) => b.score.compareTo(a.score));
+    return ranked.take(3).toList();
   }
 
   @override
@@ -45,7 +27,7 @@ class InsightsScreen extends StatelessWidget {
     final locale = context.watch<LocaleCubit>().state;
 
     return Scaffold(
-      appBar: AppBar(title: Text(AppStrings.t('insights', locale))),
+      backgroundColor: Colors.transparent,
       body: BlocBuilder<InsightsCubit, InsightsState>(
         buildWhen: (previous, current) => previous.insights != current.insights,
         builder: (context, state) {
@@ -53,79 +35,20 @@ class InsightsScreen extends StatelessWidget {
           if (insights == null) {
             return Center(child: Text(AppStrings.t('noInsights', locale)));
           }
+          final factors = _topFactors(insights.factors);
+          final group = MortalityInsights.ageGroupLabel(insights.actualAge);
+          final killers = MortalityInsights.fromInsights(insights);
+
           return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
             children: [
-              Text(
-                AppStrings.t('insightsSubtitle', locale),
-                style: const TextStyle(fontSize: 16, color: AppTheme.textSecondary, height: 1.4),
+              PageHeader(
+                title: AppStrings.t('healthGlanceTitle', locale),
+                subtitle: AppStrings.t('healthGlanceSubtitle', locale),
               ),
+              _HeroCard(insights: insights, factors: factors, locale: locale),
               const SizedBox(height: 18),
-              _HealthAgeCard(insights: insights, locale: locale),
-              const SizedBox(height: 18),
-              SectionHeader(AppStrings.t('topFactorsTitle', locale)),
-              HpCard(
-                child: Column(
-                  children: [
-                    for (final factor in _topFactors(insights.factors))
-                      FactorBar(
-                        label: factor.localizedLabel(locale),
-                        score: factor.score,
-                        impact: factor.impact,
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              SectionHeader(AppStrings.t('nationalComparisonTitle', locale)),
-              HpCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      insights.localizedNationalComparisonHeadline(locale),
-                      style: const TextStyle(fontSize: 16, height: 1.45),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppStrings.t('healthAgeCompareLabel', locale),
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 10),
-                    RiskCompareBar(
-                      personal: insights.healthAge.toDouble(),
-                      national: insights.peerAverageHealthAge.toDouble(),
-                      personalLabel: AppStrings.t('you', locale),
-                      nationalLabel: AppStrings.t('nationalAvg', locale),
-                      suffix: '',
-                      decimals: 0,
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      insights.topRisk.localizedName(locale),
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 10),
-                    RiskCompareBar(
-                      personal: insights.topRisk.personalRisk,
-                      national: insights.topRisk.nationalAverage,
-                      personalLabel: AppStrings.t('yourRisk', locale),
-                      nationalLabel: AppStrings.t('nationalAvg', locale),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      insights.localizedPeerComparison(locale),
-                      style: const TextStyle(fontSize: 15, height: 1.4, color: AppTheme.textSecondary),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              HpPrimaryButton(
-                label: AppStrings.t('nextActionRoadmap', locale),
-                icon: Icons.arrow_forward,
-                onPressed: () => context.go('/home/plan'),
-              ),
+              _MortalityCard(ageGroup: group, killers: killers, locale: locale),
             ],
           );
         },
@@ -134,48 +57,406 @@ class InsightsScreen extends StatelessWidget {
   }
 }
 
-/// The "Your Health Age" card: dual circular Health Age vs. actual age
-/// comparison plus a localized success/caution message driven by
-/// [Insights.healthAgeDelta].
-class _HealthAgeCard extends StatelessWidget {
-  const _HealthAgeCard({required this.insights, required this.locale});
+class _HeroCard extends StatelessWidget {
+  const _HeroCard({required this.insights, required this.factors, required this.locale});
 
   final Insights insights;
+  final List<RiskFactor> factors;
   final String locale;
 
   @override
   Widget build(BuildContext context) {
     final delta = insights.healthAgeDelta;
-    final String message;
-    final Color messageColor;
-    if (delta < 0) {
-      message = AppStrings.tn('healthAgeYoungerMsg', locale, delta.abs());
-      messageColor = AppTheme.riskLow;
-    } else if (delta > 0) {
-      message = AppStrings.tn('healthAgeOlderMsg', locale, delta);
-      messageColor = AppTheme.riskModerate;
-    } else {
-      message = AppStrings.t('healthAgeSameMsg', locale);
-      messageColor = AppTheme.primary;
-    }
+    final isBad = delta > 0;
+    final width = MediaQuery.sizeOf(context).width;
+    final stacked = width < 900;
+
+    final ageSide = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(AppStrings.t('yourHealthAgeTitle', locale), style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 18),
+        HealthAgeDualGauge(healthAge: insights.healthAge, actualAge: insights.actualAge, locale: locale),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: isBad ? AppTheme.softRed : const Color(0xFFF5F8F6),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 25,
+                height: 25,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isBad ? const Color(0xFFFFE3E1) : const Color(0xFFE2F1E7),
+                ),
+                child: Icon(
+                  isBad ? Icons.north_east : (delta < 0 ? Icons.south_east : Icons.check),
+                  size: 14,
+                  color: isBad ? AppTheme.riskHigh : AppTheme.primary,
+                ),
+              ),
+              const SizedBox(width: 11),
+              Expanded(
+                child: Text.rich(
+                  TextSpan(
+                    style: const TextStyle(fontSize: 14, height: 1.35, color: AppTheme.foreground),
+                    children: [
+                      TextSpan(text: '${AppStrings.t('healthAgeDeltaPrefix', locale)} '),
+                      TextSpan(
+                        text: delta == 0
+                            ? AppStrings.t('healthAgeAligned', locale)
+                            : AppStrings.tn(isBad ? 'healthAgeYearsAbove' : 'healthAgeYearsBelow', locale, delta.abs()),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: isBad ? AppTheme.riskHigh : const Color(0xFF196D45),
+                        ),
+                      ),
+                      if (delta != 0) TextSpan(text: ' ${AppStrings.t('healthAgeDeltaSuffix', locale)}'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          AppStrings.t('healthAgeDisclaimer', locale),
+          style: const TextStyle(fontSize: 11.5, height: 1.45, color: Color(0xFF7B8490)),
+        ),
+      ],
+    );
+
+    final factorSide = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(AppStrings.t('factorsInfluencingTitle', locale), style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Text(
+          AppStrings.t('factorsInfluencingSubtitle', locale),
+          style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary),
+        ),
+        const SizedBox(height: 14),
+        for (final factor in factors) ...[
+          _FactorRow(factor: factor, locale: locale),
+          const SizedBox(height: 12),
+        ],
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () => context.go('/home/roadmap'),
+            child: Text(AppStrings.t('viewMyRoadmap', locale)),
+          ),
+        ),
+      ],
+    );
 
     return HpCard(
+      padding: EdgeInsets.all(stacked ? 20 : 28),
+      child: stacked
+          ? Column(
+              children: [
+                ageSide,
+                const SizedBox(height: 24),
+                const Divider(height: 1, color: AppTheme.border),
+                const SizedBox(height: 24),
+                factorSide,
+              ],
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(flex: 103, child: ageSide),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: SizedBox(
+                    height: 280,
+                    child: VerticalDivider(width: 1, color: AppTheme.border),
+                  ),
+                ),
+                Expanded(flex: 97, child: factorSide),
+              ],
+            ),
+    );
+  }
+}
+
+class _FactorRow extends StatelessWidget {
+  const _FactorRow({required this.factor, required this.locale});
+
+  final RiskFactor factor;
+  final String locale;
+
+  IconData get _icon {
+    switch (factor.id) {
+      case 'diet':
+        return Icons.restaurant_outlined;
+      case 'physical_inactivity':
+        return Icons.directions_walk_outlined;
+      case 'sleep':
+        return Icons.bedtime_outlined;
+      case 'smoking':
+        return Icons.smoke_free_outlined;
+      case 'alcohol':
+        return Icons.local_bar_outlined;
+      default:
+        return Icons.monitor_heart_outlined;
+    }
+  }
+
+  int get _filledBars {
+    switch (factor.impact.toLowerCase()) {
+      case 'high':
+        return 4;
+      case 'medium':
+      case 'moderate':
+        return 3;
+      default:
+        return 2;
+    }
+  }
+
+  String get _badgeLabel {
+    switch (factor.impact.toLowerCase()) {
+      case 'high':
+        return AppStrings.t('impactHigh', locale);
+      case 'medium':
+      case 'moderate':
+        return AppStrings.t('impactModerate', locale);
+      default:
+        return AppStrings.t('impactLower', locale);
+    }
+  }
+
+  String get _subLabel {
+    switch (factor.impact.toLowerCase()) {
+      case 'high':
+        return AppStrings.t('impactHighSub', locale);
+      case 'medium':
+      case 'moderate':
+        return AppStrings.t('impactModerateSub', locale);
+      default:
+        return AppStrings.t('impactLowerSub', locale);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = AppTheme.riskColor(factor.impact);
+    final soft = AppTheme.riskSoft(factor.impact);
+    final filled = _filledBars;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(color: soft, shape: BoxShape.circle),
+              child: Icon(_icon, size: 20, color: color),
+            ),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(factor.localizedLabel(locale), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 3),
+                  Text(_subLabel, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              decoration: BoxDecoration(color: soft, borderRadius: BorderRadius.circular(8)),
+              child: Text(
+                _badgeLabel,
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: color),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 55),
+          child: Row(
+            children: [
+              for (var i = 0; i < 6; i++)
+                Expanded(
+                  child: Container(
+                    height: 7,
+                    margin: EdgeInsets.only(right: i == 5 ? 0 : 5),
+                    decoration: BoxDecoration(
+                      color: i < filled ? color : const Color(0xFFE8EAED),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MortalityCard extends StatelessWidget {
+  const _MortalityCard({
+    required this.ageGroup,
+    required this.killers,
+    required this.locale,
+  });
+
+  final String ageGroup;
+  final List<MortalityKiller> killers;
+  final String locale;
+
+  static const _styles = [
+    (bg: AppTheme.softRed, fg: Color(0xFFB83D38), pct: Color(0xFFDC554F)),
+    (bg: AppTheme.softOrange, fg: Color(0xFFB86B12), pct: Color(0xFFC97918)),
+    (bg: AppTheme.softGreen, fg: Color(0xFF27804D), pct: Color(0xFF23804B)),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final tiles = [
+      for (var i = 0; i < killers.length; i++)
+        (
+          rank: '${i + 1}',
+          rankBg: _styles[i % _styles.length].bg,
+          rankFg: _styles[i % _styles.length].fg,
+          icon: killers[i].icon,
+          title: killers[i].localizedTitle(locale),
+          body: killers[i].localizedBody(locale, ageGroup),
+          pct: killers[i].percentLabel,
+          pctColor: _styles[i % _styles.length].pct,
+          meta: killers[i].localizedMeta(locale),
+        ),
+    ];
+
+    final narrow = MediaQuery.sizeOf(context).width < 720;
+
+    return HpCard(
+      padding: const EdgeInsets.fromLTRB(24, 22, 24, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppStrings.t('yourHealthAgeTitle', locale), style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 16),
-          HealthAgeDualGauge(healthAge: insights.healthAge, actualAge: insights.actualAge, locale: locale),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  AppStrings.t('mortalityTitle', locale).replaceAll('{group}', ageGroup),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              TextButton(
+                onPressed: () => context.go('/home/learn'),
+                child: Text(AppStrings.t('exploreInsights', locale)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            AppStrings.t('mortalitySubtitle', locale),
+            style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary, height: 1.4),
+          ),
           const SizedBox(height: 18),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: messageColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: messageColor.withValues(alpha: 0.3)),
+          if (narrow)
+            Column(
+              children: [
+                for (final k in tiles) ...[
+                  _KillerTile(data: k),
+                  const SizedBox(height: 12),
+                ],
+              ],
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < tiles.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 14),
+                  Expanded(child: _KillerTile(data: tiles[i])),
+                ],
+              ],
             ),
-            child: Text(message, style: TextStyle(fontSize: 15, height: 1.4, color: messageColor)),
+          const SizedBox(height: 14),
+          const Divider(height: 1, color: Color(0xFFE8ECEE)),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Text(
+              AppStrings.t('mortalitySource', locale),
+              style: const TextStyle(fontSize: 10.5, color: Color(0xFF727D88)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _KillerTile extends StatelessWidget {
+  const _KillerTile({required this.data});
+
+  final ({
+    String rank,
+    Color rankBg,
+    Color rankFg,
+    IconData icon,
+    String title,
+    String body,
+    String pct,
+    Color pctColor,
+    String meta,
+  }) data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minHeight: 205),
+      padding: const EdgeInsets.all(17),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.78),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: const Color(0xFFE7EBED)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(color: data.rankBg, borderRadius: BorderRadius.circular(8)),
+            child: Text(data.rank, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: data.rankFg)),
+          ),
+          const SizedBox(height: 8),
+          Icon(data.icon, size: 28, color: data.rankFg),
+          const SizedBox(height: 8),
+          Text(data.title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 7),
+          Text(data.body, style: const TextStyle(fontSize: 12, height: 1.45, color: AppTheme.textSecondary)),
+          const SizedBox(height: 13),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: data.pct,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: data.pctColor),
+                ),
+                TextSpan(
+                  text: ' · ${data.meta}',
+                  style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+                ),
+              ],
+            ),
           ),
         ],
       ),

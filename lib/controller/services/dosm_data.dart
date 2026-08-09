@@ -4,6 +4,9 @@
 /// approximations used to seed the on-device risk engine — not clinical
 /// data. Source framing: Department of Statistics Malaysia (DOSM)
 /// mortality themes.
+///
+/// Age curves cover 18–79 so [baselineRate] changes with the user's
+/// questionnaire age (not a single hardcoded mid-life band).
 class AgeBand {
   const AgeBand({required this.minAge, required this.maxAge, required this.rate});
 
@@ -42,14 +45,18 @@ class DosmData {
       nameBm: 'Penyakit Kardiovaskular',
       nationalShare: 0.22,
       maleCurve: [
+        AgeBand(minAge: 18, maxAge: 39, rate: 0.08),
         AgeBand(minAge: 40, maxAge: 49, rate: 0.18),
         AgeBand(minAge: 50, maxAge: 59, rate: 0.28),
         AgeBand(minAge: 60, maxAge: 69, rate: 0.36),
+        AgeBand(minAge: 70, maxAge: 90, rate: 0.42),
       ],
       femaleCurve: [
+        AgeBand(minAge: 18, maxAge: 39, rate: 0.05),
         AgeBand(minAge: 40, maxAge: 49, rate: 0.12),
         AgeBand(minAge: 50, maxAge: 59, rate: 0.2),
         AgeBand(minAge: 60, maxAge: 69, rate: 0.29),
+        AgeBand(minAge: 70, maxAge: 90, rate: 0.35),
       ],
     ),
     CauseOfDeath(
@@ -58,14 +65,18 @@ class DosmData {
       nameBm: 'Komplikasi Berkaitan Diabetes',
       nationalShare: 0.09,
       maleCurve: [
+        AgeBand(minAge: 18, maxAge: 39, rate: 0.04),
         AgeBand(minAge: 40, maxAge: 49, rate: 0.08),
         AgeBand(minAge: 50, maxAge: 59, rate: 0.14),
         AgeBand(minAge: 60, maxAge: 69, rate: 0.19),
+        AgeBand(minAge: 70, maxAge: 90, rate: 0.22),
       ],
       femaleCurve: [
+        AgeBand(minAge: 18, maxAge: 39, rate: 0.045),
         AgeBand(minAge: 40, maxAge: 49, rate: 0.09),
         AgeBand(minAge: 50, maxAge: 59, rate: 0.15),
         AgeBand(minAge: 60, maxAge: 69, rate: 0.2),
+        AgeBand(minAge: 70, maxAge: 90, rate: 0.23),
       ],
     ),
     CauseOfDeath(
@@ -74,14 +85,18 @@ class DosmData {
       nameBm: 'Penyakit Pernafasan Kronik',
       nationalShare: 0.07,
       maleCurve: [
+        AgeBand(minAge: 18, maxAge: 39, rate: 0.035),
         AgeBand(minAge: 40, maxAge: 49, rate: 0.06),
         AgeBand(minAge: 50, maxAge: 59, rate: 0.1),
         AgeBand(minAge: 60, maxAge: 69, rate: 0.15),
+        AgeBand(minAge: 70, maxAge: 90, rate: 0.2),
       ],
       femaleCurve: [
+        AgeBand(minAge: 18, maxAge: 39, rate: 0.025),
         AgeBand(minAge: 40, maxAge: 49, rate: 0.04),
         AgeBand(minAge: 50, maxAge: 59, rate: 0.07),
         AgeBand(minAge: 60, maxAge: 69, rate: 0.11),
+        AgeBand(minAge: 70, maxAge: 90, rate: 0.16),
       ],
     ),
     CauseOfDeath(
@@ -90,14 +105,18 @@ class DosmData {
       nameBm: 'Kanser (semua jenis)',
       nationalShare: 0.14,
       maleCurve: [
+        AgeBand(minAge: 18, maxAge: 39, rate: 0.05),
         AgeBand(minAge: 40, maxAge: 49, rate: 0.1),
         AgeBand(minAge: 50, maxAge: 59, rate: 0.17),
         AgeBand(minAge: 60, maxAge: 69, rate: 0.24),
+        AgeBand(minAge: 70, maxAge: 90, rate: 0.3),
       ],
       femaleCurve: [
+        AgeBand(minAge: 18, maxAge: 39, rate: 0.055),
         AgeBand(minAge: 40, maxAge: 49, rate: 0.11),
         AgeBand(minAge: 50, maxAge: 59, rate: 0.16),
         AgeBand(minAge: 60, maxAge: 69, rate: 0.22),
+        AgeBand(minAge: 70, maxAge: 90, rate: 0.28),
       ],
     ),
   ];
@@ -107,8 +126,10 @@ class DosmData {
         ? causes.first
         : causes.firstWhere((c) => c.id == causeId);
     final bands = cause.curveFor(gender);
-    final band = bands.where((b) => age >= b.minAge && age <= b.maxAge);
-    return band.isNotEmpty ? band.first.rate : bands.last.rate;
+    final exact = bands.where((b) => age >= b.minAge && age <= b.maxAge);
+    if (exact.isNotEmpty) return exact.first.rate;
+    if (age < bands.first.minAge) return bands.first.rate;
+    return bands.last.rate;
   }
 
   static const Map<String, double> nationalLifeExpectancy = {'male': 72.5, 'female': 77.2};

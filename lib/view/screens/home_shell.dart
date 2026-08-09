@@ -6,8 +6,8 @@ import '../../controller/cubits/locale_cubit.dart';
 import '../../core/l10n/app_strings.dart';
 import '../../core/widgets/responsive_shell.dart';
 
-/// Bottom-nav (phone) / navigation-rail (tablet+) shell for the five main
-/// authenticated tabs, wired to the `go_router` [StatefulShellRoute].
+/// Bottom-nav (phone) / sidebar (tablet+) shell for the four main tabs
+/// matching the Finalprototype: My Health, My Roadmap, Learn, Profile.
 class HomeShell extends StatelessWidget {
   const HomeShell({super.key, required this.navigationShell});
 
@@ -18,16 +18,12 @@ class HomeShell extends StatelessWidget {
     final locale = context.watch<LocaleCubit>().state;
     return ResponsiveShell(
       navigationShell: navigationShell,
+      brandName: AppStrings.t('appName', locale),
       destinations: [
         ShellDestination(
-          icon: Icons.home_outlined,
-          selectedIcon: Icons.home,
+          icon: Icons.favorite_border,
+          selectedIcon: Icons.favorite,
           label: AppStrings.t('home', locale),
-        ),
-        ShellDestination(
-          icon: Icons.insights_outlined,
-          selectedIcon: Icons.insights,
-          label: AppStrings.t('insights', locale),
         ),
         ShellDestination(
           icon: Icons.checklist_outlined,
@@ -35,9 +31,9 @@ class HomeShell extends StatelessWidget {
           label: AppStrings.t('plan', locale),
         ),
         ShellDestination(
-          icon: Icons.donut_large_outlined,
-          selectedIcon: Icons.donut_large,
-          label: AppStrings.t('progress', locale),
+          icon: Icons.menu_book_outlined,
+          selectedIcon: Icons.menu_book,
+          label: AppStrings.t('learn', locale),
         ),
         ShellDestination(
           icon: Icons.person_outline,

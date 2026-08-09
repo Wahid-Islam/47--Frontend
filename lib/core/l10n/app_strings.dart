@@ -6,7 +6,7 @@ class AppStrings {
   AppStrings._();
 
   static const Map<String, Map<String, String>> _map = {
-    'appName': {'en': 'mysihat', 'bm': 'mysihat'},
+    'appName': {'en': 'MySihat', 'bm': 'MySihat'},
     'tagline': {'en': 'Understand today. Act for tomorrow.', 'bm': 'Fahami hari ini. Bertindak untuk esok.'},
     'getStarted': {'en': 'Get Started', 'bm': 'Mulakan'},
     'haveAccount': {'en': 'I already have an account', 'bm': 'Saya sudah ada akaun'},
@@ -16,11 +16,198 @@ class AppStrings {
     'email': {'en': 'Email', 'bm': 'E-mel'},
     'password': {'en': 'Password', 'bm': 'Kata laluan'},
     'fullName': {'en': 'Full name', 'bm': 'Nama penuh'},
-    'home': {'en': 'Overview', 'bm': 'Gambaran Keseluruhan'},
-    'insights': {'en': 'Personal Insights', 'bm': 'Wawasan Peribadi'},
-    'plan': {'en': 'Action Roadmap', 'bm': 'Pelan Tindakan'},
+    'home': {'en': 'My Health', 'bm': 'Kesihatan Saya'},
+    'insights': {'en': 'My Health', 'bm': 'Kesihatan Saya'},
+    'plan': {'en': 'My Roadmap', 'bm': 'Pelan Saya'},
+    'learn': {'en': 'Learn', 'bm': 'Belajar'},
     'progress': {'en': 'Progress', 'bm': 'Kemajuan'},
     'profile': {'en': 'Profile', 'bm': 'Profil'},
+    'complete': {'en': 'complete', 'bm': 'selesai'},
+    'of': {'en': 'of', 'bm': 'daripada'},
+    'todaysProgress': {'en': "Today's progress", 'bm': 'Kemajuan hari ini'},
+    'healthGlanceTitle': {'en': 'Your Health at a Glance', 'bm': 'Kesihatan Anda Sekilas'},
+    'healthGlanceSubtitle': {
+      'en': 'Here’s how your health compares to your actual age, and what matters most.',
+      'bm': 'Beginilah kesihatan anda berbanding umur sebenar, dan apa yang paling penting.',
+    },
+    'healthAgeDeltaPrefix': {'en': 'Your Health Age is', 'bm': 'Umur Kesihatan anda'},
+    'healthAgeYearsAbove': {'en': '{n} years above', 'bm': '{n} tahun lebih tinggi'},
+    'healthAgeYearsBelow': {'en': '{n} years below', 'bm': '{n} tahun lebih rendah'},
+    'healthAgeDeltaSuffix': {'en': 'your actual age.', 'bm': 'daripada umur sebenar anda.'},
+    'healthAgeAligned': {'en': 'aligned with your actual age.', 'bm': 'selaras dengan umur sebenar anda.'},
+    'healthAgeDisclaimer': {
+      'en':
+          'Health Age is an estimate based on your profile and Malaysian mortality trends. It is not a medical diagnosis.',
+      'bm':
+          'Umur Kesihatan ialah anggaran berdasarkan profil anda dan trend kematian Malaysia. Ia bukan diagnosis perubatan.',
+    },
+    'factorsInfluencingTitle': {
+      'en': 'What’s influencing your Health Age?',
+      'bm': 'Apa yang mempengaruhi Umur Kesihatan anda?',
+    },
+    'factorsInfluencingSubtitle': {
+      'en': 'These are the top lifestyle factors contributing to your result.',
+      'bm': 'Ini ialah faktor gaya hidup utama yang menyumbang kepada keputusan anda.',
+    },
+    'viewMyRoadmap': {'en': 'View My Roadmap  →', 'bm': 'Lihat Pelan Saya  →'},
+    'impactHigh': {'en': 'HIGH', 'bm': 'TINGGI'},
+    'impactModerate': {'en': 'MODERATE', 'bm': 'SEDERHANA'},
+    'impactLower': {'en': 'LOWER', 'bm': 'RENDAH'},
+    'impactHighSub': {'en': 'High impact', 'bm': 'Impak tinggi'},
+    'impactModerateSub': {'en': 'Moderate impact', 'bm': 'Impak sederhana'},
+    'impactLowerSub': {'en': 'Lower impact', 'bm': 'Impak lebih rendah'},
+    'mortalityTitle': {
+      'en': 'Top mortality insights for Malaysians aged {group}',
+      'bm': 'Wawasan kematian utama untuk rakyat Malaysia berumur {group}',
+    },
+    'mortalitySubtitle': {
+      'en':
+          'DOSM 2024 data. The analysis is based on medically certified causes of death, which represented 67.3% of all deaths in Malaysia in 2024.',
+      'bm':
+          'Data DOSM 2024. Analisis berdasarkan punca kematian yang disahkan secara perubatan, mewakili 67.3% daripada semua kematian di Malaysia pada 2024.',
+    },
+    'exploreInsights': {'en': 'Explore all insights ↗', 'bm': 'Teroka semua wawasan ↗'},
+    'mortalitySource': {
+      'en':
+          'Source: Department of Statistics Malaysia (DOSM), Statistics on Causes of Death, Malaysia 2025 — data refer to 2024.',
+      'bm':
+          'Sumber: Jabatan Perangkaan Malaysia (DOSM), Statistics on Causes of Death, Malaysia 2025 — data merujuk kepada 2024.',
+    },
+    'killerHeartTitle': {'en': 'Ischaemic Heart Disease', 'bm': 'Penyakit Jantung Iskemik'},
+    'killerHeartBody': {
+      'en': 'Principal cause of death for Malaysians aged {group}.',
+      'bm': 'Punca kematian utama untuk rakyat Malaysia berumur {group}.',
+    },
+    'killerHeartMeta': {'en': '5,380 deaths', 'bm': '5,380 kematian'},
+    'killerPneumoniaTitle': {'en': 'Pneumonia', 'bm': 'Pneumonia'},
+    'killerPneumoniaBody': {
+      'en': 'One of Malaysia’s leading causes of death overall, with 15,332 medically certified deaths in 2024.',
+      'bm': 'Salah satu punca kematian utama di Malaysia, dengan 15,332 kematian disahkan secara perubatan pada 2024.',
+    },
+    'killerPneumoniaMeta': {'en': 'national share', 'bm': 'bahagian kebangsaan'},
+    'killerDiabetesTitle': {'en': 'Diabetes Mellitus', 'bm': 'Diabetes Mellitus'},
+    'killerDiabetesBody': {
+      'en': 'A major national cause of death and an important health context for the {group} age group.',
+      'bm': 'Punca kematian kebangsaan utama dan konteks kesihatan penting untuk kumpulan umur {group}.',
+    },
+    'killerDiabetesMeta': {'en': 'national share', 'bm': 'bahagian kebangsaan'},
+    'roadmapTitle': {'en': 'Your Improvement Roadmap', 'bm': 'Pelan Penambahbaikan Anda'},
+    'roadmapSubtitle': {
+      'en': 'Three small actions to help turn awareness into consistent behaviour.',
+      'bm': 'Tiga tindakan kecil untuk mengubah kesedaran menjadi tingkah laku konsisten.',
+    },
+    'roadmapSectionTitle': {'en': 'Your Improvement Roadmap', 'bm': 'Pelan Penambahbaikan Anda'},
+    'roadmapSectionSubtitle': {
+      'en': 'Three small actions designed to move you towards your actual age.',
+      'bm': 'Tiga tindakan kecil untuk menghampirkan anda kepada umur sebenar.',
+    },
+    'projectionCardTitle': {
+      'en': 'See where consistency could take you',
+      'bm': 'Lihat ke mana konsistensi boleh membawa anda',
+    },
+    'projectionCardSubtitle': {
+      'en':
+          'Illustrative projection based on completed roadmap habits. It is designed to make progress visible—not to predict medical outcomes.',
+      'bm':
+          'Unjuran ilustratif berdasarkan tabiat pelan yang dilengkapkan. Ia untuk menjadikan kemajuan kelihatan—bukan meramal hasil perubatan.',
+    },
+    'roadmapNotice': {
+      'en':
+          'The habits are behaviour prompts, not medical prescriptions. Your projected Health Age is an illustrative feedback tool.',
+      'bm':
+          'Tabiat ialah panduan tingkah laku, bukan preskripsi perubatan. Umur Kesihatan unjuran ialah alat maklum balas ilustratif.',
+    },
+    'riskPts': {'en': 'risk pts today', 'bm': 'mata risiko hari ini'},
+    'riskDropToday': {
+      'en': 'Today’s ticks lowered your risk by ~{pts} pts · Health Age trending to {age}.',
+      'bm': 'Tanda hari ini menurunkan risiko ~{pts} mata · Umur Kesihatan menuju {age}.',
+    },
+    'dailyReminder': {'en': 'Daily activity reminder', 'bm': 'Peringatan aktiviti harian'},
+    'reminderOnAt': {'en': 'On · reminds at {time}', 'bm': 'Aktif · peringatan pada {time}'},
+    'reminderOff': {'en': 'Off · turn on to get a daily nudge', 'bm': 'Mati · hidupkan untuk peringatan harian'},
+    'setTime': {'en': 'Set time', 'bm': 'Tetapkan masa'},
+    'learnTitle': {'en': 'Make sense of the data', 'bm': 'Fahami data'},
+    'learnSubtitle': {
+      'en': 'A few useful stories from Malaysia’s mortality statistics.',
+      'bm': 'Beberapa cerita berguna daripada statistik kematian Malaysia.',
+    },
+    'learnSectionTitle': {'en': 'What the Malaysian data says', 'bm': 'Apa kata data Malaysia'},
+    'learnSectionSubtitle': {
+      'en': 'Turn a national mortality dataset into useful context for everyday decisions.',
+      'bm': 'Jadikan set data kematian kebangsaan sebagai konteks berguna untuk keputusan harian.',
+    },
+    'whyThisMatters': {'en': 'Why this matters', 'bm': 'Mengapa ini penting'},
+    'learnWhyBody': {
+      'en':
+          'the point of MySihat is not to overwhelm you with statistics. It is to translate population-level information into a small number of things you can understand and act on.',
+      'bm':
+          'matlamat MySihat bukan untuk membebankan anda dengan statistik. Ia untuk menterjemah maklumat populasi kepada beberapa perkara yang boleh anda fahami dan bertindak.',
+    },
+    'learnCard1Eyebrow': {'en': 'Your age group · 41–59', 'bm': 'Kumpulan umur anda · 41–59'},
+    'learnCard1Title': {'en': 'Heart disease is the leading cause', 'bm': 'Penyakit jantung ialah punca utama'},
+    'learnCard1Stat': {'en': '17.6%', 'bm': '17.6%'},
+    'learnCard1Body': {
+      'en':
+          'Ischaemic heart diseases accounted for 5,380 medically certified deaths among Malaysians aged 41–59 in 2024.',
+      'bm':
+          'Penyakit jantung iskemik menyumbang 5,380 kematian disahkan secara perubatan dalam kalangan rakyat Malaysia berumur 41–59 pada 2024.',
+    },
+    'learnCard1Source': {
+      'en': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
+      'bm': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
+    },
+    'learnCard2Eyebrow': {'en': 'Malaysia · 2024', 'bm': 'Malaysia · 2024'},
+    'learnCard2Title': {'en': 'Heart disease led nationally too', 'bm': 'Penyakit jantung juga mendahului secara kebangsaan'},
+    'learnCard2Stat': {'en': '17,421', 'bm': '17,421'},
+    'learnCard2Body': {
+      'en':
+          'Deaths from ischaemic heart diseases represented 13.0% of medically certified deaths, making it Malaysia’s principal cause of death in 2024.',
+      'bm':
+          'Kematian akibat penyakit jantung iskemik mewakili 13.0% kematian disahkan secara perubatan, menjadikannya punca kematian utama Malaysia pada 2024.',
+    },
+    'learnCard2Source': {'en': 'DOSM · data refer to 2024', 'bm': 'DOSM · data merujuk kepada 2024'},
+    'learnCard3Eyebrow': {'en': 'Long-term trend', 'bm': 'Trend jangka panjang'},
+    'learnCard3Title': {'en': 'Cancer deaths have risen', 'bm': 'Kematian kanser meningkat'},
+    'learnCard3Stat': {'en': '5,231 → 19,180', 'bm': '5,231 → 19,180'},
+    'learnCard3Body': {
+      'en':
+          'Deaths caused by neoplasms increased from 2001 to 2024. Digestive-organ cancers recorded the highest number among cancer categories in 2024.',
+      'bm':
+          'Kematian akibat neoplasma meningkat dari 2001 ke 2024. Kanser organ pencernaan mencatat jumlah tertinggi dalam kategori kanser pada 2024.',
+    },
+    'learnCard3Source': {
+      'en': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
+      'bm': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
+    },
+    'learnCard4Eyebrow': {'en': 'How to read this', 'bm': 'Cara membaca ini'},
+    'learnCard4Title': {
+      'en': 'Population data is context, not a diagnosis',
+      'bm': 'Data populasi ialah konteks, bukan diagnosis',
+    },
+    'learnCard4Body': {
+      'en':
+          'Mortality statistics show patterns across populations. MySihat uses them as a Malaysian reference point and combines them with your profile to make the information personally meaningful.',
+      'bm':
+          'Statistik kematian menunjukkan pola populasi. MySihat menggunakannya sebagai rujukan Malaysia dan menggabungkannya dengan profil anda supaya maklumat menjadi bermakna secara peribadi.',
+    },
+    'learnCard4Source': {
+      'en': '67.3% of deaths in 2024 were medically certified.',
+      'bm': '67.3% kematian pada 2024 disahkan secara perubatan.',
+    },
+    'profileTitle': {'en': 'Your Health Profile', 'bm': 'Profil Kesihatan Anda'},
+    'profileSubtitle': {
+      'en': 'Update the information MySihat uses to personalise your experience.',
+      'bm': 'Kemas kini maklumat yang digunakan MySihat untuk memperibadikan pengalaman anda.',
+    },
+    'profileSectionTitle': {'en': 'Your Health Profile', 'bm': 'Profil Kesihatan Anda'},
+    'profileSectionSubtitle': {
+      'en': 'Update the information MySihat uses to personalise your experience.',
+      'bm': 'Kemas kini maklumat yang digunakan MySihat untuk memperibadikan pengalaman anda.',
+    },
+    'profileNotice': {
+      'en': 'Required fields are used to update your Health Age display and age-group context.',
+      'bm': 'Medan wajib digunakan untuk mengemas kini paparan Umur Kesihatan dan konteks kumpulan umur.',
+    },
     'healthAge': {'en': 'Health Age', 'bm': 'Umur Kesihatan'},
     'actualAge': {'en': 'Actual age', 'bm': 'Umur sebenar'},
     'overallRisk': {'en': 'Overall risk', 'bm': 'Risiko keseluruhan'},
@@ -45,11 +232,19 @@ class AppStrings {
     'demographics': {'en': 'About you', 'bm': 'Tentang anda'},
     'lifestyle': {'en': 'Lifestyle', 'bm': 'Gaya hidup'},
     'age': {'en': 'Age', 'bm': 'Umur'},
-    'gender': {'en': 'Gender', 'bm': 'Jantina'},
+    'sex': {'en': 'Sex', 'bm': 'Jantina'},
+    'gender': {'en': 'Sex', 'bm': 'Jantina'},
     'state': {'en': 'State', 'bm': 'Negeri'},
-    'activity': {'en': 'Activity level', 'bm': 'Tahap aktiviti'},
-    'diet': {'en': 'Diet habit', 'bm': 'Tabiat pemakanan'},
+    'activity': {'en': 'Physical activity', 'bm': 'Aktiviti fizikal'},
+    'diet': {'en': 'Diet', 'bm': 'Pemakanan'},
     'smoking': {'en': 'Do you smoke?', 'bm': 'Adakah anda merokok?'},
+    'heightCm': {'en': 'Height (cm)', 'bm': 'Ketinggian (cm)'},
+    'weightKg': {'en': 'Weight (kg)', 'bm': 'Berat (kg)'},
+    'alcohol': {'en': 'Alcohol', 'bm': 'Alkohol'},
+    'alcoholNone': {'en': 'None', 'bm': 'Tiada'},
+    'alcoholOccasional': {'en': 'Occasional', 'bm': 'Kadang-kadang'},
+    'alcoholRegular': {'en': 'Regular', 'bm': 'Kerap'},
+    'sleepHours': {'en': 'Sleep (hours per night)', 'bm': 'Tidur (jam setiap malam)'},
     'bmi': {'en': 'BMI', 'bm': 'BMI'},
     'highBp': {'en': 'High blood pressure?', 'bm': 'Tekanan darah tinggi?'},
     'yes': {'en': 'Yes', 'bm': 'Ya'},
@@ -135,6 +330,22 @@ class AppStrings {
       'bm': 'Masukkan umur (nombor bulat) antara 18 dan 90',
     },
     'validationBmiRange': {'en': 'Enter a BMI between 10 and 60', 'bm': 'Masukkan BMI antara 10 dan 60'},
+    'validationHeightRange': {
+      'en': 'Enter height between 100 and 250 cm',
+      'bm': 'Masukkan ketinggian antara 100 dan 250 cm',
+    },
+    'validationWeightRange': {
+      'en': 'Enter weight between 30 and 250 kg',
+      'bm': 'Masukkan berat antara 30 dan 250 kg',
+    },
+    'validationSleepRange': {
+      'en': 'Enter sleep between 3 and 14 hours',
+      'bm': 'Masukkan tidur antara 3 dan 14 jam',
+    },
+    'validationHeightWeight': {
+      'en': 'Height and weight must produce a BMI between 10 and 60',
+      'bm': 'Ketinggian dan berat mesti menghasilkan BMI antara 10 dan 60',
+    },
   };
 
   static String t(String key, String locale) {

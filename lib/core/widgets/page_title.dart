@@ -10,13 +10,13 @@ import '../theme/app_theme.dart';
 class PageTitle extends StatelessWidget {
   const PageTitle({super.key, required this.title, required this.child});
 
-  /// Page name, shown as "<title> · mysihat".
+  /// Page name, shown as "<title> · MySihat".
   final String title;
 
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return Title(title: '$title · mysihat', color: AppTheme.primary, child: child);
+    return Title(title: '$title · MySihat', color: AppTheme.primary, child: child);
   }
 }

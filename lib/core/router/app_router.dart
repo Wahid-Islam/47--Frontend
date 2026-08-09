@@ -7,15 +7,14 @@ import '../../controller/cubits/auth_cubit.dart';
 import '../../view/screens/clinics_screen.dart';
 import '../../view/screens/home_shell.dart';
 import '../../view/screens/insights_screen.dart';
+import '../../view/screens/learn_screen.dart';
 import '../../view/screens/login_screen.dart';
 import '../../view/screens/onboarding_screen.dart';
 import '../../view/screens/plan_screen.dart';
 import '../../view/screens/profile_screen.dart';
 import '../../view/screens/profile_wizard_screen.dart';
-import '../../view/screens/progress_screen.dart';
 import '../../view/screens/register_screen.dart';
 import '../../view/screens/splash_screen.dart';
-import '../../view/screens/summary_screen.dart';
 import '../widgets/page_title.dart';
 
 /// Builds the app's [GoRouter], using [authCubit] both to redirect between
@@ -47,14 +46,19 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
         return onWizard ? null : '/profile-wizard';
       }
 
-      // Straight out of the profile wizard, US 1.1 requires landing on
-      // Personal Insights (not just the generic home tab).
+      // After questionnaire, land on My Health.
       if (onWizard) {
-        return '/home/insights';
+        return '/home';
       }
       if (onSplash || onOnboarding || onAuthForm) {
         return '/home';
       }
+
+      // Legacy route aliases from the 5-tab shell.
+      if (location == '/home/insights') return '/home';
+      if (location == '/home/plan') return '/home/roadmap';
+      if (location == '/home/progress') return '/home/roadmap';
+
       return null;
     },
     routes: [
@@ -87,32 +91,25 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
             routes: [
               GoRoute(
                 path: '/home',
-                builder: (context, state) => const PageTitle(title: 'Overview', child: SummaryScreen()),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/home/insights',
                 builder: (context, state) =>
-                    const PageTitle(title: 'Personal Insights', child: InsightsScreen()),
+                    const PageTitle(title: 'My Health', child: InsightsScreen()),
               ),
             ],
           ),
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/home/plan',
-                builder: (context, state) => const PageTitle(title: 'Action Roadmap', child: PlanScreen()),
+                path: '/home/roadmap',
+                builder: (context, state) =>
+                    const PageTitle(title: 'My Roadmap', child: PlanScreen()),
               ),
             ],
           ),
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/home/progress',
-                builder: (context, state) => const PageTitle(title: 'Progress', child: ProgressScreen()),
+                path: '/home/learn',
+                builder: (context, state) => const PageTitle(title: 'Learn', child: LearnScreen()),
               ),
             ],
           ),

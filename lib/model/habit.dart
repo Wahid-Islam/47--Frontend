@@ -39,24 +39,34 @@ class HabitLogRow extends Equatable {
   List<Object?> get props => [userId, logDate, completedHabitIds];
 }
 
-/// A single habit row rendered on the Progress screen: a catalog entry
-/// combined with today's completed state.
+/// A single habit row on the Roadmap: catalog entry + completion + why recommended.
 class HabitItem extends Equatable {
-  const HabitItem({required this.catalogItem, required this.completed});
+  const HabitItem({
+    required this.catalogItem,
+    required this.completed,
+    this.reasonEn = '',
+    this.reasonBm = '',
+    this.category = 'HABIT',
+  });
 
   final HabitCatalogItem catalogItem;
   final bool completed;
+  final String reasonEn;
+  final String reasonBm;
+  final String category;
 
   String get id => catalogItem.id;
 
   String localizedTitle(String locale) => catalogItem.localizedTitle(locale);
 
+  String localizedReason(String locale) =>
+      locale == 'bm' && reasonBm.isNotEmpty ? reasonBm : reasonEn;
+
   @override
-  List<Object?> get props => [catalogItem, completed];
+  List<Object?> get props => [catalogItem, completed, reasonEn, reasonBm, category];
 }
 
-/// View-ready aggregate for "today's habits", combining the planned habit
-/// list (derived from the latest insights) with the day's completion log.
+/// View-ready aggregate for "today's habits".
 class HabitsToday extends Equatable {
   const HabitsToday({
     required this.date,

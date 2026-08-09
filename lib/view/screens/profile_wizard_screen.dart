@@ -16,16 +16,13 @@ import '../../core/widgets/centered_pane.dart';
 import '../../core/widgets/chips.dart';
 import '../../model/profile.dart';
 
-/// US 1.1 questionnaire: two-step demographics + lifestyle wizard backed
-/// by a [Form]/[GlobalKey] with field-level validators. Because the
-/// currently-hidden step's fields are not mounted, `_formKey.validate()`
-/// only checks the step that's on screen, giving true per-step validation
-/// without duplicating a [Form] per step.
+/// Post-registration questionnaire.
 ///
-/// On finish it saves the profile, inserts an immutable questionnaire
-/// snapshot row (US 1.1), recomputes insights via [InsightsCubit],
-/// refreshes today's habits, flips [AuthCubit.markOnboardingComplete],
-/// and navigates straight to Personal Insights.
+/// Name/email/password were already collected at sign-up, so this wizard
+/// never asks for full name again.
+///
+/// Step 0: Age, Sex, Smoking, Height, Weight
+/// Step 1: Physical activity, Diet, Alcohol, Sleep
 class ProfileWizardScreen extends StatefulWidget {
   const ProfileWizardScreen({super.key});
 
@@ -36,15 +33,15 @@ class ProfileWizardScreen extends StatefulWidget {
 class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   final _formKey = GlobalKey<FormState>();
   int step = 0;
-  late final TextEditingController _name;
   late final TextEditingController _age;
-  late final TextEditingController _bmi;
+  late final TextEditingController _height;
+  late final TextEditingController _weight;
+  late final TextEditingController _sleep;
   String? gender;
-  String? stateValue;
   String activity = 'moderate';
   String diet = 'average';
+  String alcohol = 'none';
   bool smoking = false;
-  bool highBp = false;
   bool _submitting = false;
   String? _error;
   final QuestionnaireRepository _questionnaireRepository = QuestionnaireRepository();
@@ -53,23 +50,36 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   void initState() {
     super.initState();
     final seed = context.read<ProfileCubit>().state.profile;
-    _name = TextEditingController(text: seed?.fullName ?? '');
-    _age = TextEditingController(text: seed != null ? seed.age.toString() : '');
-    _bmi = TextEditingController(text: seed != null ? seed.bmi.toString() : '');
-    gender = seed?.gender;
-    stateValue = (seed != null && malaysianStates.contains(seed.state)) ? seed.state : null;
+    _age = TextEditingController(text: seed != null && seed.onboardingComplete ? seed.age.toString() : '');
+    _height = TextEditingController(
+      text: seed != null && seed.onboardingComplete ? seed.heightCm.toStringAsFixed(0) : '',
+    );
+    _weight = TextEditingController(
+      text: seed != null && seed.onboardingComplete ? seed.weightKg.toStringAsFixed(1) : '',
+    );
+    _sleep = TextEditingController(
+      text: seed != null && seed.onboardingComplete ? seed.sleepHours.toString() : '',
+    );
+    gender = seed?.onboardingComplete == true ? seed!.gender : null;
     activity = seed?.activityLevel ?? 'moderate';
     diet = seed?.dietHabit ?? 'average';
+    alcohol = seed?.alcohol ?? 'none';
     smoking = seed?.smoking ?? false;
-    highBp = seed?.highBloodPressure ?? false;
   }
 
   @override
   void dispose() {
-    _name.dispose();
     _age.dispose();
-    _bmi.dispose();
+    _height.dispose();
+    _weight.dispose();
+    _sleep.dispose();
     super.dispose();
+  }
+
+  double? _parseDecimal(String raw) {
+    final text = raw.trim().replaceAll(',', '.');
+    if (text.isEmpty) return null;
+    return double.tryParse(text);
   }
 
   Future<void> _submit(bool finish) async {
@@ -86,20 +96,46 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
 
     final current =
         context.read<ProfileCubit>().state.profile ?? Profile.empty(userId, email: authState.email);
-    final age = int.parse(_age.text.trim());
-    final bmi = double.parse(_bmi.text.trim());
+
+    final age = int.tryParse(_age.text.trim()) ?? current.age;
+    final height = _parseDecimal(_height.text) ?? current.heightCm;
+    final weight = _parseDecimal(_weight.text) ?? current.weightKg;
+    final sleep = _parseDecimal(_sleep.text) ?? current.sleepHours;
+    final bmi = Profile.bmiFromHeightWeight(height, weight) ?? current.bmi;
+
+    if (finish) {
+      final locale = context.read<LocaleCubit>().state;
+      if (age < 18 || age > 90) {
+        setState(() {
+          _submitting = false;
+          _error = AppStrings.t('validationAgeRange', locale);
+        });
+        return;
+      }
+      if (bmi < 10 || bmi > 60) {
+        setState(() {
+          _submitting = false;
+          _error = AppStrings.t('validationHeightWeight', locale);
+        });
+        return;
+      }
+    }
+
     final updated = current.copyWith(
       id: userId,
       email: authState.email,
-      fullName: _name.text.trim(),
+      // Keep the name collected at registration — never overwrite from this form.
+      fullName: current.fullName,
       age: age,
       gender: gender,
-      state: stateValue,
       activityLevel: activity,
       dietHabit: diet,
       smoking: smoking,
-      bmi: bmi,
-      highBloodPressure: highBp,
+      heightCm: height,
+      weightKg: weight,
+      bmi: double.parse(bmi.toStringAsFixed(1)),
+      alcohol: alcohol,
+      sleepHours: sleep,
       onboardingComplete: finish,
       locale: context.read<LocaleCubit>().state,
     );
@@ -125,27 +161,27 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         await _questionnaireRepository.submit(
           userId: userId,
           answers: {
-            'fullName': saved.fullName,
             'age': saved.age,
-            'gender': saved.gender,
-            'state': saved.state,
-            'activityLevel': saved.activityLevel,
-            'dietHabit': saved.dietHabit,
+            'sex': saved.gender,
             'smoking': saved.smoking,
+            'heightCm': saved.heightCm,
+            'weightKg': saved.weightKg,
             'bmi': saved.bmi,
-            'highBloodPressure': saved.highBloodPressure,
+            'activityLevel': saved.activityLevel,
+            'diet': saved.dietHabit,
+            'alcohol': saved.alcohol,
+            'sleepHours': saved.sleepHours,
           },
         );
       } catch (_) {
-        // Non-fatal: the mutable profile row (and thus Health Age) is
-        // already saved; the questionnaire log is best-effort history.
+        // Non-fatal: profile + Health Age already saved.
       }
 
       await insightsCubit.recalculate(saved);
       await habitsCubit.refreshToday();
       authCubit.markOnboardingComplete();
       if (!mounted) return;
-      context.go('/home/insights');
+      context.go('/home');
     } else {
       setState(() => step = 1);
     }
@@ -179,7 +215,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                   if (_error != null) ErrorBanner(_error!),
                   Expanded(
                     child: SingleChildScrollView(
-                      child: step == 0 ? _demographics(context, locale) : _lifestyle(context, locale),
+                      child: step == 0 ? _basics(context, locale) : _lifestyle(context, locale),
                     ),
                   ),
                   Row(
@@ -211,18 +247,10 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     );
   }
 
-  Widget _demographics(BuildContext context, String locale) {
+  Widget _basics(BuildContext context, String locale) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextFormField(
-          controller: _name,
-          textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(labelText: AppStrings.t('fullName', locale)),
-          validator: (v) =>
-              (v == null || v.trim().isEmpty) ? AppStrings.t('validationRequired', locale) : null,
-        ),
-        const SizedBox(height: 14),
         TextFormField(
           controller: _age,
           keyboardType: TextInputType.number,
@@ -238,7 +266,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           },
         ),
         const SizedBox(height: 16),
-        Text(AppStrings.t('gender', locale), style: Theme.of(context).textTheme.labelLarge),
+        Text(AppStrings.t('sex', locale), style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         FormField<String>(
           initialValue: gender,
@@ -264,35 +292,35 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
             );
           },
         ),
-        const SizedBox(height: 16),
-        FormField<String>(
-          initialValue: stateValue,
-          validator: (v) => v == null ? AppStrings.t('validationSelect', locale) : null,
-          builder: (field) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                DropdownButtonFormField<String>(
-                  initialValue: stateValue,
-                  decoration: InputDecoration(
-                    labelText: AppStrings.t('state', locale),
-                    errorText: field.errorText,
-                  ),
-                  items: malaysianStates
-                      .map(
-                        (s) => DropdownMenuItem(
-                          value: s,
-                          child: Text(s, overflow: TextOverflow.ellipsis),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (v) {
-                    setState(() => stateValue = v);
-                    field.didChange(v);
-                  },
-                ),
-              ],
-            );
+        const SizedBox(height: 8),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(AppStrings.t('smoking', locale), style: const TextStyle(fontSize: 16)),
+          value: smoking,
+          onChanged: (v) => setState(() => smoking = v),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _height,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(labelText: AppStrings.t('heightCm', locale)),
+          validator: (v) {
+            final parsed = _parseDecimal(v ?? '');
+            if (parsed == null) return AppStrings.t('validationRequired', locale);
+            if (parsed < 100 || parsed > 250) return AppStrings.t('validationHeightRange', locale);
+            return null;
+          },
+        ),
+        const SizedBox(height: 14),
+        TextFormField(
+          controller: _weight,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(labelText: AppStrings.t('weightKg', locale)),
+          validator: (v) {
+            final parsed = _parseDecimal(v ?? '');
+            if (parsed == null) return AppStrings.t('validationRequired', locale);
+            if (parsed < 30 || parsed > 250) return AppStrings.t('validationWeightRange', locale);
+            return null;
           },
         ),
       ],
@@ -364,32 +392,43 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           },
         ),
         const SizedBox(height: 16),
-        TextFormField(
-          controller: _bmi,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(labelText: AppStrings.t('bmi', locale)),
-          validator: (v) {
-            final trimmed = v?.trim() ?? '';
-            if (trimmed.isEmpty) return AppStrings.t('validationRequired', locale);
-            final parsed = double.tryParse(trimmed);
-            if (parsed == null || parsed < 10 || parsed > 60) {
-              return AppStrings.t('validationBmiRange', locale);
-            }
-            return null;
+        Text(AppStrings.t('alcohol', locale), style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 8),
+        FormField<String>(
+          initialValue: alcohol,
+          validator: (v) => (v == null || v.isEmpty) ? AppStrings.t('validationSelect', locale) : null,
+          builder: (field) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ChoiceChipRow(
+                  value: alcohol,
+                  onChanged: (v) {
+                    setState(() => alcohol = v);
+                    field.didChange(v);
+                  },
+                  options: [
+                    (value: 'none', label: AppStrings.t('alcoholNone', locale)),
+                    (value: 'occasional', label: AppStrings.t('alcoholOccasional', locale)),
+                    (value: 'regular', label: AppStrings.t('alcoholRegular', locale)),
+                  ],
+                ),
+                if (field.hasError) _fieldError(field.errorText!),
+              ],
+            );
           },
         ),
         const SizedBox(height: 16),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(AppStrings.t('smoking', locale), style: const TextStyle(fontSize: 16)),
-          value: smoking,
-          onChanged: (v) => setState(() => smoking = v),
-        ),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(AppStrings.t('highBp', locale), style: const TextStyle(fontSize: 16)),
-          value: highBp,
-          onChanged: (v) => setState(() => highBp = v),
+        TextFormField(
+          controller: _sleep,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(labelText: AppStrings.t('sleepHours', locale)),
+          validator: (v) {
+            final parsed = _parseDecimal(v ?? '');
+            if (parsed == null) return AppStrings.t('validationRequired', locale);
+            if (parsed < 3 || parsed > 14) return AppStrings.t('validationSleepRange', locale);
+            return null;
+          },
         ),
       ],
     );

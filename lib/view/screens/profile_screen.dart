@@ -10,16 +10,17 @@ import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/buttons.dart';
 import '../../core/widgets/cards.dart';
+import '../widgets/page_header.dart';
 
-/// Profile summary, language switch, disclaimer, and logout.
+/// Profile summary styled like the Finalprototype Health Profile page.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   static const String _fallbackDisclaimerEn =
-      'HealthPath provides population-based statistical insights for education and prevention planning. '
+      'MySihat provides population-based statistical insights for education and prevention planning. '
       'It is not a medical diagnosis or clinical advice.';
   static const String _fallbackDisclaimerBm =
-      'HealthPath menyediakan pandangan statistik berasaskan populasi untuk pendidikan dan perancangan '
+      'MySihat menyediakan pandangan statistik berasaskan populasi untuk pendidikan dan perancangan '
       'pencegahan. Ia bukan diagnosis perubatan atau nasihat klinikal.';
 
   @override
@@ -28,46 +29,108 @@ class ProfileScreen extends StatelessWidget {
     final email = context.watch<AuthCubit>().state.email ?? '';
 
     return Scaffold(
-      appBar: AppBar(title: Text(AppStrings.t('profile', locale))),
+      backgroundColor: Colors.transparent,
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         children: [
-          BlocBuilder<ProfileCubit, ProfileState>(
-            buildWhen: (previous, current) => previous.profile != current.profile,
-            builder: (context, state) {
-              final profile = state.profile;
-              return HpCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      (profile?.fullName.isNotEmpty ?? false) ? profile!.fullName : 'HealthPath user',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(email, style: const TextStyle(fontSize: 16, color: AppTheme.textSecondary)),
-                    const SizedBox(height: 12),
-                    Text(
-                      '${AppStrings.t('age', locale)}: ${profile?.age ?? '-'}  ·  '
-                      '${AppStrings.t('state', locale)}: ${profile?.state ?? '-'}',
-                      style: const TextStyle(fontSize: 15),
-                    ),
-                    Text(
-                      'BMI ${profile?.bmi ?? '-'}  ·  ${AppStrings.t('activity', locale)}: ${profile?.activityLevel ?? '-'}',
-                      style: const TextStyle(fontSize: 15),
-                    ),
-                  ],
+          PageHeader(
+            title: AppStrings.t('profileTitle', locale),
+            subtitle: AppStrings.t('profileSubtitle', locale),
+          ),
+          HpCard(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppStrings.t('profileSectionTitle', locale), style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 6),
+                Text(
+                  AppStrings.t('profileSectionSubtitle', locale),
+                  style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary),
                 ),
-              );
-            },
+                const SizedBox(height: 18),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F7F3),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFDCECE2)),
+                  ),
+                  child: Text(
+                    AppStrings.t('profileNotice', locale),
+                    style: const TextStyle(fontSize: 12, height: 1.4, color: Color(0xFF32684C)),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                BlocBuilder<ProfileCubit, ProfileState>(
+                  buildWhen: (previous, current) => previous.profile != current.profile,
+                  builder: (context, state) {
+                    final profile = state.profile;
+                    final fields = [
+                      (AppStrings.t('fullName', locale), profile?.fullName.isNotEmpty == true ? profile!.fullName : '—'),
+                      (AppStrings.t('email', locale), email.isEmpty ? '—' : email),
+                      (AppStrings.t('age', locale), '${profile?.age ?? '—'}'),
+                      (AppStrings.t('sex', locale), profile?.gender ?? '—'),
+                      (
+                        AppStrings.t('smoking', locale),
+                        profile == null
+                            ? '—'
+                            : (profile.smoking ? AppStrings.t('yes', locale) : AppStrings.t('no', locale)),
+                      ),
+                      (AppStrings.t('heightCm', locale), profile == null ? '—' : profile.heightCm.toStringAsFixed(0)),
+                      (AppStrings.t('weightKg', locale), profile == null ? '—' : profile.weightKg.toStringAsFixed(0)),
+                      (AppStrings.t('activity', locale), profile?.activityLevel ?? '—'),
+                      (AppStrings.t('diet', locale), profile?.dietHabit ?? '—'),
+                      (AppStrings.t('alcohol', locale), profile?.alcohol ?? '—'),
+                      (AppStrings.t('sleepHours', locale), profile == null ? '—' : profile.sleepHours.toString()),
+                      (AppStrings.t('bmi', locale), profile == null ? '—' : profile.bmi.toStringAsFixed(1)),
+                    ];
+
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        final twoCol = constraints.maxWidth >= 560;
+                        if (!twoCol) {
+                          return Column(
+                            children: [
+                              for (final f in fields) ...[
+                                _ProfileField(label: f.$1, value: f.$2),
+                                const SizedBox(height: 12),
+                              ],
+                            ],
+                          );
+                        }
+                        return Wrap(
+                          spacing: 16,
+                          runSpacing: 16,
+                          children: [
+                            for (final f in fields)
+                              SizedBox(
+                                width: (constraints.maxWidth - 16) / 2,
+                                child: _ProfileField(label: f.$1, value: f.$2),
+                              ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SizedBox(
+                    width: 240,
+                    child: HpPrimaryButton(
+                      label: AppStrings.t('editProfile', locale),
+                      icon: Icons.edit_outlined,
+                      onPressed: () => context.push('/profile-wizard'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 14),
-          HpPrimaryButton(
-            label: AppStrings.t('editProfile', locale),
-            icon: Icons.edit_outlined,
-            onPressed: () => context.push('/profile-wizard'),
-          ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
           SectionHeader(AppStrings.t('language', locale)),
           HpCard(
             child: Column(
@@ -95,7 +158,7 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
           SectionHeader(AppStrings.t('disclaimer', locale)),
           BlocBuilder<InsightsCubit, InsightsState>(
             buildWhen: (previous, current) => previous.insights != current.insights,
@@ -132,5 +195,33 @@ class ProfileScreen extends StatelessWidget {
     if (userId != null) {
       context.read<ProfileCubit>().updateLocale(userId, value);
     }
+  }
+}
+
+class _ProfileField extends StatelessWidget {
+  const _ProfileField({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppTheme.foreground)),
+        const SizedBox(height: 7),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFDFE7E3)),
+          ),
+          child: Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+        ),
+      ],
+    );
   }
 }

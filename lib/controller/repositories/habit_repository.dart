@@ -23,4 +23,12 @@ class HabitRepository {
     if (json == null) throw ApiException(500, 'Empty habit log response');
     return HabitLogRow.fromJson(json);
   }
+
+  /// Recent logs for streak / day-by-day risk (includes today when present).
+  Future<List<HabitLogRow>> listRecent({int days = 7}) async {
+    final json = await _client.getJson('/api/habits/history', query: {'days': '$days'});
+    if (json == null) return const [];
+    final logs = json['logs'] as List? ?? const [];
+    return logs.map((e) => HabitLogRow.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+  }
 }

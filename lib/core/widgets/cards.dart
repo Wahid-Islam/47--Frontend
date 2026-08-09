@@ -14,7 +14,7 @@ class HpCard extends StatelessWidget {
     return Card(
       child: onTap == null
           ? content
-          : InkWell(onTap: onTap, borderRadius: BorderRadius.circular(20), child: content),
+          : InkWell(onTap: onTap, borderRadius: BorderRadius.circular(22), child: content),
     );
   }
 }
