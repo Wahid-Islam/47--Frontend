@@ -100,13 +100,25 @@ flutter build web --release --dart-define=API_BASE_URL=https://YOUR-API.vercel.a
 
 #### Option 1 — Vercel (static)
 
-1. Import **`Wahid-Islam/47--Frontend`** into Vercel
-2. Set build settings:
-   - **Build Command:** install Flutter in the build, then  
-     `flutter build web --release --dart-define=API_BASE_URL=https://YOUR-API.vercel.app`
-   - **Output Directory:** `build/web`
-3. Or build locally and deploy the `build/web` folder with `npx vercel --prod`
+Vercel does **not** ship Flutter. This repo’s `vercel.json` installs the Flutter SDK during the build via `scripts/vercel_install.sh`.
+
+1. Import **`Wahid-Islam/47--Frontend`** into Vercel (Framework Preset: **Other**)
+2. In Project Settings → Environment Variables, add (Production):
+
+   | Name | Value |
+   |---|---|
+   | `API_BASE_URL` | Your backend URL, e.g. `https://47-backend.vercel.app` (no trailing slash) |
+
+3. Deploy. First build clones Flutter and can take several minutes.
 4. Add the frontend origin to the backend’s `CORS_ALLOWED_ORIGINS`, then redeploy the backend
+
+**Faster alternative** — build on your machine, then upload static files:
+
+```powershell
+cd D:\S2-2026\W1-W3\frontend
+flutter build web --release --dart-define=API_BASE_URL=https://YOUR-API.vercel.app
+npx vercel --prod
+```
 
 #### Option 2 — Firebase Hosting
 
