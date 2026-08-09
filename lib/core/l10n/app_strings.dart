@@ -14,6 +14,10 @@ class AppStrings {
     },
     'ofDeaths': {'en': 'of deaths', 'bm': 'daripada kematian'},
     'lastUpdated': {'en': 'Last updated: 29 July 2025', 'bm': 'Kemas kini terakhir: 29 Julai 2025'},
+    'scrollOrTapAdjust': {
+      'en': 'Scroll or tap − / +',
+      'bm': 'Tatal atau ketik − / +',
+    },
     'getStarted': {'en': 'Get Started', 'bm': 'Mulakan'},
     'haveAccount': {'en': 'I already have an account', 'bm': 'Saya sudah ada akaun'},
     'demoLogin': {'en': 'Try demo (Lim Wei Jian)', 'bm': 'Cuba demo (Lim Wei Jian)'},

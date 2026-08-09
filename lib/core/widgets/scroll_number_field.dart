@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_theme.dart';
 
-/// Scrollable numeric picker with + / − controls for questionnaire fields.
+/// Web-friendly numeric stepper with +/− and a horizontal scroll strip.
+///
+/// Avoids [ListWheelScrollView], which is unreliable on Flutter web.
 class ScrollNumberField extends StatefulWidget {
   const ScrollNumberField({
     super.key,
@@ -13,6 +16,7 @@ class ScrollNumberField extends StatefulWidget {
     required this.onChanged,
     this.step = 1,
     this.suffix,
+    this.hint,
     this.decimals = 0,
     this.validator,
   });
@@ -23,6 +27,7 @@ class ScrollNumberField extends StatefulWidget {
   final double max;
   final double step;
   final String? suffix;
+  final String? hint;
   final int decimals;
   final ValueChanged<double> onChanged;
   final String? Function(double value)? validator;
@@ -32,8 +37,8 @@ class ScrollNumberField extends StatefulWidget {
 }
 
 class _ScrollNumberFieldState extends State<ScrollNumberField> {
-  static const double _itemExtent = 40;
-  late FixedExtentScrollController _controller;
+  static const double _chipWidth = 64;
+  late final ScrollController _scrollController;
   late List<double> _values;
   String? _error;
 
@@ -41,7 +46,8 @@ class _ScrollNumberFieldState extends State<ScrollNumberField> {
   void initState() {
     super.initState();
     _values = _buildValues();
-    _controller = FixedExtentScrollController(initialItem: _indexFor(widget.value));
+    _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelected(jump: true));
   }
 
   @override
@@ -52,15 +58,14 @@ class _ScrollNumberFieldState extends State<ScrollNumberField> {
         oldWidget.step != widget.step) {
       _values = _buildValues();
     }
-    final nextIndex = _indexFor(widget.value);
-    if (_controller.hasClients && _controller.selectedItem != nextIndex) {
-      _controller.jumpToItem(nextIndex);
+    if (oldWidget.value != widget.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelected());
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -91,27 +96,45 @@ class _ScrollNumberFieldState extends State<ScrollNumberField> {
     return value.toStringAsFixed(widget.decimals);
   }
 
-  void _setIndex(int index, {bool notify = true}) {
-    final next = _values[index.clamp(0, _values.length - 1)];
-    _error = widget.validator?.call(next);
-    if (notify) widget.onChanged(next);
+  void _scrollToSelected({bool jump = false}) {
+    if (!_scrollController.hasClients) return;
+    final index = _indexFor(widget.value);
+    final viewport = _scrollController.position.viewportDimension;
+    final target = (index * _chipWidth) - (viewport - _chipWidth) / 2;
+    final offset = target.clamp(0.0, _scrollController.position.maxScrollExtent);
+    if (jump) {
+      _scrollController.jumpTo(offset);
+    } else {
+      _scrollController.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void _setValue(double next) {
+    final clamped = next.clamp(widget.min, widget.max);
+    final snapped = _values[_indexFor(clamped)];
+    _error = widget.validator?.call(snapped);
+    widget.onChanged(snapped);
     setState(() {});
   }
 
   void _nudge(int delta) {
-    if (!_controller.hasClients) return;
-    final next = (_controller.selectedItem + delta).clamp(0, _values.length - 1);
-    _controller.animateToItem(
-      next,
-      duration: const Duration(milliseconds: 160),
-      curve: Curves.easeOut,
-    );
+    final index = (_indexFor(widget.value) + delta).clamp(0, _values.length - 1);
+    HapticFeedback.selectionClick();
+    _setValue(_values[index]);
   }
 
   @override
   Widget build(BuildContext context) {
-    final canDecrease = _indexFor(widget.value) > 0;
-    final canIncrease = _indexFor(widget.value) < _values.length - 1;
+    final selectedIndex = _indexFor(widget.value);
+    final canDecrease = selectedIndex > 0;
+    final canIncrease = selectedIndex < _values.length - 1;
+    final display = widget.suffix == null
+        ? _format(widget.value)
+        : '${_format(widget.value)} ${widget.suffix}';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,67 +142,88 @@ class _ScrollNumberFieldState extends State<ScrollNumberField> {
         Text(widget.label, style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(12, 14, 12, 12),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: _error != null ? AppTheme.riskHigh : const Color(0xFFDFE7E3)),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: Row(
+          child: Column(
             children: [
-              _StepButton(
-                icon: Icons.remove,
-                enabled: canDecrease,
-                onPressed: () => _nudge(-1),
-              ),
-              Expanded(
-                child: SizedBox(
-                  height: 132,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        height: _itemExtent,
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        decoration: BoxDecoration(
-                          color: AppTheme.softGreen,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      ListWheelScrollView.useDelegate(
-                        controller: _controller,
-                        itemExtent: _itemExtent,
-                        physics: const FixedExtentScrollPhysics(),
-                        diameterRatio: 1.35,
-                        perspective: 0.003,
-                        onSelectedItemChanged: (index) => _setIndex(index),
-                        childDelegate: ListWheelChildBuilderDelegate(
-                          childCount: _values.length,
-                          builder: (context, index) {
-                            final selected = _indexFor(widget.value) == index;
-                            final text = _format(_values[index]);
-                            final label = widget.suffix == null ? text : '$text ${widget.suffix}';
-                            return Center(
-                              child: Text(
-                                label,
-                                style: TextStyle(
-                                  fontSize: selected ? 22 : 16,
-                                  fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
-                                  color: selected ? AppTheme.primaryDark : AppTheme.textSecondary,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+              Row(
+                children: [
+                  _StepButton(
+                    icon: Icons.remove_rounded,
+                    enabled: canDecrease,
+                    onPressed: () => _nudge(-1),
                   ),
-                ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(
+                          display,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.primaryDark,
+                            height: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        if (widget.hint != null)
+                          Text(
+                            widget.hint!,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textSecondary.withValues(alpha: 0.9),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  _StepButton(
+                    icon: Icons.add_rounded,
+                    enabled: canIncrease,
+                    onPressed: () => _nudge(1),
+                  ),
+                ],
               ),
-              _StepButton(
-                icon: Icons.add,
-                enabled: canIncrease,
-                onPressed: () => _nudge(1),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 44,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _values.length,
+                  itemExtent: _chipWidth,
+                  itemBuilder: (context, index) {
+                    final selected = index == selectedIndex;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Material(
+                        color: selected ? AppTheme.softGreen : const Color(0xFFF4F7F5),
+                        borderRadius: BorderRadius.circular(10),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () => _setValue(_values[index]),
+                          child: Center(
+                            child: Text(
+                              _format(_values[index]),
+                              style: TextStyle(
+                                fontSize: selected ? 16 : 13,
+                                fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                                color: selected ? AppTheme.primaryDark : AppTheme.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),
@@ -217,7 +261,7 @@ class _StepButton extends StatelessWidget {
           foregroundColor: enabled ? AppTheme.primaryDark : AppTheme.textSecondary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        icon: Icon(icon, size: 22),
+        icon: Icon(icon, size: 24),
       ),
     );
   }
