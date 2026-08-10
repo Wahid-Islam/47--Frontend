@@ -176,10 +176,16 @@ class RecommendationEngine {
         if (profile.dietHabit != 'healthy') votes += 0.8;
         if (profile.alcohol != 'none') votes += 0.6;
       case 'sleep_7':
-        if (profile.sleepHours < 7 || profile.sleepHours > 9) {
+        if (profile.sleepHours > 8) {
           adopt(
-            'Your sleep hours are outside the 7–9 window — protect tonight’s sleep.',
-            'Jam tidur anda di luar julat 7–9 — lindungi tidur malam ini.',
+            'You sleep longer than the Health Age optimum (7–8h) — aim a bit shorter tonight.',
+            'Anda tidur lebih lama daripada optimum Umur Kesihatan (7–8j) — sasarkan sedikit lebih pendek malam ini.',
+            4,
+          );
+        } else if (profile.sleepHours < 7) {
+          adopt(
+            'Your sleep is under 7 hours — aim for at least 7 tonight.',
+            'Tidur anda di bawah 7 jam — sasarkan sekurang-kurangnya 7 malam ini.',
             4,
           );
         } else {

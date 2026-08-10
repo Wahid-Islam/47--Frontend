@@ -270,7 +270,6 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           min: 18,
           max: 90,
           step: 1,
-          hint: AppStrings.t('scrollOrTapAdjust', locale),
           onChanged: (v) => setState(() => _ageValue = v.round()),
           validator: (v) {
             if (v < 18 || v > 90) return AppStrings.t('validationAgeRange', locale);
@@ -319,7 +318,6 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           max: 250,
           step: 1,
           suffix: 'cm',
-          hint: AppStrings.t('scrollOrTapAdjust', locale),
           onChanged: (v) => setState(() => _heightValue = v),
           validator: (v) {
             if (v < 100 || v > 250) return AppStrings.t('validationHeightRange', locale);
@@ -335,7 +333,6 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           step: 0.5,
           decimals: 1,
           suffix: 'kg',
-          hint: AppStrings.t('scrollOrTapAdjust', locale),
           onChanged: (v) => setState(() => _weightValue = v),
           validator: (v) {
             if (v < 30 || v > 250) return AppStrings.t('validationWeightRange', locale);

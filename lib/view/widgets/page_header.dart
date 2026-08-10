@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../controller/cubits/profile_cubit.dart';
 import '../../core/theme/app_theme.dart';
@@ -61,12 +62,22 @@ class PageHeader extends StatelessWidget {
             icon: const Icon(Icons.notifications_none_rounded, size: 20, color: Color(0xFF334154)),
           ),
           const SizedBox(width: 8),
-          CircleAvatar(
-            radius: 19,
-            backgroundColor: AppTheme.softGreen,
-            child: Text(
-              initial,
-              style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF2C6D48)),
+          Material(
+            color: AppTheme.softGreen,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () => context.go('/home/profile'),
+              child: SizedBox(
+                width: 38,
+                height: 38,
+                child: Center(
+                  child: Text(
+                    initial,
+                    style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF2C6D48)),
+                  ),
+                ),
+              ),
             ),
           ),
         ],

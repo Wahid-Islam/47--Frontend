@@ -101,10 +101,10 @@ class ActionCatalog {
     ),
     ActionItem(
       id: 'sleep_7',
-      title: 'Aim for 7 Hours of Sleep',
-      titleBm: 'Sasaran 7 Jam Tidur',
-      description: 'Consistent sleep helps blood pressure and metabolic health.',
-      descriptionBm: 'Tidur yang konsisten membantu tekanan darah dan kesihatan metabolik.',
+      title: 'Aim for 7–8 Hours of Sleep',
+      titleBm: 'Sasar 7–8 Jam Tidur',
+      description: 'Health Age risk is lowest around 7–8 hours of sleep.',
+      descriptionBm: 'Risiko Umur Kesihatan paling rendah sekitar 7–8 jam tidur.',
       category: 'recovery',
       impact: 'medium',
       timeMinutes: 0,
@@ -130,8 +130,8 @@ class ActionCatalog {
     ),
     HabitCatalogItem(
       id: 'sleep_7',
-      title: 'Sleep at least 7 hours',
-      titleBm: 'Tidur sekurang-kurangnya 7 jam',
+      title: 'Aim for 7–8 hours of sleep',
+      titleBm: 'Sasar 7–8 jam tidur',
     ),
     HabitCatalogItem(
       id: 'check_bp_reminder',
