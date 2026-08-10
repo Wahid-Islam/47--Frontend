@@ -14,11 +14,13 @@ class CauseOfDeath {
     required this.nationalShare,
     required this.maleCurve,
     required this.femaleCurve,
+    this.nameZh = '',
   });
 
   final String id;
   final String name;
   final String nameBm;
+  final String nameZh;
   final double nationalShare;
   final List<AgeBand> maleCurve;
   final List<AgeBand> femaleCurve;
@@ -34,6 +36,7 @@ class DosmData {
       id: 'cardiovascular',
       name: 'Cardiovascular Disease',
       nameBm: 'Penyakit Kardiovaskular',
+      nameZh: '心血管疾病',
       nationalShare: 0.22,
       maleCurve: [
         AgeBand(minAge: 18, maxAge: 39, rate: 0.08),
@@ -54,6 +57,7 @@ class DosmData {
       id: 'diabetes_complications',
       name: 'Diabetes-related Complications',
       nameBm: 'Komplikasi Berkaitan Diabetes',
+      nameZh: '糖尿病相关并发症',
       nationalShare: 0.09,
       maleCurve: [
         AgeBand(minAge: 18, maxAge: 39, rate: 0.04),
@@ -74,6 +78,7 @@ class DosmData {
       id: 'respiratory',
       name: 'Chronic Respiratory Disease',
       nameBm: 'Penyakit Pernafasan Kronik',
+      nameZh: '慢性呼吸道疾病',
       nationalShare: 0.07,
       maleCurve: [
         AgeBand(minAge: 18, maxAge: 39, rate: 0.035),
@@ -94,6 +99,7 @@ class DosmData {
       id: 'cancer',
       name: 'Cancer (all sites)',
       nameBm: 'Kanser (semua jenis)',
+      nameZh: '癌症（所有部位）',
       nationalShare: 0.14,
       maleCurve: [
         AgeBand(minAge: 18, maxAge: 39, rate: 0.05),

@@ -1,27 +1,42 @@
 import 'package:equatable/equatable.dart';
 
+import '../core/l10n/localized.dart';
+
 class ActionCta extends Equatable {
-  const ActionCta({required this.type, required this.label, required this.labelBm});
+  const ActionCta({
+    required this.type,
+    required this.label,
+    required this.labelBm,
+    this.labelZh = '',
+  });
 
   /// 'clinic' | 'habit'
   final String type;
   final String label;
   final String labelBm;
+  final String labelZh;
 
   factory ActionCta.fromJson(Map<String, dynamic> json) {
     return ActionCta(
       type: json['type']?.toString() ?? 'habit',
       label: json['label']?.toString() ?? '',
       labelBm: json['labelBm']?.toString() ?? json['label_bm']?.toString() ?? '',
+      labelZh: json['labelZh']?.toString() ?? json['label_zh']?.toString() ?? '',
     );
   }
 
-  Map<String, dynamic> toJson() => {'type': type, 'label': label, 'labelBm': labelBm};
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'label': label,
+    'labelBm': labelBm,
+    'labelZh': labelZh,
+  };
 
-  String localizedLabel(String locale) => locale == 'bm' && labelBm.isNotEmpty ? labelBm : label;
+  String localizedLabel(String locale) =>
+      localizedText(locale, en: label, bm: labelBm, zh: labelZh);
 
   @override
-  List<Object?> get props => [type, label, labelBm];
+  List<Object?> get props => [type, label, labelBm, labelZh];
 }
 
 class ActionItem extends Equatable {
@@ -37,14 +52,18 @@ class ActionItem extends Equatable {
     required this.targets,
     required this.habitIds,
     required this.cta,
+    this.titleZh = '',
+    this.descriptionZh = '',
     this.priorityScore,
   });
 
   final String id;
   final String title;
   final String titleBm;
+  final String titleZh;
   final String description;
   final String descriptionBm;
+  final String descriptionZh;
   final String category;
   final String impact; // low | medium | high
   final int timeMinutes;
@@ -58,8 +77,10 @@ class ActionItem extends Equatable {
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       titleBm: json['titleBm']?.toString() ?? json['title_bm']?.toString() ?? '',
+      titleZh: json['titleZh']?.toString() ?? json['title_zh']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       descriptionBm: json['descriptionBm']?.toString() ?? json['description_bm']?.toString() ?? '',
+      descriptionZh: json['descriptionZh']?.toString() ?? json['description_zh']?.toString() ?? '',
       category: json['category']?.toString() ?? '',
       impact: json['impact']?.toString() ?? 'medium',
       timeMinutes: (json['timeMinutes'] as num?)?.toInt() ?? (json['time_minutes'] as num?)?.toInt() ?? 0,
@@ -80,8 +101,10 @@ class ActionItem extends Equatable {
       'id': id,
       'title': title,
       'titleBm': titleBm,
+      'titleZh': titleZh,
       'description': description,
       'descriptionBm': descriptionBm,
+      'descriptionZh': descriptionZh,
       'category': category,
       'impact': impact,
       'timeMinutes': timeMinutes,
@@ -97,8 +120,10 @@ class ActionItem extends Equatable {
       id: id,
       title: title,
       titleBm: titleBm,
+      titleZh: titleZh,
       description: description,
       descriptionBm: descriptionBm,
+      descriptionZh: descriptionZh,
       category: category,
       impact: impact,
       timeMinutes: timeMinutes,
@@ -109,18 +134,21 @@ class ActionItem extends Equatable {
     );
   }
 
-  String localizedTitle(String locale) => locale == 'bm' && titleBm.isNotEmpty ? titleBm : title;
+  String localizedTitle(String locale) =>
+      localizedText(locale, en: title, bm: titleBm, zh: titleZh);
 
   String localizedDescription(String locale) =>
-      locale == 'bm' && descriptionBm.isNotEmpty ? descriptionBm : description;
+      localizedText(locale, en: description, bm: descriptionBm, zh: descriptionZh);
 
   @override
   List<Object?> get props => [
     id,
     title,
     titleBm,
+    titleZh,
     description,
     descriptionBm,
+    descriptionZh,
     category,
     impact,
     timeMinutes,
@@ -132,24 +160,37 @@ class ActionItem extends Equatable {
 }
 
 class HabitCatalogItem extends Equatable {
-  const HabitCatalogItem({required this.id, required this.title, required this.titleBm});
+  const HabitCatalogItem({
+    required this.id,
+    required this.title,
+    required this.titleBm,
+    this.titleZh = '',
+  });
 
   final String id;
   final String title;
   final String titleBm;
+  final String titleZh;
 
   factory HabitCatalogItem.fromJson(Map<String, dynamic> json) {
     return HabitCatalogItem(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       titleBm: json['titleBm']?.toString() ?? json['title_bm']?.toString() ?? '',
+      titleZh: json['titleZh']?.toString() ?? json['title_zh']?.toString() ?? '',
     );
   }
 
-  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'titleBm': titleBm};
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'titleBm': titleBm,
+    'titleZh': titleZh,
+  };
 
-  String localizedTitle(String locale) => locale == 'bm' && titleBm.isNotEmpty ? titleBm : title;
+  String localizedTitle(String locale) =>
+      localizedText(locale, en: title, bm: titleBm, zh: titleZh);
 
   @override
-  List<Object?> get props => [id, title, titleBm];
+  List<Object?> get props => [id, title, titleBm, titleZh];
 }

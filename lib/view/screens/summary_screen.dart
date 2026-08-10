@@ -60,8 +60,12 @@ class SummaryScreen extends StatelessWidget {
                 BlocSelector<ProfileCubit, ProfileState, String>(
                   selector: (state) => state.profile?.fullName ?? '',
                   builder: (context, fullName) {
-                    final displayName = fullName.isNotEmpty ? fullName : 'Friend';
-                    return Text('Hi, $displayName', style: Theme.of(context).textTheme.titleLarge);
+                    final displayName =
+                        fullName.isNotEmpty ? fullName : AppStrings.t('friend', locale);
+                    return Text(
+                      '${AppStrings.t('hiPrefix', locale)}$displayName',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    );
                   },
                 ),
                 const SizedBox(height: 4),

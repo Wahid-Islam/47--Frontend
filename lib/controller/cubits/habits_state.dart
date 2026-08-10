@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../core/l10n/localized.dart';
 import '../../model/habit.dart';
 
 enum HabitsStatus { initial, loading, ready, error }
@@ -12,6 +13,7 @@ class HabitsState extends Equatable {
     this.totalCount = 0,
     this.motivation = '',
     this.motivationBm = '',
+    this.motivationZh = '',
     this.riskDropPoints = 0,
     this.adjustedHealthAge = 0,
     this.baseHealthAge = 0,
@@ -29,6 +31,7 @@ class HabitsState extends Equatable {
   final int totalCount;
   final String motivation;
   final String motivationBm;
+  final String motivationZh;
 
   /// Illustrative overall-risk points dropped from today's ticks + streak.
   final double riskDropPoints;
@@ -47,7 +50,7 @@ class HabitsState extends Equatable {
   double get habitProgress => totalCount == 0 ? 0 : completedCount / totalCount;
 
   String localizedMotivation(String locale) =>
-      locale == 'bm' && motivationBm.isNotEmpty ? motivationBm : motivation;
+      localizedText(locale, en: motivation, bm: motivationBm, zh: motivationZh);
 
   HabitsState copyWith({
     HabitsStatus? status,
@@ -56,6 +59,7 @@ class HabitsState extends Equatable {
     int? totalCount,
     String? motivation,
     String? motivationBm,
+    String? motivationZh,
     double? riskDropPoints,
     int? adjustedHealthAge,
     int? baseHealthAge,
@@ -73,6 +77,7 @@ class HabitsState extends Equatable {
       totalCount: totalCount ?? this.totalCount,
       motivation: motivation ?? this.motivation,
       motivationBm: motivationBm ?? this.motivationBm,
+      motivationZh: motivationZh ?? this.motivationZh,
       riskDropPoints: riskDropPoints ?? this.riskDropPoints,
       adjustedHealthAge: adjustedHealthAge ?? this.adjustedHealthAge,
       baseHealthAge: baseHealthAge ?? this.baseHealthAge,
@@ -93,6 +98,7 @@ class HabitsState extends Equatable {
     totalCount,
     motivation,
     motivationBm,
+    motivationZh,
     riskDropPoints,
     adjustedHealthAge,
     baseHealthAge,

@@ -15,6 +15,9 @@ class RiskEngine {
       'MySihat menyediakan anggaran Umur Kesihatan berasaskan populasi untuk '
       'pendidikan menggunakan gaya hidup yang anda laporkan dan data kematian Malaysia. '
       'Ia bukan diagnosis perubatan, ukuran umur biologi, atau ramalan jangka hayat individu.';
+  static const String _disclaimerZh =
+      'MySihat 根据您报告的生活方式与马来西亚死亡数据，提供教育性的人群健康年龄估计。'
+      '它不是医学诊断、生物年龄测量，也不是对个人寿命的预测。';
 
   static String _impactLabel(double score) {
     if (score >= 0.28) return 'high';
@@ -41,6 +44,7 @@ class RiskEngine {
         id: cause.id,
         name: cause.name,
         nameBm: cause.nameBm,
+        nameZh: cause.nameZh,
         nationalAverage: (base * 1000).round() / 10,
         personalRisk: (personal * 1000).round() / 10,
         level: _impactLabel(personal),
@@ -59,14 +63,16 @@ class RiskEngine {
             id: f.id,
             label: f.label,
             labelBm: f.labelBm,
+            labelZh: f.labelZh,
             impact: f.impact,
             score: f.score,
           ),
         )
         .toList();
 
-    final peerComparison = _buildPeerText(topRisk, gender, age);
-    final peerComparisonBm = _buildPeerTextBm(topRisk, gender, age);
+    final peerComparison = _buildPeerText(topRisk, gender, age, locale: 'en');
+    final peerComparisonBm = _buildPeerText(topRisk, gender, age, locale: 'bm');
+    final peerComparisonZh = _buildPeerText(topRisk, gender, age, locale: 'zh');
 
     final rankedActions = RecommendationEngine.rankActions(profile: profile, risks: risks).take(3).toList();
     final daySeed = DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
@@ -90,7 +96,7 @@ class RiskEngine {
       peerAverageHealthAge,
       topRisk,
       gender: gender,
-      isBm: false,
+      locale: 'en',
       riskIndex: relativeRisk,
       lifestyleScore: health.lifestyleScore,
     );
@@ -99,7 +105,16 @@ class RiskEngine {
       peerAverageHealthAge,
       topRisk,
       gender: gender,
-      isBm: true,
+      locale: 'bm',
+      riskIndex: relativeRisk,
+      lifestyleScore: health.lifestyleScore,
+    );
+    final nationalComparisonHeadlineZh = _buildNationalHeadline(
+      healthAge,
+      peerAverageHealthAge,
+      topRisk,
+      gender: gender,
+      locale: 'zh',
       riskIndex: relativeRisk,
       lifestyleScore: health.lifestyleScore,
     );
@@ -107,6 +122,7 @@ class RiskEngine {
     return Insights(
       disclaimer: _disclaimer,
       disclaimerBm: _disclaimerBm,
+      disclaimerZh: _disclaimerZh,
       actualAge: age,
       healthAge: healthAge,
       lifeExpectancy: lifeExpectancy,
@@ -117,6 +133,7 @@ class RiskEngine {
       factors: factors,
       peerComparison: peerComparison,
       peerComparisonBm: peerComparisonBm,
+      peerComparisonZh: peerComparisonZh,
       topActions: rankedActions,
       habits: habits,
       generatedAt: DateTime.now().toUtc(),
@@ -126,6 +143,7 @@ class RiskEngine {
       projectedHealthAgeNoChange: projectedHealthAgeNoChange,
       nationalComparisonHeadline: nationalComparisonHeadline,
       nationalComparisonHeadlineBm: nationalComparisonHeadlineBm,
+      nationalComparisonHeadlineZh: nationalComparisonHeadlineZh,
     );
   }
 
@@ -134,12 +152,12 @@ class RiskEngine {
     int peerAverageHealthAge,
     RiskItem topRisk, {
     required String gender,
-    required bool isBm,
+    required String locale,
     required double riskIndex,
     required double lifestyleScore,
   }) {
     final delta = healthAge - peerAverageHealthAge;
-    if (isBm) {
+    if (locale == 'bm') {
       final sex = gender == 'female' ? 'wanita' : 'lelaki';
       final relation = delta > 0
           ? '$delta tahun lebih tinggi daripada'
@@ -150,6 +168,19 @@ class RiskEngine {
           'seusia anda. Indeks risiko terlaras model ialah ${riskIndex.toStringAsFixed(2)} '
           '(skor gaya hidup ${lifestyleScore.round()}/100). Risiko utama, ${topRisk.nameBm.toLowerCase()}, '
           'ialah ${topRisk.personalRisk}% berbanding purata ${topRisk.nationalAverage}%.';
+    }
+    if (locale == 'zh') {
+      final sex = gender == 'female' ? '女性' : '男性';
+      final relation = delta > 0
+          ? '高出实际年龄 $delta 岁'
+          : delta < 0
+          ? '低于实际年龄 ${delta.abs()} 岁'
+          : '与实际年龄一致';
+      final riskName = topRisk.nameZh.isNotEmpty ? topRisk.nameZh : topRisk.name;
+      return '您的健康年龄（$healthAge）相对同龄$sex的实际年龄（$peerAverageHealthAge）$relation。'
+          '模型调整后风险指数为 ${riskIndex.toStringAsFixed(2)}'
+          '（生活方式评分 ${lifestyleScore.round()}/100）。主要示意风险$riskName为 ${topRisk.personalRisk}%，'
+          '对比平均 ${topRisk.nationalAverage}%。';
     }
     final sex = gender == 'female' ? 'women' : 'men';
     final relation = delta > 0
@@ -163,23 +194,27 @@ class RiskEngine {
         '${topRisk.name.toLowerCase()}, sits at ${topRisk.personalRisk}% vs ${topRisk.nationalAverage}%.';
   }
 
-  static String _buildPeerText(RiskItem topRisk, String gender, int age) {
+  static String _buildPeerText(RiskItem topRisk, String gender, int age, {required String locale}) {
+    final bandStart = (age ~/ 10) * 10;
+    final abs = topRisk.deltaVsPeers.abs();
+    if (locale == 'bm') {
+      final sex = gender == 'female' ? 'wanita' : 'lelaki';
+      final direction = topRisk.deltaVsPeers >= 0 ? 'lebih tinggi' : 'lebih rendah';
+      return 'Berbanding $sex Malaysia lain berumur $bandStart-${bandStart + 9}, anggaran risiko '
+          '${topRisk.nameBm.toLowerCase()} anda kira-kira $abs mata peratusan $direction daripada purata '
+          'demografi (${topRisk.nationalAverage}%).';
+    }
+    if (locale == 'zh') {
+      final sex = gender == 'female' ? '女性' : '男性';
+      final direction = topRisk.deltaVsPeers >= 0 ? '高于' : '低于';
+      final riskName = topRisk.nameZh.isNotEmpty ? topRisk.nameZh : topRisk.name;
+      return '与 $bandStart–${bandStart + 9} 岁的其他马来西亚$sex相比，您的$riskName估计风险约$direction人口平均 '
+          '${topRisk.nationalAverage}% 约 $abs 个百分点。';
+    }
     final sex = gender == 'female' ? 'women' : 'men';
     final direction = topRisk.deltaVsPeers >= 0 ? 'higher' : 'lower';
-    final abs = topRisk.deltaVsPeers.abs();
-    final bandStart = (age ~/ 10) * 10;
     return 'Compared with other Malaysian $sex aged $bandStart-${bandStart + 9}, your estimated '
         '${topRisk.name.toLowerCase()} risk is about $abs percentage points $direction than the demographic '
         'average (${topRisk.nationalAverage}%).';
-  }
-
-  static String _buildPeerTextBm(RiskItem topRisk, String gender, int age) {
-    final sex = gender == 'female' ? 'wanita' : 'lelaki';
-    final direction = topRisk.deltaVsPeers >= 0 ? 'lebih tinggi' : 'lebih rendah';
-    final abs = topRisk.deltaVsPeers.abs();
-    final bandStart = (age ~/ 10) * 10;
-    return 'Berbanding $sex Malaysia lain berumur $bandStart-${bandStart + 9}, anggaran risiko '
-        '${topRisk.nameBm.toLowerCase()} anda kira-kira $abs mata peratusan $direction daripada purata '
-        'demografi (${topRisk.nationalAverage}%).';
   }
 }

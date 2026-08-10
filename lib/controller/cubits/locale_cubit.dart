@@ -10,6 +10,7 @@ class LocaleCubit extends Cubit<String> {
   }
 
   static const _key = 'hp_locale';
+  static const supported = {'en', 'bm', 'zh'};
 
   SharedPreferences? _prefs;
 
@@ -20,13 +21,13 @@ class LocaleCubit extends Cubit<String> {
   Future<void> _restore() async {
     final prefs = await _preferences();
     final saved = prefs.getString(_key);
-    if (saved == 'en' || saved == 'bm') {
-      emit(saved!);
+    if (saved != null && supported.contains(saved)) {
+      emit(saved);
     }
   }
 
   Future<void> setLocale(String value) async {
-    final normalized = value == 'bm' ? 'bm' : 'en';
+    final normalized = supported.contains(value) ? value : 'en';
     if (normalized == state) return;
     emit(normalized);
     final prefs = await _preferences();
@@ -34,8 +35,8 @@ class LocaleCubit extends Cubit<String> {
   }
 
   void applyRemote(String? value) {
-    if ((value == 'en' || value == 'bm') && value != state) {
-      unawaited(setLocale(value!));
+    if (value != null && supported.contains(value) && value != state) {
+      unawaited(setLocale(value));
     }
   }
 }

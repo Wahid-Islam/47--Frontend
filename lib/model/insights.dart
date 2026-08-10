@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../core/l10n/localized.dart';
 import 'action_item.dart';
 
 class RiskItem extends Equatable {
@@ -11,11 +12,13 @@ class RiskItem extends Equatable {
     required this.personalRisk,
     required this.level,
     required this.deltaVsPeers,
+    this.nameZh = '',
   });
 
   final String id;
   final String name;
   final String nameBm;
+  final String nameZh;
   final double nationalAverage;
   final double personalRisk;
   final String level; // low | medium | high
@@ -26,6 +29,7 @@ class RiskItem extends Equatable {
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
       nameBm: json['nameBm']?.toString() ?? json['name_bm']?.toString() ?? '',
+      nameZh: json['nameZh']?.toString() ?? json['name_zh']?.toString() ?? '',
       nationalAverage:
           (json['nationalAverage'] as num?)?.toDouble() ??
           (json['national_average'] as num?)?.toDouble() ??
@@ -43,6 +47,7 @@ class RiskItem extends Equatable {
       'id': id,
       'name': name,
       'nameBm': nameBm,
+      'nameZh': nameZh,
       'nationalAverage': nationalAverage,
       'personalRisk': personalRisk,
       'level': level,
@@ -50,10 +55,11 @@ class RiskItem extends Equatable {
     };
   }
 
-  String localizedName(String locale) => locale == 'bm' && nameBm.isNotEmpty ? nameBm : name;
+  String localizedName(String locale) =>
+      localizedText(locale, en: name, bm: nameBm, zh: nameZh);
 
   @override
-  List<Object?> get props => [id, name, nameBm, nationalAverage, personalRisk, level, deltaVsPeers];
+  List<Object?> get props => [id, name, nameBm, nameZh, nationalAverage, personalRisk, level, deltaVsPeers];
 }
 
 class RiskFactor extends Equatable {
@@ -63,11 +69,13 @@ class RiskFactor extends Equatable {
     required this.labelBm,
     required this.impact,
     required this.score,
+    this.labelZh = '',
   });
 
   final String id;
   final String label;
   final String labelBm;
+  final String labelZh;
   final String impact; // low | medium | high
   final double score;
 
@@ -76,19 +84,28 @@ class RiskFactor extends Equatable {
       id: json['id']?.toString() ?? '',
       label: json['label']?.toString() ?? '',
       labelBm: json['labelBm']?.toString() ?? json['label_bm']?.toString() ?? '',
+      labelZh: json['labelZh']?.toString() ?? json['label_zh']?.toString() ?? '',
       impact: json['impact']?.toString() ?? 'low',
       score: (json['score'] as num?)?.toDouble() ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'label': label, 'labelBm': labelBm, 'impact': impact, 'score': score};
+    return {
+      'id': id,
+      'label': label,
+      'labelBm': labelBm,
+      'labelZh': labelZh,
+      'impact': impact,
+      'score': score,
+    };
   }
 
-  String localizedLabel(String locale) => locale == 'bm' && labelBm.isNotEmpty ? labelBm : label;
+  String localizedLabel(String locale) =>
+      localizedText(locale, en: label, bm: labelBm, zh: labelZh);
 
   @override
-  List<Object?> get props => [id, label, labelBm, impact, score];
+  List<Object?> get props => [id, label, labelBm, labelZh, impact, score];
 }
 
 class Insights extends Equatable {
@@ -108,16 +125,20 @@ class Insights extends Equatable {
     required this.topActions,
     required this.habits,
     required this.generatedAt,
+    this.disclaimerZh = '',
+    this.peerComparisonZh = '',
     this.peerAverageHealthAge = 0,
     this.healthAgeDelta = 0,
     this.projectedHealthAgeFollowPlan = 0,
     this.projectedHealthAgeNoChange = 0,
     this.nationalComparisonHeadline = '',
     this.nationalComparisonHeadlineBm = '',
+    this.nationalComparisonHeadlineZh = '',
   });
 
   final String disclaimer;
   final String disclaimerBm;
+  final String disclaimerZh;
   final int actualAge;
   final int healthAge;
   final double lifeExpectancy;
@@ -128,6 +149,7 @@ class Insights extends Equatable {
   final List<RiskFactor> factors;
   final String peerComparison;
   final String peerComparisonBm;
+  final String peerComparisonZh;
   final List<ActionItem> topActions;
   final List<HabitCatalogItem> habits;
   final DateTime generatedAt;
@@ -142,6 +164,7 @@ class Insights extends Equatable {
 
   final String nationalComparisonHeadline;
   final String nationalComparisonHeadlineBm;
+  final String nationalComparisonHeadlineZh;
 
   factory Insights.fromJson(Map<String, dynamic> json) {
     final risks = (json['risks'] as List? ?? const [])
@@ -150,6 +173,7 @@ class Insights extends Equatable {
     return Insights(
       disclaimer: json['disclaimer']?.toString() ?? '',
       disclaimerBm: json['disclaimerBm']?.toString() ?? '',
+      disclaimerZh: json['disclaimerZh']?.toString() ?? '',
       actualAge: (json['actualAge'] as num?)?.toInt() ?? 0,
       healthAge: (json['healthAge'] as num?)?.toInt() ?? 0,
       lifeExpectancy: (json['lifeExpectancy'] as num?)?.toDouble() ?? 0,
@@ -174,6 +198,7 @@ class Insights extends Equatable {
           .toList(),
       peerComparison: json['peerComparison']?.toString() ?? '',
       peerComparisonBm: json['peerComparisonBm']?.toString() ?? '',
+      peerComparisonZh: json['peerComparisonZh']?.toString() ?? '',
       topActions: (json['topActions'] as List? ?? const [])
           .map((e) => ActionItem.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
@@ -194,6 +219,7 @@ class Insights extends Equatable {
           (json['projectedHealthAgeNoChange'] as num?)?.toInt() ?? (json['healthAge'] as num?)?.toInt() ?? 0,
       nationalComparisonHeadline: json['nationalComparisonHeadline']?.toString() ?? '',
       nationalComparisonHeadlineBm: json['nationalComparisonHeadlineBm']?.toString() ?? '',
+      nationalComparisonHeadlineZh: json['nationalComparisonHeadlineZh']?.toString() ?? '',
     );
   }
 
@@ -201,6 +227,7 @@ class Insights extends Equatable {
     return {
       'disclaimer': disclaimer,
       'disclaimerBm': disclaimerBm,
+      'disclaimerZh': disclaimerZh,
       'actualAge': actualAge,
       'healthAge': healthAge,
       'lifeExpectancy': lifeExpectancy,
@@ -211,6 +238,7 @@ class Insights extends Equatable {
       'factors': factors.map((e) => e.toJson()).toList(),
       'peerComparison': peerComparison,
       'peerComparisonBm': peerComparisonBm,
+      'peerComparisonZh': peerComparisonZh,
       'topActions': topActions.map((e) => e.toJson()).toList(),
       'habits': habits.map((e) => e.toJson()).toList(),
       'generatedAt': generatedAt.toIso8601String(),
@@ -220,24 +248,28 @@ class Insights extends Equatable {
       'projectedHealthAgeNoChange': projectedHealthAgeNoChange,
       'nationalComparisonHeadline': nationalComparisonHeadline,
       'nationalComparisonHeadlineBm': nationalComparisonHeadlineBm,
+      'nationalComparisonHeadlineZh': nationalComparisonHeadlineZh,
     };
   }
 
   String localizedPeerComparison(String locale) =>
-      locale == 'bm' && peerComparisonBm.isNotEmpty ? peerComparisonBm : peerComparison;
+      localizedText(locale, en: peerComparison, bm: peerComparisonBm, zh: peerComparisonZh);
 
   String localizedDisclaimer(String locale) =>
-      locale == 'bm' && disclaimerBm.isNotEmpty ? disclaimerBm : disclaimer;
+      localizedText(locale, en: disclaimer, bm: disclaimerBm, zh: disclaimerZh);
 
-  String localizedNationalComparisonHeadline(String locale) =>
-      locale == 'bm' && nationalComparisonHeadlineBm.isNotEmpty
-      ? nationalComparisonHeadlineBm
-      : nationalComparisonHeadline;
+  String localizedNationalComparisonHeadline(String locale) => localizedText(
+    locale,
+    en: nationalComparisonHeadline,
+    bm: nationalComparisonHeadlineBm,
+    zh: nationalComparisonHeadlineZh,
+  );
 
   @override
   List<Object?> get props => [
     disclaimer,
     disclaimerBm,
+    disclaimerZh,
     actualAge,
     healthAge,
     lifeExpectancy,
@@ -248,6 +280,7 @@ class Insights extends Equatable {
     factors,
     peerComparison,
     peerComparisonBm,
+    peerComparisonZh,
     topActions,
     habits,
     generatedAt,
@@ -257,5 +290,6 @@ class Insights extends Equatable {
     projectedHealthAgeNoChange,
     nationalComparisonHeadline,
     nationalComparisonHeadlineBm,
+    nationalComparisonHeadlineZh,
   ];
 }

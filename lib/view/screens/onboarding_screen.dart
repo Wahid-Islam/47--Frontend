@@ -34,9 +34,32 @@ class OnboardingScreen extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  child: TextButton(
-                    onPressed: () => context.read<LocaleCubit>().setLocale(locale == 'en' ? 'bm' : 'en'),
-                    child: Text(locale == 'en' ? 'BM' : 'ENG'),
+                  child: PopupMenuButton<String>(
+                    initialValue: locale,
+                    onSelected: (value) => context.read<LocaleCubit>().setLocale(value),
+                    itemBuilder: (context) => [
+                      PopupMenuItem(value: 'en', child: Text(AppStrings.t('english', locale))),
+                      PopupMenuItem(value: 'bm', child: Text(AppStrings.t('bahasaMelayu', locale))),
+                      PopupMenuItem(value: 'zh', child: Text(AppStrings.t('simplifiedChinese', locale))),
+                    ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            locale == 'bm'
+                                ? 'BM'
+                                : locale == 'zh'
+                                ? '中文'
+                                : 'ENG',
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.expand_more, size: 18),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

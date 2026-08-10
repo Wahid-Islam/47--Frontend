@@ -26,6 +26,13 @@ void main() {
     );
 
     blocTest<LocaleCubit, String>(
+      'setLocale("zh") emits "zh"',
+      build: LocaleCubit.new,
+      act: (cubit) => cubit.setLocale('zh'),
+      verify: (cubit) => check(cubit.state).equals('zh'),
+    );
+
+    blocTest<LocaleCubit, String>(
       'setLocale normalizes unknown values to "en"',
       build: LocaleCubit.new,
       act: (cubit) => cubit.setLocale('fr'),
@@ -44,6 +51,14 @@ void main() {
       final cubit = LocaleCubit();
       await Future<void>.delayed(Duration.zero);
       check(cubit.state).equals('bm');
+      await cubit.close();
+    });
+
+    test('a freshly created cubit restores zh', () async {
+      SharedPreferences.setMockInitialValues({'hp_locale': 'zh'});
+      final cubit = LocaleCubit();
+      await Future<void>.delayed(Duration.zero);
+      check(cubit.state).equals('zh');
       await cubit.close();
     });
   });

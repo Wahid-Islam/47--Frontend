@@ -45,8 +45,10 @@ void main() {
 
       check(insights.nationalComparisonHeadline).isNotEmpty();
       check(insights.nationalComparisonHeadlineBm).isNotEmpty();
+      check(insights.nationalComparisonHeadlineZh).isNotEmpty();
       check(insights.localizedNationalComparisonHeadline('bm')).equals(insights.nationalComparisonHeadlineBm);
       check(insights.localizedNationalComparisonHeadline('en')).equals(insights.nationalComparisonHeadline);
+      check(insights.localizedNationalComparisonHeadline('zh')).equals(insights.nationalComparisonHeadlineZh);
     });
 
     test('healthier lifestyle lowers the computed health age vs. the demo profile', () {

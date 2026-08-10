@@ -59,24 +59,24 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
       GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
       GoRoute(
         path: '/onboarding',
-        builder: (context, state) => const PageTitle(title: 'Welcome', child: OnboardingScreen()),
+        builder: (context, state) => const PageTitle(titleKey: 'welcome', child: OnboardingScreen()),
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const PageTitle(title: 'Sign in', child: LoginScreen()),
+        builder: (context, state) => const PageTitle(titleKey: 'signIn', child: LoginScreen()),
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => const PageTitle(title: 'Create account', child: RegisterScreen()),
+        builder: (context, state) => const PageTitle(titleKey: 'register', child: RegisterScreen()),
       ),
       GoRoute(
         path: '/profile-wizard',
         builder: (context, state) =>
-            const PageTitle(title: 'Health questionnaire', child: ProfileWizardScreen()),
+            const PageTitle(titleKey: 'healthQuestionnaire', child: ProfileWizardScreen()),
       ),
       GoRoute(
         path: '/clinics',
-        builder: (context, state) => const PageTitle(title: 'Nearby clinics', child: ClinicsScreen()),
+        builder: (context, state) => const PageTitle(titleKey: 'clinics', child: ClinicsScreen()),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => HomeShell(navigationShell: navigationShell),
@@ -86,7 +86,7 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
               GoRoute(
                 path: '/home',
                 builder: (context, state) =>
-                    const PageTitle(title: 'My Health', child: InsightsScreen()),
+                    const PageTitle(titleKey: 'home', child: InsightsScreen()),
               ),
             ],
           ),
@@ -95,7 +95,7 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
               GoRoute(
                 path: '/home/roadmap',
                 builder: (context, state) =>
-                    const PageTitle(title: 'My Roadmap', child: PlanScreen()),
+                    const PageTitle(titleKey: 'plan', child: PlanScreen()),
               ),
             ],
           ),
@@ -103,7 +103,7 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
             routes: [
               GoRoute(
                 path: '/home/learn',
-                builder: (context, state) => const PageTitle(title: 'Learn', child: LearnScreen()),
+                builder: (context, state) => const PageTitle(titleKey: 'learn', child: LearnScreen()),
               ),
             ],
           ),
@@ -111,7 +111,7 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
             routes: [
               GoRoute(
                 path: '/home/profile',
-                builder: (context, state) => const PageTitle(title: 'Profile', child: ProfileScreen()),
+                builder: (context, state) => const PageTitle(titleKey: 'profile', child: ProfileScreen()),
               ),
             ],
           ),

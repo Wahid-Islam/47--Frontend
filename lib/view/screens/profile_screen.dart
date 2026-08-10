@@ -7,6 +7,7 @@ import '../../controller/cubits/insights_cubit.dart';
 import '../../controller/cubits/locale_cubit.dart';
 import '../../controller/cubits/profile_cubit.dart';
 import '../../core/l10n/app_strings.dart';
+import '../../core/l10n/localized.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/buttons.dart';
 import '../../core/widgets/cards.dart';
@@ -21,6 +22,9 @@ class ProfileScreen extends StatelessWidget {
   static const String _fallbackDisclaimerBm =
       'MySihat menyediakan pandangan statistik berasaskan populasi untuk pendidikan dan perancangan '
       'pencegahan. Ia bukan diagnosis perubatan atau nasihat klinikal.';
+  static const String _fallbackDisclaimerZh =
+      'MySihat 提供基于人群的统计洞察，用于教育与预防规划。'
+      '它不是医学诊断或临床建议。';
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +70,20 @@ class ProfileScreen extends StatelessWidget {
                   buildWhen: (previous, current) => previous.profile != current.profile,
                   builder: (context, state) {
                     final profile = state.profile;
+                    String enumLabel(String? value, Map<String, String> keys) {
+                      if (value == null || value.isEmpty) return '—';
+                      final key = keys[value];
+                      return key == null ? value : AppStrings.t(key, locale);
+                    }
+
                     final fields = [
                       (AppStrings.t('fullName', locale), profile?.fullName.isNotEmpty == true ? profile!.fullName : '—'),
                       (AppStrings.t('email', locale), email.isEmpty ? '—' : email),
                       (AppStrings.t('age', locale), '${profile?.age ?? '—'}'),
-                      (AppStrings.t('sex', locale), profile?.gender ?? '—'),
+                      (
+                        AppStrings.t('sex', locale),
+                        enumLabel(profile?.gender, {'male': 'male', 'female': 'female', 'other': 'other'}),
+                      ),
                       (
                         AppStrings.t('smoking', locale),
                         profile == null
@@ -79,9 +92,30 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       (AppStrings.t('heightCm', locale), profile == null ? '—' : profile.heightCm.toStringAsFixed(0)),
                       (AppStrings.t('weightKg', locale), profile == null ? '—' : profile.weightKg.toStringAsFixed(0)),
-                      (AppStrings.t('activity', locale), profile?.activityLevel ?? '—'),
-                      (AppStrings.t('diet', locale), profile?.dietHabit ?? '—'),
-                      (AppStrings.t('alcohol', locale), profile?.alcohol ?? '—'),
+                      (
+                        AppStrings.t('activity', locale),
+                        enumLabel(profile?.activityLevel, {
+                          'low': 'low',
+                          'moderate': 'moderate',
+                          'high': 'high',
+                        }),
+                      ),
+                      (
+                        AppStrings.t('diet', locale),
+                        enumLabel(profile?.dietHabit, {
+                          'unhealthy': 'unhealthy',
+                          'average': 'average',
+                          'healthy': 'healthy',
+                        }),
+                      ),
+                      (
+                        AppStrings.t('alcohol', locale),
+                        enumLabel(profile?.alcohol, {
+                          'none': 'alcoholNone',
+                          'occasional': 'alcoholOccasional',
+                          'regular': 'alcoholRegular',
+                        }),
+                      ),
                       (AppStrings.t('sleepHours', locale), profile == null ? '—' : profile.sleepHours.toString()),
                       (AppStrings.t('bmi', locale), profile == null ? '—' : profile.bmi.toStringAsFixed(1)),
                     ];
@@ -134,26 +168,21 @@ class ProfileScreen extends StatelessWidget {
           HpCard(
             child: Column(
               children: [
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(AppStrings.t('english', locale), style: const TextStyle(fontSize: 16)),
-                  trailing: Icon(
-                    locale == 'en' ? Icons.radio_button_checked : Icons.radio_button_off,
-                    color: AppTheme.primary,
+                for (final option in const [
+                  ('en', 'english'),
+                  ('bm', 'bahasaMelayu'),
+                  ('zh', 'simplifiedChinese'),
+                ])
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(AppStrings.t(option.$2, locale), style: const TextStyle(fontSize: 16)),
+                    trailing: Icon(
+                      locale == option.$1 ? Icons.radio_button_checked : Icons.radio_button_off,
+                      color: AppTheme.primary,
+                    ),
+                    onTap: () => _changeLocale(context, option.$1),
+                    minVerticalPadding: 16,
                   ),
-                  onTap: () => _changeLocale(context, 'en'),
-                  minVerticalPadding: 16,
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(AppStrings.t('bahasaMelayu', locale), style: const TextStyle(fontSize: 16)),
-                  trailing: Icon(
-                    locale == 'bm' ? Icons.radio_button_checked : Icons.radio_button_off,
-                    color: AppTheme.primary,
-                  ),
-                  onTap: () => _changeLocale(context, 'bm'),
-                  minVerticalPadding: 16,
-                ),
               ],
             ),
           ),
@@ -164,7 +193,12 @@ class ProfileScreen extends StatelessWidget {
             builder: (context, state) {
               final disclaimer =
                   state.insights?.localizedDisclaimer(locale) ??
-                  (locale == 'bm' ? _fallbackDisclaimerBm : _fallbackDisclaimerEn);
+                  localizedText(
+                    locale,
+                    en: _fallbackDisclaimerEn,
+                    bm: _fallbackDisclaimerBm,
+                    zh: _fallbackDisclaimerZh,
+                  );
               return HpCard(
                 child: Text(
                   disclaimer,

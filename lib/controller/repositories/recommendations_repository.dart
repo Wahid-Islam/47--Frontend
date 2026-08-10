@@ -1,4 +1,5 @@
 import '../../core/config/api_client.dart';
+import '../../core/l10n/localized.dart';
 import '../../model/action_item.dart';
 import '../services/recommendation_engine.dart';
 
@@ -7,11 +8,16 @@ class RecommendationsResult {
     required this.habits,
     this.coachNote = '',
     this.coachNoteBm = '',
+    this.coachNoteZh = '',
   });
 
   final List<HabitRecommendation> habits;
   final String coachNote;
   final String coachNoteBm;
+  final String coachNoteZh;
+
+  String localizedCoachNote(String locale) =>
+      localizedText(locale, en: coachNote, bm: coachNoteBm, zh: coachNoteZh);
 }
 
 class RecommendationsRepository {
@@ -44,10 +50,12 @@ class RecommendationsRepository {
             id: id,
             title: map['title']?.toString() ?? id,
             titleBm: map['title_bm']?.toString() ?? map['titleBm']?.toString() ?? map['title']?.toString() ?? id,
+            titleZh: map['title_zh']?.toString() ?? map['titleZh']?.toString() ?? '',
           ),
           score: (map['score'] as num?)?.toDouble() ?? 1,
           reasonEn: map['reason']?.toString() ?? '',
           reasonBm: map['reason_bm']?.toString() ?? map['reasonBm']?.toString() ?? '',
+          reasonZh: map['reason_zh']?.toString() ?? map['reasonZh']?.toString() ?? '',
           category: map['category']?.toString() ?? 'HABIT',
         ),
       );
@@ -56,6 +64,7 @@ class RecommendationsRepository {
       habits: habits.take(4).toList(),
       coachNote: json['coach_note']?.toString() ?? '',
       coachNoteBm: json['coach_note_bm']?.toString() ?? '',
+      coachNoteZh: json['coach_note_zh']?.toString() ?? '',
     );
   }
 }

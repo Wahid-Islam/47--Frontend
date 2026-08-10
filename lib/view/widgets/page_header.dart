@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../controller/cubits/locale_cubit.dart';
 import '../../controller/cubits/profile_cubit.dart';
+import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
 
 class PageHeader extends StatelessWidget {
@@ -17,8 +19,11 @@ class PageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.watch<LocaleCubit>().state;
     final profile = context.watch<ProfileCubit>().state.profile;
-    final name = (profile?.fullName.isNotEmpty ?? false) ? profile!.fullName.split(' ').first : 'there';
+    final name = (profile?.fullName.isNotEmpty ?? false)
+        ? profile!.fullName.split(' ').first
+        : AppStrings.t('helloThere', locale);
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'M';
 
     return Padding(
@@ -34,7 +39,7 @@ class PageHeader extends StatelessWidget {
                   TextSpan(
                     style: const TextStyle(fontSize: 15, color: Color(0xFF334154), fontWeight: FontWeight.w600),
                     children: [
-                      const TextSpan(text: 'Hello, '),
+                      TextSpan(text: AppStrings.t('hello', locale)),
                       TextSpan(text: name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
                     ],
                   ),
@@ -51,7 +56,7 @@ class PageHeader extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           IconButton(
-            tooltip: 'Notifications',
+            tooltip: AppStrings.t('notifications', locale),
             onPressed: () {},
             style: IconButton.styleFrom(
               backgroundColor: Colors.white,

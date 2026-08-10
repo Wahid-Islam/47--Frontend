@@ -36,7 +36,7 @@ class HealthAgeDualGauge extends StatelessWidget {
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 12),
-          child: Text('VS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF7C8794))),
+          child: Text(AppStrings.t('vsLabel', locale), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF7C8794))),
         ),
         _AgeCircle(
           value: actualAge,

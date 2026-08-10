@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../core/l10n/localized.dart';
 import 'action_item.dart';
 
 class HabitLogRow extends Equatable {
@@ -44,6 +45,7 @@ class HabitItem extends Equatable {
     required this.completed,
     this.reasonEn = '',
     this.reasonBm = '',
+    this.reasonZh = '',
     this.category = 'HABIT',
   });
 
@@ -51,6 +53,7 @@ class HabitItem extends Equatable {
   final bool completed;
   final String reasonEn;
   final String reasonBm;
+  final String reasonZh;
   final String category;
 
   String get id => catalogItem.id;
@@ -58,10 +61,10 @@ class HabitItem extends Equatable {
   String localizedTitle(String locale) => catalogItem.localizedTitle(locale);
 
   String localizedReason(String locale) =>
-      locale == 'bm' && reasonBm.isNotEmpty ? reasonBm : reasonEn;
+      localizedText(locale, en: reasonEn, bm: reasonBm, zh: reasonZh);
 
   @override
-  List<Object?> get props => [catalogItem, completed, reasonEn, reasonBm, category];
+  List<Object?> get props => [catalogItem, completed, reasonEn, reasonBm, reasonZh, category];
 }
 
 class HabitsToday extends Equatable {
@@ -72,6 +75,7 @@ class HabitsToday extends Equatable {
     this.totalCount = 0,
     this.motivation = '',
     this.motivationBm = '',
+    this.motivationZh = '',
   });
 
   final DateTime date;
@@ -80,10 +84,19 @@ class HabitsToday extends Equatable {
   final int totalCount;
   final String motivation;
   final String motivationBm;
+  final String motivationZh;
 
   String localizedMotivation(String locale) =>
-      locale == 'bm' && motivationBm.isNotEmpty ? motivationBm : motivation;
+      localizedText(locale, en: motivation, bm: motivationBm, zh: motivationZh);
 
   @override
-  List<Object?> get props => [date, items, completedCount, totalCount, motivation, motivationBm];
+  List<Object?> get props => [
+    date,
+    items,
+    completedCount,
+    totalCount,
+    motivation,
+    motivationBm,
+    motivationZh,
+  ];
 }

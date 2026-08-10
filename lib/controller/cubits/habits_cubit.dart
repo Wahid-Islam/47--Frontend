@@ -40,6 +40,7 @@ class HabitsCubit extends Cubit<HabitsState> {
   List<HabitRecommendation>? _recommendedHabits;
   String _coachNote = '';
   String _coachNoteBm = '';
+  String _coachNoteZh = '';
 
   Future<void> loadToday(String userId, {DateTime? date}) async {
     _userId = userId;
@@ -85,6 +86,7 @@ class HabitsCubit extends Cubit<HabitsState> {
       _recommendedHabits = result.habits;
       _coachNote = result.coachNote;
       _coachNoteBm = result.coachNoteBm;
+      _coachNoteZh = result.coachNoteZh;
       _emit(log);
     } catch (_) {
       // Keep local recommendations if the backend call is unavailable.
@@ -156,6 +158,7 @@ class HabitsCubit extends Cubit<HabitsState> {
                   score: 1,
                   reasonEn: 'From your latest Health Age plan.',
                   reasonBm: 'Dari pelan Umur Kesihatan terkini anda.',
+                  reasonZh: '来自您最新的健康年龄计划。',
                   category: 'HABIT',
                 ),
               )
@@ -169,6 +172,7 @@ class HabitsCubit extends Cubit<HabitsState> {
           completed: completedSet.contains(rec.habit.id),
           reasonEn: rec.reasonEn,
           reasonBm: rec.reasonBm,
+          reasonZh: rec.reasonZh,
           category: rec.category,
         ),
     ];
@@ -193,20 +197,26 @@ class HabitsCubit extends Cubit<HabitsState> {
 
     String motivation;
     String motivationBm;
+    String motivationZh;
     if (_coachNote.isNotEmpty && completedCount == 0) {
       motivation = _coachNote;
       motivationBm = _coachNoteBm.isNotEmpty ? _coachNoteBm : _coachNote;
+      motivationZh = _coachNoteZh.isNotEmpty ? _coachNoteZh : _coachNote;
     } else if (completedCount == 0) {
       motivation = 'Complete today’s 4 actions — each tick lowers your risk signal.';
       motivationBm = 'Lengkapkan 4 tindakan hari ini — setiap tanda menurunkan isyarat risiko.';
+      motivationZh = '完成今天的 4 项行动 — 每勾一项都会降低风险信号。';
     } else if (total > 0 && completedCount == total) {
       motivation = 'All 4 done — risk dropped about ${riskDrop.toStringAsFixed(1)} points today.';
       motivationBm = 'Keempat-empat selesai — risiko turun kira-kira ${riskDrop.toStringAsFixed(1)} mata hari ini.';
+      motivationZh = '四项全部完成 — 今日风险约下降 ${riskDrop.toStringAsFixed(1)} 分。';
     } else {
       motivation =
           '$completedCount of $total done — risk down ~${riskDrop.toStringAsFixed(1)} pts (Health Age → $adjusted).';
       motivationBm =
           '$completedCount daripada $total selesai — risiko turun ~${riskDrop.toStringAsFixed(1)} mata (Umur Kesihatan → $adjusted).';
+      motivationZh =
+          '已完成 $completedCount / $total — 风险约下降 ${riskDrop.toStringAsFixed(1)} 分（健康年龄 → $adjusted）。';
     }
 
     emit(
@@ -217,6 +227,7 @@ class HabitsCubit extends Cubit<HabitsState> {
         totalCount: total,
         motivation: motivation,
         motivationBm: motivationBm,
+        motivationZh: motivationZh,
         riskDropPoints: riskDrop,
         adjustedHealthAge: adjusted,
         baseHealthAge: baseHealth,
@@ -248,6 +259,7 @@ class HabitsCubit extends Cubit<HabitsState> {
     _recommendedHabits = null;
     _coachNote = '';
     _coachNoteBm = '';
+    _coachNoteZh = '';
     emit(const HabitsState());
   }
 }

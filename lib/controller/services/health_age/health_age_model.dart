@@ -11,11 +11,13 @@ class FactorContribution {
     required this.labelBm,
     required this.multiplier,
     required this.logContribution,
+    this.labelZh = '',
   });
 
   final String id;
   final String label;
   final String labelBm;
+  final String labelZh;
   final double multiplier;
 
   /// Absolute log contribution used for ranking explainability.
@@ -151,6 +153,7 @@ class HealthAgeModel {
         id: 'smoking',
         label: 'Smoking',
         labelBm: 'Merokok',
+        labelZh: '吸烟',
         multiplier: multipliers['smoking']!,
         logContribution: logs['smoking']!,
       ),
@@ -158,6 +161,7 @@ class HealthAgeModel {
         id: 'physical_inactivity',
         label: 'Physical Inactivity',
         labelBm: 'Kurang Aktiviti Fizikal',
+        labelZh: '缺乏身体活动',
         multiplier: multipliers['physical_inactivity']!,
         logContribution: logs['physical_inactivity']!,
       ),
@@ -165,6 +169,7 @@ class HealthAgeModel {
         id: 'diet',
         label: 'Dietary Habits',
         labelBm: 'Tabiat Pemakanan',
+        labelZh: '饮食习惯',
         multiplier: multipliers['diet']!,
         logContribution: logs['diet']!,
       ),
@@ -172,6 +177,7 @@ class HealthAgeModel {
         id: 'bmi',
         label: 'BMI',
         labelBm: 'BMI',
+        labelZh: 'BMI',
         multiplier: multipliers['bmi']!,
         logContribution: logs['bmi']!,
       ),
@@ -179,6 +185,7 @@ class HealthAgeModel {
         id: 'alcohol',
         label: 'Alcohol',
         labelBm: 'Alkohol',
+        labelZh: '酒精',
         multiplier: multipliers['alcohol']!,
         logContribution: logs['alcohol']!,
       ),
@@ -186,6 +193,7 @@ class HealthAgeModel {
         id: 'sleep',
         label: 'Sleep',
         labelBm: 'Tidur',
+        labelZh: '睡眠',
         multiplier: multipliers['sleep']!,
         logContribution: logs['sleep']!,
       ),
@@ -193,6 +201,7 @@ class HealthAgeModel {
         id: 'blood_pressure',
         label: 'High Blood Pressure',
         labelBm: 'Tekanan Darah Tinggi',
+        labelZh: '高血压',
         multiplier: multipliers['blood_pressure']!,
         logContribution: logs['blood_pressure']!,
       ),
@@ -200,6 +209,7 @@ class HealthAgeModel {
         id: 'diabetes',
         label: 'Diabetes',
         labelBm: 'Diabetes',
+        labelZh: '糖尿病',
         multiplier: multipliers['diabetes']!,
         logContribution: logs['diabetes']!,
       ),

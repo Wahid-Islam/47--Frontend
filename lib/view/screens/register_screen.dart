@@ -68,7 +68,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     keyboardType: TextInputType.emailAddress,
                     autofillHints: const [AutofillHints.email],
                     decoration: InputDecoration(labelText: AppStrings.t('email', locale)),
-                    validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                    validator: (v) =>
+                        (v == null || !v.contains('@')) ? AppStrings.t('validationEmail', locale) : null,
                   ),
                   const SizedBox(height: 14),
                   TextFormField(

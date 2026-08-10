@@ -1,3 +1,4 @@
+import '../../core/l10n/localized.dart';
 import '../../model/action_item.dart';
 import '../../model/insights.dart';
 import '../../model/profile.dart';
@@ -10,15 +11,18 @@ class HabitRecommendation {
     required this.reasonEn,
     required this.reasonBm,
     required this.category,
+    this.reasonZh = '',
   });
 
   final HabitCatalogItem habit;
   final double score;
   final String reasonEn;
   final String reasonBm;
+  final String reasonZh;
   final String category;
 
-  String localizedReason(String locale) => locale == 'bm' && reasonBm.isNotEmpty ? reasonBm : reasonEn;
+  String localizedReason(String locale) =>
+      localizedText(locale, en: reasonEn, bm: reasonBm, zh: reasonZh);
 }
 
 class RecommendationEngine {
@@ -63,6 +67,7 @@ class RecommendationEngine {
             score: 0.5,
             reasonEn: 'A simple daily anchor to keep momentum.',
             reasonBm: 'Sauh harian mudah untuk kekalkan momentum.',
+            reasonZh: '一个简单的每日锚点，帮助保持动力。',
             category: _categoryFor(habit.id),
           ),
         );
@@ -120,22 +125,34 @@ class RecommendationEngine {
     var votes = 0.0;
     var reasonEn = 'Matched to your overall health profile.';
     var reasonBm = 'Disesuaikan dengan profil kesihatan keseluruhan anda.';
+    var reasonZh = '根据您的整体健康资料匹配。';
 
-    void adopt(String en, String bm, double weight) {
+    void adopt(String en, String bm, String zh, double weight) {
       if (weight <= 0) return;
       votes += weight;
       if (weight >= 2) {
         reasonEn = en;
         reasonBm = bm;
+        reasonZh = zh;
       }
     }
 
     switch (habit.id) {
       case 'walk_20':
         if (profile.activityLevel == 'low') {
-          adopt('Your activity level is low — daily walking is a top lever.', 'Tahap aktiviti anda rendah — berjalan harian ialah tuas utama.', 4);
+          adopt(
+            'Your activity level is low — daily walking is a top lever.',
+            'Tahap aktiviti anda rendah — berjalan harian ialah tuas utama.',
+            '您的活动水平偏低 — 每日步行是重要抓手。',
+            4,
+          );
         } else if (profile.activityLevel == 'moderate') {
-          adopt('Keep building on moderate activity with a daily walk.', 'Teruskan aktiviti sederhana dengan berjalan harian.', 2);
+          adopt(
+            'Keep building on moderate activity with a daily walk.',
+            'Teruskan aktiviti sederhana dengan berjalan harian.',
+            '在中等活动基础上，坚持每日步行。',
+            2,
+          );
         } else {
           votes += 0.4;
         }
@@ -144,7 +161,12 @@ class RecommendationEngine {
         }
       case 'smoke_free_day':
         if (profile.smoking) {
-          adopt('Smoking strongly raises your Health Age — stay smoke-free today.', 'Merokok menaikkan Umur Kesihatan dengan kuat — kekal tanpa asap hari ini.', 6);
+          adopt(
+            'Smoking strongly raises your Health Age — stay smoke-free today.',
+            'Merokok menaikkan Umur Kesihatan dengan kuat — kekal tanpa asap hari ini.',
+            '吸烟会明显推高健康年龄 — 今天保持无烟。',
+            6,
+          );
         } else {
           votes -= 3;
         }
@@ -152,15 +174,30 @@ class RecommendationEngine {
       case 'no_sugary_drink':
       case 'brown_rice_meal':
         if (profile.dietHabit == 'unhealthy') {
-          adopt('Diet is a high-impact factor in your result — one better food choice today.', 'Pemakanan berimpak tinggi dalam keputusan anda — satu pilihan makanan lebih baik hari ini.', 4);
+          adopt(
+            'Diet is a high-impact factor in your result — one better food choice today.',
+            'Pemakanan berimpak tinggi dalam keputusan anda — satu pilihan makanan lebih baik hari ini.',
+            '饮食对您的结果影响很大 — 今天做一次更健康的食物选择。',
+            4,
+          );
         } else if (profile.dietHabit == 'average') {
-          adopt('A small diet upgrade supports your metabolic risk.', 'Peningkatan pemakanan kecil menyokong risiko metabolik anda.', 2);
+          adopt(
+            'A small diet upgrade supports your metabolic risk.',
+            'Peningkatan pemakanan kecil menyokong risiko metabolik anda.',
+            '小小的饮食升级有助于代谢风险。',
+            2,
+          );
         } else {
           votes += 0.3;
         }
         if (topRiskIds.contains('diabetes_complications')) votes += 2;
       case 'drink_water':
-        adopt('Hydration helps replace sugary drinks and supports daily energy.', 'Penghidratan membantu ganti minuman bergula dan menyokong tenaga harian.', 1.2);
+        adopt(
+          'Hydration helps replace sugary drinks and supports daily energy.',
+          'Penghidratan membantu ganti minuman bergula dan menyokong tenaga harian.',
+          '补水有助于替代含糖饮料并支持日常精力。',
+          1.2,
+        );
         if (profile.dietHabit != 'healthy') votes += 0.8;
         if (profile.alcohol != 'none') votes += 0.6;
       case 'sleep_7':
@@ -168,12 +205,14 @@ class RecommendationEngine {
           adopt(
             'You sleep longer than the Health Age optimum (7–8h) — aim a bit shorter tonight.',
             'Anda tidur lebih lama daripada optimum Umur Kesihatan (7–8j) — sasarkan sedikit lebih pendek malam ini.',
+            '您的睡眠长于健康年龄较佳区间（7–8 小时）— 今晚可略短一些。',
             4,
           );
         } else if (profile.sleepHours < 7) {
           adopt(
             'Your sleep is under 7 hours — aim for at least 7 tonight.',
             'Tidur anda di bawah 7 jam — sasarkan sekurang-kurangnya 7 malam ini.',
+            '您的睡眠不足 7 小时 — 今晚争取至少 7 小时。',
             4,
           );
         } else {
@@ -184,6 +223,7 @@ class RecommendationEngine {
           adopt(
             'Blood-pressure awareness matters for your age and heart risk.',
             'Kesedaran tekanan darah penting untuk umur dan risiko jantung anda.',
+            '关注血压对您的年龄与心脏风险很重要。',
             3,
           );
         } else {
@@ -201,6 +241,7 @@ class RecommendationEngine {
       score: votes,
       reasonEn: reasonEn,
       reasonBm: reasonBm,
+      reasonZh: reasonZh,
       category: _categoryFor(habit.id),
     );
   }
