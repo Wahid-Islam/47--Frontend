@@ -3,9 +3,6 @@ import 'package:flutter/services.dart';
 
 import '../theme/app_theme.dart';
 
-/// Web-friendly numeric stepper with +/− and a horizontal scroll strip.
-///
-/// Avoids [ListWheelScrollView], which is unreliable on Flutter web.
 class ScrollNumberField extends StatefulWidget {
   const ScrollNumberField({
     super.key,

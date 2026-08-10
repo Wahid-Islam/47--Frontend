@@ -6,9 +6,6 @@ import '../../core/widgets/cards.dart';
 import '../../core/widgets/chips.dart';
 import '../../model/action_item.dart';
 
-/// A single ranked action on the Plan tab, with an impact chip and a CTA
-/// button that either opens the clinics list or nudges the user toward a
-/// daily habit.
 class ActionCard extends StatelessWidget {
   const ActionCard({
     super.key,

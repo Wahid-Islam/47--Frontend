@@ -11,7 +11,6 @@ import '../../core/widgets/cards.dart';
 import '../../core/widgets/chips.dart';
 import '../widgets/health_age_gauge.dart';
 
-/// Home tab: Health Age gauge, overall risk, and top risk headline.
 class SummaryScreen extends StatelessWidget {
   const SummaryScreen({super.key});
 

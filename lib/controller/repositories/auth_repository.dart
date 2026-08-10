@@ -4,12 +4,6 @@ import '../services/risk_engine.dart';
 import 'insights_repository.dart';
 import 'profile_repository.dart';
 
-/// Auth session against the mysihat backend API.
-///
-/// Tokens are stored via [ApiClient] (`shared_preferences` / localStorage on
-/// web). There is no push stream equivalent of Supabase's `onAuthStateChange`
-/// — [AuthCubit] calls [restoreSession] once at startup and emits state from
-/// its own login/register/logout methods.
 class AuthRepository {
   AuthRepository({
     ApiClient? client,
@@ -27,7 +21,6 @@ class AuthRepository {
   static const String demoEmail = 'lim.weijian@healthpath.demo';
   static const String demoPassword = 'demo1234';
 
-  /// Restores a previous session from the stored token, or returns null.
   Future<AuthSession?> restoreSession() async {
     if (!_client.hasToken) return null;
     try {
@@ -64,7 +57,6 @@ class AuthRepository {
     return _persistSession(json);
   }
 
-  /// Signs in as the shared demo account, then ensures insights exist for it.
   Future<AuthSession> demoSignIn() async {
     final json = await _client.postJson('/api/auth/demo');
     final session = await _persistSession(json);

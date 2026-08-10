@@ -1,6 +1,5 @@
 import '../../core/config/api_client.dart';
 
-/// Append-only questionnaire audit trail via `POST /api/questionnaire`.
 class QuestionnaireRepository {
   QuestionnaireRepository({ApiClient? client}) : _client = client ?? apiClient;
 

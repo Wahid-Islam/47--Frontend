@@ -9,7 +9,6 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/cards.dart';
 import '../widgets/page_header.dart';
 
-/// Learn — cards generated from the user's live insights (questionnaire-driven).
 class LearnScreen extends StatelessWidget {
   const LearnScreen({super.key});
 

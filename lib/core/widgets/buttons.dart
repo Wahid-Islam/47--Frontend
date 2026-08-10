@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Full-width primary call-to-action button with a min 48px tap target and
-/// a built-in busy spinner, used across onboarding/auth/profile flows.
 class HpPrimaryButton extends StatelessWidget {
   const HpPrimaryButton({
     super.key,

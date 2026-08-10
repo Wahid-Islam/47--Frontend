@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Call-to-action metadata attached to an [ActionItem], e.g. "book a
-/// clinic visit" vs. "track a daily habit".
 class ActionCta extends Equatable {
   const ActionCta({required this.type, required this.label, required this.labelBm});
 
@@ -26,8 +24,6 @@ class ActionCta extends Equatable {
   List<Object?> get props => [type, label, labelBm];
 }
 
-/// A recommended preventive action (from the static catalog or a computed
-/// insights payload's `topActions`).
 class ActionItem extends Equatable {
   const ActionItem({
     required this.id,
@@ -135,7 +131,6 @@ class ActionItem extends Equatable {
   ];
 }
 
-/// A single entry from the daily habit catalog (e.g. "Walk 20 minutes").
 class HabitCatalogItem extends Equatable {
   const HabitCatalogItem({required this.id, required this.title, required this.titleBm});
 

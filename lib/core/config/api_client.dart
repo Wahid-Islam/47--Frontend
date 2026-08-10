@@ -5,10 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api_config.dart';
 
-/// Thin HTTP client for the mysihat backend.
-///
-/// Attaches the bearer token when present, decodes JSON, and maps non-2xx
-/// responses to [ApiException] so screens can show `error.message`.
 class ApiClient {
   ApiClient({http.Client? httpClient, SharedPreferences? preferences})
     : _http = httpClient ?? http.Client(),
@@ -108,7 +104,6 @@ class ApiClient {
   }
 }
 
-/// Shared singleton used by every repository.
 final apiClient = ApiClient();
 
 class ApiException implements Exception {

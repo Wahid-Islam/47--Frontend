@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-/// Soft leaf cluster used on the sidebar promo card (mockup accent).
 class LeafFoliagePainter extends CustomPainter {
   const LeafFoliagePainter({this.opacity = 1});
 
@@ -79,7 +78,6 @@ class LeafFoliagePainter extends CustomPainter {
   bool shouldRepaint(covariant LeafFoliagePainter oldDelegate) => oldDelegate.opacity != opacity;
 }
 
-/// Simplified Petronas / KL Tower skyline + hills watermark.
 class KlSkylinePainter extends CustomPainter {
   const KlSkylinePainter({this.opacity = 0.18});
 
@@ -167,7 +165,6 @@ class KlSkylinePainter extends CustomPainter {
   bool shouldRepaint(covariant KlSkylinePainter oldDelegate) => oldDelegate.opacity != opacity;
 }
 
-/// Sidebar bottom promo card from the MySihat mockup.
 class SidebarPromoCard extends StatelessWidget {
   const SidebarPromoCard({super.key, required this.message});
 
@@ -229,7 +226,6 @@ class SidebarPromoCard extends StatelessWidget {
   }
 }
 
-/// Soft KL skyline watermark anchored to the bottom of a page.
 class KlWatermarkBackdrop extends StatelessWidget {
   const KlWatermarkBackdrop({super.key, required this.child, this.height = 160});
 
@@ -255,7 +251,6 @@ class KlWatermarkBackdrop extends StatelessWidget {
   }
 }
 
-/// Tiny Malaysia flag mark for mortality section headers.
 class MalaysiaFlagMark extends StatelessWidget {
   const MalaysiaFlagMark({super.key, this.size = 18});
 

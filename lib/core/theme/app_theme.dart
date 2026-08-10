@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// mysihat design tokens aligned with the Finalprototype HTML.
-///
-/// Soft green wellness UI: ink text, muted secondary, frosted cards,
-/// green primary `#168653`. Headings stay expressive (Lora); body uses
-/// a clean system-adjacent sans (Raleway) for 40–60 readability.
 class AppTheme {
   AppTheme._();
 

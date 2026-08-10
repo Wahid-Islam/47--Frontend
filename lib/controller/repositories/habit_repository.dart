@@ -1,7 +1,6 @@
 import '../../core/config/api_client.dart';
 import '../../model/habit.dart';
 
-/// Data access for `GET` / `PUT /api/habits/today`.
 class HabitRepository {
   HabitRepository({ApiClient? client}) : _client = client ?? apiClient;
 
@@ -24,7 +23,6 @@ class HabitRepository {
     return HabitLogRow.fromJson(json);
   }
 
-  /// Recent logs for streak / day-by-day risk (includes today when present).
   Future<List<HabitLogRow>> listRecent({int days = 7}) async {
     final json = await _client.getJson('/api/habits/history', query: {'days': '$days'});
     if (json == null) return const [];

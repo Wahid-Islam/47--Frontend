@@ -8,8 +8,6 @@ import 'insights_state.dart';
 
 export 'insights_state.dart';
 
-/// Loads the persisted insights payload and can recompute it on-device via
-/// [RiskEngine] whenever the profile changes (wizard finish, demo login).
 class InsightsCubit extends Cubit<InsightsState> {
   InsightsCubit({InsightsRepository? repository})
     : _repository = repository ?? InsightsRepository(),

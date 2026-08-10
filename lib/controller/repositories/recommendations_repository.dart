@@ -14,7 +14,6 @@ class RecommendationsResult {
   final String coachNoteBm;
 }
 
-/// Fetches personalised daily habits from `GET /api/recommendations/rf`.
 class RecommendationsRepository {
   RecommendationsRepository({ApiClient? client}) : _client = client ?? apiClient;
 

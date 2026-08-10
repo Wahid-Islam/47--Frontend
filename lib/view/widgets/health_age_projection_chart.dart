@@ -5,10 +5,6 @@ import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
 
 /// 12-month Health Age projection.
-///
-/// The green "follow the plan" curve falls from today's [healthAge] toward
-/// [actualAge] as [habitProgress] increases (0 = flat at Health Age;
-/// 1 = reaches actual age). The dashed grey line shows the "no change" path.
 class HealthAgeProjectionChart extends StatelessWidget {
   const HealthAgeProjectionChart({
     super.key,

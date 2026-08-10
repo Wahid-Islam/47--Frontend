@@ -9,11 +9,6 @@ import 'auth_state.dart';
 
 export 'auth_state.dart';
 
-/// Owns the API auth session: restore on start, login, register, demo, logout.
-///
-/// Unlike the old Supabase stream, this cubit emits authenticated state
-/// directly from its own methods. [GoRouterRefreshStream] still listens to
-/// [stream] and re-runs redirects on every emit.
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit({AuthRepository? authRepository, ProfileRepository? profileRepository})
     : _authRepository = authRepository ?? AuthRepository(),
@@ -117,8 +112,6 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  /// Called once the profile wizard finishes saving, so the router can
-  /// redirect to the home shell without waiting for another DB round trip.
   void markOnboardingComplete() {
     if (state.status == AuthStatus.authenticated) {
       emit(state.copyWith(onboardingComplete: true));

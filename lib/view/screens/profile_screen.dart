@@ -12,7 +12,6 @@ import '../../core/widgets/buttons.dart';
 import '../../core/widgets/cards.dart';
 import '../widgets/page_header.dart';
 
-/// Profile summary styled like the Finalprototype Health Profile page.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-/// Colour-coded pill used for risk/impact levels (low/medium/high).
 class RiskChip extends StatelessWidget {
   const RiskChip(this.level, {super.key});
 
@@ -26,10 +25,6 @@ class RiskChip extends StatelessWidget {
   }
 }
 
-/// A row of single-select filter chips with a >=48px tap target each.
-///
-/// [value] is nullable so callers can represent a "required, not yet
-/// answered" state (no chip pre-selected) for form validation.
 class ChoiceChipRow extends StatelessWidget {
   const ChoiceChipRow({super.key, required this.options, required this.value, required this.onChanged});
 

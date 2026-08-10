@@ -1,7 +1,6 @@
 import '../../core/config/api_client.dart';
 import '../../model/insights.dart';
 
-/// Data access for `GET` / `PUT /api/insights`.
 class InsightsRepository {
   InsightsRepository({ApiClient? client}) : _client = client ?? apiClient;
 

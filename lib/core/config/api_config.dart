@@ -1,9 +1,3 @@
-/// Backend API base URL.
-///
-/// Override at build/run time:
-///   flutter run -d chrome --dart-define=API_BASE_URL=https://your-api.vercel.app
-///
-/// Defaults to the local Node server started by `npm run dev` in the backend repo.
 class ApiConfig {
   const ApiConfig._();
 

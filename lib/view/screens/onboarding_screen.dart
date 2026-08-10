@@ -11,12 +11,6 @@ import '../../core/widgets/banners.dart';
 import '../../core/widgets/buttons.dart';
 import '../../core/widgets/centered_pane.dart';
 
-/// Landing page for signed-out users: get started, log in, or try the demo.
-///
-/// This is the first thing a visitor sees, so it gets a real desktop
-/// treatment — the pitch on the left, the sign-up actions in a card on the
-/// right — collapsing to the stacked phone layout below
-/// [Breakpoints.desktop].
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
 
@@ -68,7 +62,6 @@ class OnboardingScreen extends StatelessWidget {
   }
 }
 
-/// Side-by-side pitch and actions for wide browser windows.
 class _DesktopHero extends StatelessWidget {
   const _DesktopHero();
 
@@ -93,7 +86,6 @@ class _DesktopHero extends StatelessWidget {
   }
 }
 
-/// Stacked pitch-then-actions layout for phones and narrow windows.
 class _StackedHero extends StatelessWidget {
   const _StackedHero();
 

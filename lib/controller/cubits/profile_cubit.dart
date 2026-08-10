@@ -6,9 +6,6 @@ import 'profile_state.dart';
 
 export 'profile_state.dart';
 
-/// Loads and saves the current user's [Profile]. Insights recalculation
-/// after a profile save is orchestrated by the calling screen via
-/// [InsightsCubit.recalculate] to keep cubits independently testable.
 class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit({ProfileRepository? repository})
     : _repository = repository ?? ProfileRepository(),

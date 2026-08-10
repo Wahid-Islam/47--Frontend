@@ -4,9 +4,6 @@ enum AuthStatus { unknown, authenticating, authenticated, unauthenticated }
 
 const Object _unset = Object();
 
-/// State for [AuthCubit]. Tracks the Supabase session plus the
-/// `onboarding_complete` flag (read from the user's profile) so `go_router`
-/// can redirect between onboarding, the profile wizard, and the home shell.
 class AuthState extends Equatable {
   const AuthState({
     this.status = AuthStatus.unknown,

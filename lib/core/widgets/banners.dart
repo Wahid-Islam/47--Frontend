@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-/// Inline error banner shown below headers on forms and data screens.
 class ErrorBanner extends StatelessWidget {
   const ErrorBanner(this.message, {super.key});
 

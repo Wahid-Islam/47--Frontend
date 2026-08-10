@@ -13,11 +13,9 @@ import '../widgets/design_accents.dart';
 import '../widgets/health_age_dual_gauge.dart';
 import '../widgets/page_header.dart';
 
-/// My Health — Health Age hero, top lifestyle factors, and DOSM mortality cards.
 class InsightsScreen extends StatelessWidget {
   const InsightsScreen({super.key});
 
-  /// Highest-impact lifestyle factors from the user's computed insights.
   static List<RiskFactor> _topFactors(List<RiskFactor> factors) {
     final ranked = [...factors]..sort((a, b) => b.score.compareTo(a.score));
     return ranked.take(3).toList();

@@ -1,9 +1,5 @@
 import '../../model/action_item.dart';
 
-/// Static catalog of preventive actions and daily habits.
-///
-/// Ported from `backend/src/data/actions.js`. [RiskEngine] ranks and
-/// filters these based on the user's computed risks and profile.
 class ActionCatalog {
   ActionCatalog._();
 

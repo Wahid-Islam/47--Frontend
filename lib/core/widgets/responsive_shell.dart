@@ -6,8 +6,6 @@ import '../../view/widgets/design_accents.dart';
 import '../responsive/breakpoints.dart';
 import '../theme/app_theme.dart';
 
-/// Describes a single destination in the app's bottom navigation /
-/// navigation rail shell.
 class ShellDestination {
   const ShellDestination({required this.icon, required this.selectedIcon, required this.label});
 
@@ -16,8 +14,6 @@ class ShellDestination {
   final String label;
 }
 
-/// Adaptive navigation shell for [StatefulShellRoute.indexedStack]:
-/// bottom [NavigationBar] on phones; branded glass sidebar on tablet+.
 class ResponsiveShell extends StatelessWidget {
   const ResponsiveShell({
     super.key,
@@ -98,7 +94,6 @@ class ResponsiveShell extends StatelessWidget {
   }
 }
 
-/// Prototype-style glass sidebar: brand mark, nav items, footer tagline.
 class BrandedSidebar extends StatelessWidget {
   const BrandedSidebar({
     super.key,

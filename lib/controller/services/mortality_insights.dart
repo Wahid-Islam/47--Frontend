@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../model/insights.dart';
 
-/// One mortality highlight card derived from the user's computed [RiskItem]s.
 class MortalityKiller {
   const MortalityKiller({
     required this.id,
@@ -38,7 +37,6 @@ class MortalityKiller {
   String get percentLabel => '${sharePercent.toStringAsFixed(1)}%';
 }
 
-/// Builds My Health / Learn mortality cards from live [Insights] (profile-driven).
 class MortalityInsights {
   MortalityInsights._();
 
@@ -64,7 +62,6 @@ class MortalityInsights {
     }
   }
 
-  /// Top causes ranked by the user's personal risk from [RiskEngine].
   static List<MortalityKiller> fromInsights(Insights insights, {int limit = 3}) {
     final group = ageGroupLabel(insights.actualAge);
     final risks = insights.risks.take(limit).toList();
@@ -101,7 +98,6 @@ class MortalityInsights {
       titleBm: risk.nameBm.isNotEmpty ? risk.nameBm : risk.name,
       bodyEn: bodyEn,
       bodyBm: bodyBm,
-      // Personal risk score from questionnaire + lifestyle inputs.
       sharePercent: risk.personalRisk,
       metaEn: 'vs peers ${risk.nationalAverage.toStringAsFixed(1)}',
       metaBm: 'vs rakan sebaya ${risk.nationalAverage.toStringAsFixed(1)}',
@@ -109,7 +105,6 @@ class MortalityInsights {
     );
   }
 
-  /// Learn-page cards built from the same live insights payload.
   static List<({String eyebrow, String title, String stat, String body, String source})> learnCards(
     Insights insights,
     String locale,

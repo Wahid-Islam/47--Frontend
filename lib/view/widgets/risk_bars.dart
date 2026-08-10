@@ -3,12 +3,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/chips.dart';
 
-/// Two stacked bars comparing a "You" value vs. a "National average" value
-/// — used both for a single cause-of-death risk (percentages) and for the
-/// Health Age national comparison (plain numbers), via the [suffix] and
-/// [decimals] knobs. Colors are intentionally distinct: [AppTheme.primary]
-/// (green, "You") vs [AppTheme.secondaryCompare] (neutral grey, "National
-/// average") so the two series are never confused at a glance.
 class RiskCompareBar extends StatelessWidget {
   const RiskCompareBar({
     super.key,
@@ -67,7 +61,6 @@ class RiskCompareBar extends StatelessWidget {
   }
 }
 
-/// A single contributing-factor row with a score bar and a [RiskChip].
 class FactorBar extends StatelessWidget {
   const FactorBar({super.key, required this.label, required this.score, required this.impact});
 

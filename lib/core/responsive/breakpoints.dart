@@ -1,20 +1,14 @@
 import 'package:flutter/widgets.dart';
 
-/// Responsive breakpoints for mobile / tablet / desktop layouts.
 enum DeviceType { mobile, tablet, desktop }
 
 class Breakpoints {
   Breakpoints._();
 
-  /// Below this width the layout is treated as a phone.
   static const double tablet = 600;
 
-  /// Above this width the layout is treated as a desktop / large tablet.
   static const double desktop = 1024;
 
-  /// Widest comfortable measure for a single column of reading content.
-  /// Beyond this the shell centres content instead of stretching it, so
-  /// text lines stay readable on 1440px+ monitors.
   static const double contentMaxWidth = 1080;
 
   static DeviceType of(double width) {
@@ -28,8 +22,6 @@ class Breakpoints {
   static bool isDesktop(double width) => of(width) == DeviceType.desktop;
 }
 
-/// Chooses a builder based on the current [LayoutBuilder] width, falling
-/// back to the next-smaller breakpoint when a builder isn't provided.
 class ResponsiveBuilder extends StatelessWidget {
   const ResponsiveBuilder({super.key, required this.mobile, this.tablet, this.desktop});
 

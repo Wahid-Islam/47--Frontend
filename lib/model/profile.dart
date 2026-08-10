@@ -1,10 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Immutable domain model mirroring the `public.profiles` table.
-///
-/// Column names in Postgres are snake_case; [fromJson]/[toJson] translate
-/// between that wire format and this Dart model by hand (no code
-/// generation), as required for the MVC "Model" layer.
 class Profile extends Equatable {
   const Profile({
     required this.id,
@@ -57,8 +52,6 @@ class Profile extends Equatable {
 
   factory Profile.empty(String id, {String? email}) => Profile(id: id, email: email);
 
-  /// Seed profile used by the "Try demo" flow: Lim Wei Jian, 48, low
-  /// activity, unhealthy diet, smoker, BMI ~27.4.
   factory Profile.demo(String id, {String? email}) => Profile(
     id: id,
     email: email ?? 'lim.weijian@healthpath.demo',

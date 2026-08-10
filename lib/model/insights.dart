@@ -2,8 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import 'action_item.dart';
 
-/// A single cause-of-death style risk estimate compared with the national
-/// baseline for the user's age band and gender.
 class RiskItem extends Equatable {
   const RiskItem({
     required this.id,
@@ -58,8 +56,6 @@ class RiskItem extends Equatable {
   List<Object?> get props => [id, name, nameBm, nationalAverage, personalRisk, level, deltaVsPeers];
 }
 
-/// A contributing risk factor (age, BMI, smoking, etc.) with a 0-1 score
-/// used to render the "Why this matters" bar chart.
 class RiskFactor extends Equatable {
   const RiskFactor({
     required this.id,
@@ -95,8 +91,6 @@ class RiskFactor extends Equatable {
   List<Object?> get props => [id, label, labelBm, impact, score];
 }
 
-/// Full computed insights payload, mirrors the `payload` jsonb column of
-/// `public.insights` and the output of the risk engine.
 class Insights extends Equatable {
   const Insights({
     required this.disclaimer,
@@ -138,22 +132,12 @@ class Insights extends Equatable {
   final List<HabitCatalogItem> habits;
   final DateTime generatedAt;
 
-  /// Demographic (age + gender band) average Health Age used for the
-  /// "national comparison" section. MVP approximation: the average
-  /// lifestyle peer in the same chronological age band has a Health Age
-  /// close to their actual age, so this defaults to [actualAge].
   final int peerAverageHealthAge;
 
-  /// `healthAge - actualAge`. Positive means older-than-actual (caution),
-  /// negative means younger-than-actual (success).
   final int healthAgeDelta;
 
-  /// Optimistic 12-month projection if the user follows the Action
-  /// Roadmap, used by the roadmap line chart.
   final int projectedHealthAgeFollowPlan;
 
-  /// Pessimistic 12-month projection if lifestyle stays unchanged, used by
-  /// the roadmap line chart.
   final int projectedHealthAgeNoChange;
 
   final String nationalComparisonHeadline;
@@ -197,9 +181,6 @@ class Insights extends Equatable {
           .map((e) => HabitCatalogItem.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
       generatedAt: DateTime.tryParse(json['generatedAt']?.toString() ?? '') ?? DateTime.now().toUtc(),
-      // Backward-compatible: older persisted payloads won't have these
-      // fields yet, so fall back to sensible MVP defaults derived from
-      // actualAge/healthAge rather than failing to parse.
       peerAverageHealthAge:
           (json['peerAverageHealthAge'] as num?)?.toInt() ?? (json['actualAge'] as num?)?.toInt() ?? 0,
       healthAgeDelta:

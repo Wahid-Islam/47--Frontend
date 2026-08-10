@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../controller/cubits/profile_cubit.dart';
 import '../../core/theme/app_theme.dart';
 
-/// Prototype-style page top bar: greeting, title, subtitle, avatar.
 class PageHeader extends StatelessWidget {
   const PageHeader({
     super.key,

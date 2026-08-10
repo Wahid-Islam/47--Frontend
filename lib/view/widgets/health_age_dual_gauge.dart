@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
 
-/// Side-by-side Health Age vs Actual Age rings matching the Finalprototype.
+/// Side-by-side Health Age vs Actual Age rings.
 class HealthAgeDualGauge extends StatelessWidget {
   const HealthAgeDualGauge({
     super.key,

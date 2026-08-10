@@ -1,8 +1,4 @@
 /// Prototype Health Age coefficients (Model v1.0).
-///
-/// These multipliers are **configurable development parameters**, not
-/// published clinical hazard ratios. Keep them here — never scatter magic
-/// numbers through the calculation logic.
 class HealthAgeConfig {
   const HealthAgeConfig._();
 
@@ -15,8 +11,6 @@ class HealthAgeConfig {
   static const int maxAgeDelta = 15;
 
   /// Relative-risk clamp (PDF §20).
-  /// Floor kept closer to 1 so protective lifestyles stay near chronological age
-  /// (PDF Test 1: healthy reference must not produce an extreme younger age).
   static const double minRelativeRisk = 0.70;
   static const double maxRelativeRisk = 3.50;
 

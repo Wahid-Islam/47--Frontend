@@ -17,13 +17,6 @@ import '../../core/widgets/chips.dart';
 import '../../core/widgets/scroll_number_field.dart';
 import '../../model/profile.dart';
 
-/// Post-registration questionnaire.
-///
-/// Name/email/password were already collected at sign-up, so this wizard
-/// never asks for full name again.
-///
-/// Step 0: Age, Sex, Smoking, Height, Weight
-/// Step 1: Physical activity, Diet, Alcohol, Sleep
 class ProfileWizardScreen extends StatefulWidget {
   const ProfileWizardScreen({super.key});
 

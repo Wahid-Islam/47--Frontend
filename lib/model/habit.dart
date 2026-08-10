@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import 'action_item.dart';
 
-/// Immutable domain model mirroring one row of `public.habit_logs`.
 class HabitLogRow extends Equatable {
   const HabitLogRow({required this.userId, required this.logDate, this.completedHabitIds = const []});
 
@@ -39,7 +38,6 @@ class HabitLogRow extends Equatable {
   List<Object?> get props => [userId, logDate, completedHabitIds];
 }
 
-/// A single habit row on the Roadmap: catalog entry + completion + why recommended.
 class HabitItem extends Equatable {
   const HabitItem({
     required this.catalogItem,
@@ -66,7 +64,6 @@ class HabitItem extends Equatable {
   List<Object?> get props => [catalogItem, completed, reasonEn, reasonBm, category];
 }
 
-/// View-ready aggregate for "today's habits".
 class HabitsToday extends Equatable {
   const HabitsToday({
     required this.date,

@@ -9,8 +9,6 @@ import '../../core/widgets/banners.dart';
 import '../../core/widgets/buttons.dart';
 import '../../core/widgets/cards.dart';
 
-/// Nearby clinics, sorted by distance from a default KL reference point
-/// (MVP fallback while device GPS integration is out of scope).
 class ClinicsScreen extends StatefulWidget {
   const ClinicsScreen({super.key});
 

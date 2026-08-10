@@ -6,8 +6,6 @@ import '../../controller/cubits/locale_cubit.dart';
 import '../../core/l10n/app_strings.dart';
 import '../../core/widgets/responsive_shell.dart';
 
-/// Bottom-nav (phone) / sidebar (tablet+) shell for the four main tabs
-/// matching the Finalprototype: My Health, My Roadmap, Learn, Profile.
 class HomeShell extends StatelessWidget {
   const HomeShell({super.key, required this.navigationShell});
 

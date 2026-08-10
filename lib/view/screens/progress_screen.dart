@@ -8,8 +8,6 @@ import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/cards.dart';
 
-/// Today's habits: a completion donut plus a checklist that toggles
-/// `habit_logs.completed_habit_ids` via [HabitsCubit].
 class ProgressScreen extends StatelessWidget {
   const ProgressScreen({super.key});
 

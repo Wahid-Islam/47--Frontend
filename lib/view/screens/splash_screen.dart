@@ -5,7 +5,6 @@ import '../../controller/cubits/locale_cubit.dart';
 import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
 
-/// Shown while the initial Supabase session is being resolved.
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 

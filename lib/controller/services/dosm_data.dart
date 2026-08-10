@@ -1,12 +1,3 @@
-/// Illustrative DOSM-inspired cause-of-death baselines for Malaysia.
-///
-/// Ported from `backend/src/data/dosm.js`. Values are educational
-/// approximations used to seed the on-device risk engine — not clinical
-/// data. Source framing: Department of Statistics Malaysia (DOSM)
-/// mortality themes.
-///
-/// Age curves cover 18–79 so [baselineRate] changes with the user's
-/// questionnaire age (not a single hardcoded mid-life band).
 class AgeBand {
   const AgeBand({required this.minAge, required this.maxAge, required this.rate});
 

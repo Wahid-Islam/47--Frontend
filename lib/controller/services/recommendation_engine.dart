@@ -3,7 +3,6 @@ import '../../model/insights.dart';
 import '../../model/profile.dart';
 import 'action_catalog.dart';
 
-/// One recommended daily habit with an explainable score.
 class HabitRecommendation {
   const HabitRecommendation({
     required this.habit,
@@ -22,21 +21,11 @@ class HabitRecommendation {
   String localizedReason(String locale) => locale == 'bm' && reasonBm.isNotEmpty ? reasonBm : reasonEn;
 }
 
-/// Ensemble ("random-forest style") habit recommender.
-///
-/// Several lightweight decision trees vote on each habit from the user's
-/// questionnaire features and top risks. This is **not** a generative LLM —
-/// Random Forest and LLMs are different tools. For structured profile inputs,
-/// an ensemble ranker is the right fit; explanations are rule-derived.
 class RecommendationEngine {
   RecommendationEngine._();
 
   static const int dailyHabitCount = 4;
 
-  /// Exactly [dailyHabitCount] habits for today, personalised to [profile].
-  ///
-  /// [daySeed] (e.g. day-of-year) gently rotates lower-priority habits so the
-  /// daily list can refresh while still matching the user's risk profile.
   static List<HabitRecommendation> recommendDailyHabits({
     required Profile profile,
     required List<RiskItem> risks,
@@ -141,7 +130,6 @@ class RecommendationEngine {
       }
     }
 
-    // --- ensemble trees (feature splits) ---
     switch (habit.id) {
       case 'walk_20':
         if (profile.activityLevel == 'low') {

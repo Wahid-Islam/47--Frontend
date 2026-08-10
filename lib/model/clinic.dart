@@ -1,8 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Immutable domain model mirroring the `public.clinics` Supabase table.
-/// [distanceKm] is not stored in the database; it is computed on-device
-/// once a reference location is known and attached via [copyWith].
 class Clinic extends Equatable {
   const Clinic({
     required this.id,

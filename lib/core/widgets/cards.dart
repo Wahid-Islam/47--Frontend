@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Themed content card. Kept dumb/presentational: no business logic.
 class HpCard extends StatelessWidget {
   const HpCard({super.key, required this.child, this.padding, this.onTap});
 
@@ -19,7 +18,6 @@ class HpCard extends StatelessWidget {
   }
 }
 
-/// A section title used above grouped content on list-style screens.
 class SectionHeader extends StatelessWidget {
   const SectionHeader(this.text, {super.key});
 

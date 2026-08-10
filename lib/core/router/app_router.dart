@@ -17,9 +17,6 @@ import '../../view/screens/register_screen.dart';
 import '../../view/screens/splash_screen.dart';
 import '../widgets/page_title.dart';
 
-/// Builds the app's [GoRouter], using [authCubit] both to redirect between
-/// onboarding/auth/profile-wizard/home and to refresh routing decisions
-/// whenever the auth state changes (via [GoRouterRefreshStream]).
 GoRouter buildAppRouter(AuthCubit authCubit) {
   return GoRouter(
     initialLocation: '/splash',
@@ -124,8 +121,6 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
   );
 }
 
-/// Bridges a [Stream] (the [AuthCubit]'s state stream) into a
-/// [Listenable] so `go_router` re-evaluates `redirect` on every auth change.
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();

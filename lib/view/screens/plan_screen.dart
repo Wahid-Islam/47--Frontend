@@ -10,7 +10,6 @@ import '../../core/widgets/cards.dart';
 import '../widgets/health_age_projection_chart.dart';
 import '../widgets/page_header.dart';
 
-/// My Roadmap — personalised 4 daily habits, risk drop, reminders, projection.
 class PlanScreen extends StatelessWidget {
   const PlanScreen({super.key});
 

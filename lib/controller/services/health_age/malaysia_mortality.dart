@@ -1,16 +1,6 @@
 import 'dart:math' as math;
 
-/// Malaysian sex-specific central mortality rates (`nmx`) for Health Age.
-///
-/// Source values are the abridged `nmx` column from:
-/// Department of Statistics Malaysia, *Abridged Life Tables, Malaysia, 2023*
-/// (Table 2.1), as published in the DOSM 2023–2025 life-table release.
-///
-/// Single-year rates for ages 18–90 are produced by log-linear interpolation
-/// between abridged band midpoints. Open-ended 80+ uses the published `nmx`.
-///
-/// Life expectancy anchors from the same DOSM release cycle (2025 estimates):
-/// male 73.1 / female 77.9 at birth.
+/// DOSM Abridged Life Tables Malaysia 2023 (`nmx`), interpolated to single-year ages.
 class MalaysiaMortality {
   MalaysiaMortality._();
 
@@ -99,8 +89,6 @@ class MalaysiaMortality {
     return math.exp(math.log(y0) + (math.log(y1) - math.log(y0)) * t);
   }
 
-  /// Find the age whose baseline mortality ≈ [targetMortality], with
-  /// linear interpolation between adjacent ages (PDF §§26–27).
   static double findEquivalentAge({
     required double targetMortality,
     required String sex,

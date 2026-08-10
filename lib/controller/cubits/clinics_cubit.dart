@@ -7,8 +7,6 @@ import 'clinics_state.dart';
 
 export 'clinics_state.dart';
 
-/// Loads clinics and, when a reference location is supplied, sorts them by
-/// on-device haversine distance (matching `backend/src/routes/clinics.js`).
 class ClinicsCubit extends Cubit<ClinicsState> {
   ClinicsCubit({ClinicRepository? repository})
     : _repository = repository ?? ClinicRepository(),

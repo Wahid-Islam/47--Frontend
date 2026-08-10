@@ -4,12 +4,6 @@ import 'dosm_data.dart';
 import 'health_age/health_age_model.dart';
 import 'recommendation_engine.dart';
 
-/// On-device insights engine.
-///
-/// Health Age follows the Model v1.0 mortality-equivalence specification
-/// (log-risk index × Malaysian `nmx` baseline → equivalent age).
-/// Cause-of-death cards remain educational DOSM-inspired illustrations
-/// scaled by the same relative risk index.
 class RiskEngine {
   RiskEngine._();
 

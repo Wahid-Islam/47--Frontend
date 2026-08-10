@@ -1,7 +1,6 @@
 import '../../core/config/api_client.dart';
 import '../../model/clinic.dart';
 
-/// Data access for public `GET /api/clinics`.
 class ClinicRepository {
   ClinicRepository({ApiClient? client}) : _client = client ?? apiClient;
 

@@ -3,11 +3,6 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Manages the app's active locale ('en' | 'bm'), persisted locally.
-///
-/// This cubit only owns the on-device preference; syncing the choice to
-/// the user's Supabase profile (so it round-trips across devices) is done
-/// by the caller via [ProfileCubit.updateLocale] to keep cubits decoupled.
 class LocaleCubit extends Cubit<String> {
   LocaleCubit({SharedPreferences? prefs}) : super('en') {
     _prefs = prefs;
@@ -38,8 +33,6 @@ class LocaleCubit extends Cubit<String> {
     await prefs.setString(_key, normalized);
   }
 
-  /// Applies a locale value loaded from a remote profile without
-  /// re-writing local prefs redundantly if it already matches.
   void applyRemote(String? value) {
     if ((value == 'en' || value == 'bm') && value != state) {
       unawaited(setLocale(value!));

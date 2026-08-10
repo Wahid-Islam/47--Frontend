@@ -1,7 +1,3 @@
-/// Day-by-day risk / Health Age effect from completing daily habits.
-///
-/// Each completed habit today nudges risk down; consecutive strong days
-/// accumulate a short momentum bonus (illustrative, not clinical).
 class HabitProgressEffect {
   HabitProgressEffect._();
 

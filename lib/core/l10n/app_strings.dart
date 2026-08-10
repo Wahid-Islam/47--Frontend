@@ -1,7 +1,3 @@
-/// Tiny hand-rolled EN/BM string table.
-///
-/// HealthPath supports English and Bahasa Melayu. Keys are looked up with
-/// [AppStrings.t]; unknown keys fall back to English, then to the raw key.
 class AppStrings {
   AppStrings._();
 
@@ -295,7 +291,6 @@ class AppStrings {
     'save': {'en': 'Save changes', 'bm': 'Simpan perubahan'},
     'vsActual': {'en': 'vs your actual age', 'bm': 'berbanding umur sebenar'},
 
-    // --- Epic 1.0: Personalised Health Risk Understanding ---
     'insightsSubtitle': {
       'en': 'Your estimated Health Age and the key lifestyle factors shaping it.',
       'bm': 'Anggaran Umur Kesihatan anda dan faktor gaya hidup utama yang mempengaruhinya.',
@@ -364,9 +359,6 @@ class AppStrings {
     return entry[locale] ?? entry['en'] ?? key;
   }
 
-  /// Looks up [key] like [t], then substitutes the literal token `{n}`
-  /// with [n] — used for the handful of strings that need one dynamic
-  /// number (e.g. "{n} years younger than your actual age").
   static String tn(String key, String locale, num n) {
     return t(key, locale).replaceAll('{n}', n.toString());
   }

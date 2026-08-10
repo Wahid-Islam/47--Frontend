@@ -11,9 +11,6 @@ import 'controller/cubits/profile_cubit.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
-/// Root widget: wires up every Cubit once, then hands off to a stateful
-/// view that owns the [GoRouter] instance and keeps profile/insights/habits
-/// in sync with the auth session.
 class HealthPathApp extends StatelessWidget {
   const HealthPathApp({super.key});
 
