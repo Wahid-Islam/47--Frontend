@@ -132,12 +132,6 @@ class AppStrings {
       'en': 'Today’s ticks lowered your risk by ~{pts} pts · Health Age trending to {age}.',
       'bm': 'Tanda hari ini menurunkan risiko ~{pts} mata · Umur Kesihatan menuju {age}.',
     },
-    'notificationsTitle': {'en': 'Notifications', 'bm': 'Pemberitahuan'},
-    'notificationsSubtitle': {
-      'en': 'Stay on top of your daily health habits with reminders.',
-      'bm': 'Kekal di landasan dengan peringatan tabiat kesihatan harian.',
-    },
-    'manageReminders': {'en': 'Manage reminders', 'bm': 'Urus peringatan'},
     'dailyReminder': {'en': 'Daily activity reminder', 'bm': 'Peringatan aktiviti harian'},
     'reminderOnAt': {'en': 'On · reminds at {time}', 'bm': 'Aktif · peringatan pada {time}'},
     'reminderOff': {'en': 'Off · turn on to get a daily nudge', 'bm': 'Mati · hidupkan untuk peringatan harian'},
