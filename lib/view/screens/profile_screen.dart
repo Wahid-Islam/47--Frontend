@@ -90,6 +90,18 @@ class ProfileScreen extends StatelessWidget {
                             ? '—'
                             : (profile.smoking ? AppStrings.t('yes', locale) : AppStrings.t('no', locale)),
                       ),
+                      (
+                        AppStrings.t('highBp', locale),
+                        profile == null
+                            ? '—'
+                            : (profile.highBloodPressure ? AppStrings.t('yes', locale) : AppStrings.t('no', locale)),
+                      ),
+                      (
+                        AppStrings.t('diabetesDiagnosed', locale),
+                        profile == null
+                            ? '—'
+                            : (profile.diabetes ? AppStrings.t('yes', locale) : AppStrings.t('no', locale)),
+                      ),
                       (AppStrings.t('heightCm', locale), profile == null ? '—' : profile.heightCm.toStringAsFixed(0)),
                       (AppStrings.t('weightKg', locale), profile == null ? '—' : profile.weightKg.toStringAsFixed(0)),
                       (

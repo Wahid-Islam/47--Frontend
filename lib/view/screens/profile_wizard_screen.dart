@@ -36,6 +36,8 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   String diet = 'average';
   String alcohol = 'none';
   bool smoking = false;
+  bool highBloodPressure = false;
+  bool diabetes = false;
   bool _submitting = false;
   String? _error;
   final QuestionnaireRepository _questionnaireRepository = QuestionnaireRepository();
@@ -58,6 +60,8 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     diet = seed?.dietHabit ?? 'average';
     alcohol = seed?.alcohol ?? 'none';
     smoking = seed?.smoking ?? false;
+    highBloodPressure = seed?.highBloodPressure ?? false;
+    diabetes = seed?.diabetes ?? false;
   }
 
   @override
@@ -127,6 +131,8 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
       bmi: double.parse(bmi.toStringAsFixed(1)),
       alcohol: alcohol,
       sleepHours: sleep,
+      highBloodPressure: highBloodPressure,
+      diabetes: diabetes,
       onboardingComplete: finish,
       locale: context.read<LocaleCubit>().state,
     );
@@ -162,6 +168,8 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
             'diet': saved.dietHabit,
             'alcohol': saved.alcohol,
             'sleepHours': saved.sleepHours,
+            'highBloodPressure': saved.highBloodPressure,
+            'diabetes': saved.diabetes,
           },
         );
       } catch (_) {
@@ -302,6 +310,18 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           title: Text(AppStrings.t('smoking', locale), style: const TextStyle(fontSize: 16)),
           value: smoking,
           onChanged: (v) => setState(() => smoking = v),
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(AppStrings.t('highBp', locale), style: const TextStyle(fontSize: 16)),
+          value: highBloodPressure,
+          onChanged: (v) => setState(() => highBloodPressure = v),
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(AppStrings.t('diabetesDiagnosed', locale), style: const TextStyle(fontSize: 16)),
+          value: diabetes,
+          onChanged: (v) => setState(() => diabetes = v),
         ),
         const SizedBox(height: 8),
         ScrollNumberField(

@@ -511,8 +511,15 @@ class AppStrings {
     'bmi': {'en': 'BMI', 'bm': 'BMI',
       'zh': 'BMI',
     },
-    'highBp': {'en': 'High blood pressure?', 'bm': 'Tekanan darah tinggi?',
-      'zh': '是否有高血压？',
+    'highBp': {
+      'en': 'Diagnosed high blood pressure?',
+      'bm': 'Telah didiagnosis tekanan darah tinggi?',
+      'zh': '是否已确诊高血压？',
+    },
+    'diabetesDiagnosed': {
+      'en': 'Diagnosed diabetes?',
+      'bm': 'Telah didiagnosis diabetes?',
+      'zh': '是否已确诊糖尿病？',
     },
     'yes': {'en': 'Yes', 'bm': 'Ya',
       'zh': '是',
