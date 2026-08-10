@@ -34,9 +34,12 @@ class HealthAgeDualGauge extends StatelessWidget {
           label: AppStrings.t('healthAge', locale),
           labelColor: isBad ? AppTheme.riskHigh : const Color(0xFF16804C),
         ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          child: Text(AppStrings.t('vsLabel', locale), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF7C8794))),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            AppStrings.t('vsLabel', locale),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF7C8794)),
+          ),
         ),
         _AgeCircle(
           value: actualAge,

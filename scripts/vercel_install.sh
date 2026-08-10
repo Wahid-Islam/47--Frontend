@@ -45,10 +45,14 @@ if [[ ! -x "${CACHE_DIR}/dart-sdk/bin/dart" ]]; then
   mkdir -p "${CACHE_DIR}"
   rm -rf "${CACHE_DIR}/dart-sdk" "${DART_ZIP}"
   download_with_retry "${DART_URL}" "${DART_ZIP}"
-  unzip -q "${DART_ZIP}" -d "${CACHE_DIR}"
+  if command -v unzip >/dev/null 2>&1; then
+    unzip -q "${DART_ZIP}" -d "${CACHE_DIR}"
+  else
+    python3 -c "import zipfile; zipfile.ZipFile('${DART_ZIP}').extractall('${CACHE_DIR}')"
+  fi
   rm -f "${DART_ZIP}"
   # Mark stamp so Flutter does not re-download the same SDK.
-  echo "${ENGINE_VERSION}" > "${CACHE_DIR}/engine-dart-sdk.stamp"
+  printf '%s' "${ENGINE_VERSION}" > "${CACHE_DIR}/engine-dart-sdk.stamp"
 fi
 
 flutter --version
