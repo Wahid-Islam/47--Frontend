@@ -115,7 +115,7 @@ class AppTheme {
         hintStyle: GoogleFonts.raleway(fontSize: 14, color: textSecondary),
       ),
       cardTheme: CardThemeData(
-        color: Colors.white.withValues(alpha: 0.10),
+        color: Colors.white.withValues(alpha: 0.15),
         elevation: 0,
         shadowColor: const Color(0x0A223948),
         shape: RoundedRectangleBorder(
@@ -125,7 +125,7 @@ class AppTheme {
         margin: EdgeInsets.zero,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: Colors.white.withValues(alpha: 0.10),
+        backgroundColor: Colors.white.withValues(alpha: 0.15),
         indicatorColor: navActive,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);

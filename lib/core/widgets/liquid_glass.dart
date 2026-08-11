@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-/// Soft liquid-glass wash. Keep opacity low (~0.10) so it stays aesthetic, not harsh.
+/// Soft liquid-glass wash. Keep opacity low (~0.15) so it stays aesthetic, not harsh.
 class LiquidGlass extends StatelessWidget {
   const LiquidGlass({
     super.key,
     required this.child,
     this.borderRadius = AppTheme.cardRadius,
-    this.opacity = 0.10,
+    this.opacity = 0.15,
     this.blurSigma = 14,
     this.padding,
     this.borderOpacity = 0.22,
@@ -56,7 +56,7 @@ class LiquidGlass extends StatelessWidget {
 
 /// Full-screen liquid sheen sitting under page content.
 class LiquidGlassAtmosphere extends StatelessWidget {
-  const LiquidGlassAtmosphere({super.key, this.opacity = 0.10});
+  const LiquidGlassAtmosphere({super.key, this.opacity = 0.15});
 
   final double opacity;
 

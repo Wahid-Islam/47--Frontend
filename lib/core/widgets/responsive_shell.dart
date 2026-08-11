@@ -46,7 +46,7 @@ class ResponsiveShell extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
               child: LiquidGlass(
                 borderRadius: 20,
-                opacity: 0.10,
+                opacity: 0.15,
                 child: NavigationBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
@@ -117,7 +117,7 @@ class BrandedSidebar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(14, 14, 0, 14),
       child: LiquidGlass(
         borderRadius: 24,
-        opacity: 0.10,
+        opacity: 0.15,
         blurSigma: 18,
         child: SizedBox(
           width: 215,

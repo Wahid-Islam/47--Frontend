@@ -80,7 +80,7 @@ class _HealthPathAppViewState extends State<_HealthPathAppView> {
           return Stack(
             fit: StackFit.expand,
             children: [
-              const LiquidGlassAtmosphere(opacity: 0.10),
+              const LiquidGlassAtmosphere(opacity: 0.15),
               child ?? const SizedBox.shrink(),
             ],
           );

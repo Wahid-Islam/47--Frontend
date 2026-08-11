@@ -14,7 +14,7 @@ class HpCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final content = Padding(padding: padding ?? const EdgeInsets.all(18), child: child);
     final glass = LiquidGlass(
-      opacity: 0.10,
+      opacity: 0.15,
       borderRadius: AppTheme.cardRadius,
       child: onTap == null
           ? content

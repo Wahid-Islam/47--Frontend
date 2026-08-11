@@ -177,7 +177,7 @@ class SidebarPromoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return LiquidGlass(
       borderRadius: 16,
-      opacity: 0.10,
+      opacity: 0.15,
       child: Stack(
         children: [
           Positioned(
