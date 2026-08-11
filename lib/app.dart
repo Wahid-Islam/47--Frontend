@@ -10,6 +10,7 @@ import 'controller/cubits/locale_cubit.dart';
 import 'controller/cubits/profile_cubit.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/widgets/liquid_glass.dart';
 
 class HealthPathApp extends StatelessWidget {
   const HealthPathApp({super.key});
@@ -75,6 +76,15 @@ class _HealthPathAppViewState extends State<_HealthPathAppView> {
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
         routerConfig: _router,
+        builder: (context, child) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              const LiquidGlassAtmosphere(opacity: 0.10),
+              child ?? const SizedBox.shrink(),
+            ],
+          );
+        },
       ),
     );
   }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_theme.dart';
+import 'liquid_glass.dart';
+
 class HpCard extends StatelessWidget {
   const HpCard({super.key, required this.child, this.padding, this.onTap});
 
@@ -10,11 +13,21 @@ class HpCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = Padding(padding: padding ?? const EdgeInsets.all(18), child: child);
-    return Card(
+    final glass = LiquidGlass(
+      opacity: 0.10,
+      borderRadius: AppTheme.cardRadius,
       child: onTap == null
           ? content
-          : InkWell(onTap: onTap, borderRadius: BorderRadius.circular(22), child: content),
+          : Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+                child: content,
+              ),
+            ),
     );
+    return glass;
   }
 }
 

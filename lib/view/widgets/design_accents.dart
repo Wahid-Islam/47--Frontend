@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/liquid_glass.dart';
 
 class LeafFoliagePainter extends CustomPainter {
   const LeafFoliagePainter({this.opacity = 1});
@@ -174,62 +175,54 @@ class SidebarPromoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2EDE6)),
-          boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 4))],
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: 96,
-              child: Opacity(
-                opacity: 0.35,
-                child: Image.asset(
-                  _leavesAsset,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.bottomCenter,
+    return LiquidGlass(
+      borderRadius: 16,
+      opacity: 0.10,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 96,
+            child: Opacity(
+              opacity: 0.35,
+              child: Image.asset(
+                _leavesAsset,
+                fit: BoxFit.cover,
+                alignment: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 86),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFF2F8F5B), width: 1.6),
+                    color: const Color(0xFFF3FAF5).withValues(alpha: 0.55),
+                  ),
+                  child: const Icon(Icons.eco_rounded, size: 15, color: Color(0xFF1F6B45)),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 86),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF2F8F5B), width: 1.6),
-                      color: const Color(0xFFF3FAF5),
-                    ),
-                    child: const Icon(Icons.eco_rounded, size: 15, color: Color(0xFF1F6B45)),
+                const SizedBox(height: 10),
+                Text(
+                  message,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    height: 1.35,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.foreground,
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    message,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      height: 1.35,
-                      fontWeight: FontWeight.w700,
-                      color: AppTheme.foreground,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

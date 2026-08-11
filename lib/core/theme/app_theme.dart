@@ -115,17 +115,17 @@ class AppTheme {
         hintStyle: GoogleFonts.raleway(fontSize: 14, color: textSecondary),
       ),
       cardTheme: CardThemeData(
-        color: surface.withValues(alpha: 0.92),
+        color: Colors.white.withValues(alpha: 0.10),
         elevation: 0,
-        shadowColor: const Color(0x0E223948),
+        shadowColor: const Color(0x0A223948),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(cardRadius),
-          side: BorderSide(color: border.withValues(alpha: 0.9)),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.22)),
         ),
         margin: EdgeInsets.zero,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: surface,
+        backgroundColor: Colors.white.withValues(alpha: 0.10),
         indicatorColor: navActive,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
