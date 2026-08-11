@@ -170,6 +170,8 @@ class SidebarPromoCard extends StatelessWidget {
 
   final String message;
 
+  static const _leavesAsset = 'assets/images/leaves_frame.png';
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -188,8 +190,15 @@ class SidebarPromoCard extends StatelessWidget {
               left: 0,
               right: 0,
               bottom: 0,
-              height: 78,
-              child: CustomPaint(painter: const LeafFoliagePainter()),
+              height: 96,
+              child: Opacity(
+                opacity: 0.35,
+                child: Image.asset(
+                  _leavesAsset,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.bottomCenter,
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 86),
@@ -227,23 +236,33 @@ class SidebarPromoCard extends StatelessWidget {
 }
 
 class KlWatermarkBackdrop extends StatelessWidget {
-  const KlWatermarkBackdrop({super.key, required this.child, this.height = 160});
+  const KlWatermarkBackdrop({super.key, required this.child, this.height = 220});
 
   final Widget child;
   final double height;
 
+  static const _skylineAsset = 'assets/images/kl_skyline.png';
+
   @override
   Widget build(BuildContext context) {
+    final width = math.min(MediaQuery.sizeOf(context).width * 0.58, 460.0);
     return Stack(
       children: [
         child,
         Positioned(
           right: 0,
           bottom: 0,
-          width: math.min(MediaQuery.sizeOf(context).width * 0.55, 420),
+          width: width,
           height: height,
           child: IgnorePointer(
-            child: CustomPaint(painter: const KlSkylinePainter(opacity: 0.14)),
+            child: Opacity(
+              opacity: 0.35,
+              child: Image.asset(
+                _skylineAsset,
+                fit: BoxFit.contain,
+                alignment: Alignment.bottomRight,
+              ),
+            ),
           ),
         ),
       ],
