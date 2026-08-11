@@ -76,9 +76,24 @@ class _AgeCircle extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
+        Container(
           width: 150,
           height: 150,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: accent.withValues(alpha: 0.38),
+                blurRadius: 22,
+                spreadRadius: 1,
+              ),
+              BoxShadow(
+                color: accent.withValues(alpha: 0.18),
+                blurRadius: 36,
+                spreadRadius: 4,
+              ),
+            ],
+          ),
           child: CustomPaint(
             painter: _ConicRingPainter(progress: progress, accent: accent, track: track),
             child: Center(
@@ -120,6 +135,7 @@ class _ConicRingPainter extends CustomPainter {
     final radius = size.shortestSide / 2;
     final stroke = 14.0;
     final rect = Rect.fromCircle(center: center, radius: radius - stroke / 2);
+    final sweep = math.pi * 2 * progress;
 
     final trackPaint = Paint()
       ..style = PaintingStyle.stroke
@@ -128,12 +144,21 @@ class _ConicRingPainter extends CustomPainter {
       ..strokeCap = StrokeCap.butt;
     canvas.drawArc(rect, -math.pi / 2, math.pi * 2, false, trackPaint);
 
+    // Soft neon bloom behind the accent arc.
+    final glowPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke + 6
+      ..color = accent.withValues(alpha: 0.45)
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+    canvas.drawArc(rect, -math.pi / 2, sweep, false, glowPaint);
+
     final accentPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
       ..color = accent
       ..strokeCap = StrokeCap.butt;
-    canvas.drawArc(rect, -math.pi / 2, math.pi * 2 * progress, false, accentPaint);
+    canvas.drawArc(rect, -math.pi / 2, sweep, false, accentPaint);
 
     // Soft white inset ring.
     final inset = Paint()

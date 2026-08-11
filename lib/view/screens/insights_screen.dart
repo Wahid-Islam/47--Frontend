@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -438,67 +440,143 @@ class _KillerTile extends StatelessWidget {
   }) data;
   final String ofDeathsLabel;
 
+  /// Red/warm tiles trend up; green tiles trend down (decorative only).
+  bool get _trendUp => data.pctColor.r > data.pctColor.g;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(minHeight: 250),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.72),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE7EBED)),
         boxShadow: const [BoxShadow(color: Color(0x0F223948), blurRadius: 18, offset: Offset(0, 8))],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              width: 28,
-              height: 28,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(color: data.rankBg, borderRadius: BorderRadius.circular(8)),
-              child: Text(
-                data.rank,
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: data.rankFg),
+          Positioned(
+            left: 8,
+            right: 8,
+            bottom: 8,
+            height: 72,
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _SparklinePainter(
+                  color: data.pctColor.withValues(alpha: 0.28),
+                  trendUp: _trendUp,
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 4),
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: data.rankBg.withValues(alpha: 0.55),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(color: data.rankBg, borderRadius: BorderRadius.circular(8)),
+                    child: Text(
+                      data.rank,
+                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: data.rankFg),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: data.rankBg.withValues(alpha: 0.55),
+                    boxShadow: [
+                      BoxShadow(
+                        color: data.pctColor.withValues(alpha: 0.45),
+                        blurRadius: 16,
+                        spreadRadius: 1,
+                      ),
+                      BoxShadow(
+                        color: data.pctColor.withValues(alpha: 0.2),
+                        blurRadius: 28,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Icon(data.icon, size: 28, color: data.rankFg),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  data.title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, height: 1.25),
+                ),
+                const SizedBox(height: 7),
+                Text(
+                  data.body,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 12, height: 1.45, color: AppTheme.textSecondary),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  data.pct,
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: data.pctColor, height: 1),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  ofDeathsLabel,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF5F6B78)),
+                ),
+              ],
             ),
-            child: Icon(data.icon, size: 28, color: data.rankFg),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            data.title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, height: 1.25),
-          ),
-          const SizedBox(height: 7),
-          Text(
-            data.body,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12, height: 1.45, color: AppTheme.textSecondary),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            data.pct,
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: data.pctColor, height: 1),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            ofDeathsLabel,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF5F6B78)),
           ),
         ],
       ),
     );
   }
 }
+
+class _SparklinePainter extends CustomPainter {
+  const _SparklinePainter({required this.color, required this.trendUp});
+
+  final Color color;
+  final bool trendUp;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path();
+    const steps = 18;
+    for (var i = 0; i <= steps; i++) {
+      final t = i / steps;
+      final x = size.width * t;
+      // Jagged noise on a rising or falling baseline.
+      final wobble = math.sin(t * math.pi * 5.2) * 0.12 + math.sin(t * math.pi * 2.1) * 0.06;
+      final baseline = trendUp ? (0.78 - t * 0.55) : (0.28 + t * 0.55);
+      final y = size.height * (baseline + wobble).clamp(0.08, 0.92);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _SparklinePainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.trendUp != trendUp;
+  }
+}
+
