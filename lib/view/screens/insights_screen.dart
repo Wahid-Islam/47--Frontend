@@ -442,76 +442,60 @@ class _KillerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(minHeight: 250),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withValues(alpha: 0.72),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE7EBED)),
         boxShadow: const [BoxShadow(color: Color(0x0F223948), blurRadius: 18, offset: Offset(0, 8))],
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: 88,
-            child: IgnorePointer(
-              child: CustomPaint(painter: const KlSkylinePainter(opacity: 0.12)),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              width: 28,
+              height: 28,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(color: data.rankBg, borderRadius: BorderRadius.circular(8)),
+              child: Text(
+                data.rank,
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: data.rankFg),
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(color: data.rankBg, borderRadius: BorderRadius.circular(8)),
-                    child: Text(
-                      data.rank,
-                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: data.rankFg),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: data.rankBg.withValues(alpha: 0.55),
-                  ),
-                  child: Icon(data.icon, size: 28, color: data.rankFg),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  data.title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, height: 1.25),
-                ),
-                const SizedBox(height: 7),
-                Text(
-                  data.body,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12, height: 1.45, color: AppTheme.textSecondary),
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  data.pct,
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: data.pctColor, height: 1),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  ofDeathsLabel,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF5F6B78)),
-                ),
-              ],
+          const SizedBox(height: 4),
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: data.rankBg.withValues(alpha: 0.55),
             ),
+            child: Icon(data.icon, size: 28, color: data.rankFg),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            data.title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, height: 1.25),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            data.body,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12, height: 1.45, color: AppTheme.textSecondary),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            data.pct,
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: data.pctColor, height: 1),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            ofDeathsLabel,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF5F6B78)),
           ),
         ],
       ),

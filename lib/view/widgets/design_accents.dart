@@ -250,10 +250,40 @@ class KlWatermarkBackdrop extends StatelessWidget {
           child: IgnorePointer(
             child: Opacity(
               opacity: 0.35,
-              child: Image.asset(
-                _skylineAsset,
-                fit: BoxFit.contain,
-                alignment: Alignment.bottomRight,
+              child: ShaderMask(
+                blendMode: BlendMode.dstIn,
+                shaderCallback: (bounds) {
+                  return LinearGradient(
+                    begin: Alignment.centerRight,
+                    end: Alignment.centerLeft,
+                    colors: const [
+                      Color(0xFFFFFFFF),
+                      Color(0xCCFFFFFF),
+                      Color(0x00FFFFFF),
+                    ],
+                    stops: const [0.0, 0.55, 1.0],
+                  ).createShader(bounds);
+                },
+                child: ShaderMask(
+                  blendMode: BlendMode.dstIn,
+                  shaderCallback: (bounds) {
+                    return LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: const [
+                        Color(0xFFFFFFFF),
+                        Color(0xE6FFFFFF),
+                        Color(0x00FFFFFF),
+                      ],
+                      stops: const [0.0, 0.45, 1.0],
+                    ).createShader(bounds);
+                  },
+                  child: Image.asset(
+                    _skylineAsset,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.bottomRight,
+                  ),
+                ),
               ),
             ),
           ),
