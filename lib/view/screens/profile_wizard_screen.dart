@@ -10,6 +10,7 @@ import '../../controller/cubits/profile_cubit.dart';
 import '../../controller/repositories/questionnaire_repository.dart';
 import '../../core/l10n/app_strings.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/validation/body_measures.dart';
 import '../../core/widgets/banners.dart';
 import '../../core/widgets/buttons.dart';
 import '../../core/widgets/centered_pane.dart';
@@ -48,10 +49,17 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     final seed = context.read<ProfileCubit>().state.profile;
     final editing = seed != null && seed.onboardingComplete;
     _ageValue = editing ? seed.age.clamp(18, 90) : 30;
-    _heightValue = editing ? seed.heightCm.clamp(100, 250).roundToDouble() : 165;
-    _weightValue = editing ? seed.weightKg.clamp(30, 250) : 65;
-    // Keep half-kilogram steps for weight scrolling.
+    _heightValue = editing
+        ? seed.heightCm.clamp(BodyMeasures.minHeightCm, BodyMeasures.maxHeightCm).roundToDouble()
+        : 165;
+    _weightValue = editing
+        ? seed.weightKg.clamp(BodyMeasures.minWeightKg, BodyMeasures.maxWeightKg)
+        : 65;
+    // Keep half-kilogram steps for weight scrolling, then joint BMI window.
     _weightValue = (_weightValue * 2).round() / 2;
+    _weightValue = BodyMeasures.clampWeightForHeight(_heightValue, _weightValue);
+    _weightValue = (_weightValue * 2).round() / 2;
+    _heightValue = BodyMeasures.clampHeightForWeight(_heightValue, _weightValue).roundToDouble();
     _sleep = TextEditingController(
       text: editing ? seed.sleepHours.toString() : '',
     );
@@ -74,6 +82,31 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     final text = raw.trim().replaceAll(',', '.');
     if (text.isEmpty) return null;
     return double.tryParse(text);
+  }
+
+  bool get _bodyOk => BodyMeasures.isValidBody(_heightValue, _weightValue);
+
+  double _stepCeil(double value, double step) => (value / step).ceilToDouble() * step;
+
+  double _stepFloor(double value, double step) => (value / step).floorToDouble() * step;
+
+  void _onHeightChanged(double height) {
+    final h = height.roundToDouble();
+    var w = BodyMeasures.clampWeightForHeight(h, _weightValue);
+    w = (w * 2).roundToDouble() / 2;
+    setState(() {
+      _heightValue = h;
+      _weightValue = w;
+    });
+  }
+
+  void _onWeightChanged(double weight) {
+    final w = (weight * 2).roundToDouble() / 2;
+    var h = BodyMeasures.clampHeightForWeight(_heightValue, w).roundToDouble();
+    setState(() {
+      _weightValue = w;
+      _heightValue = h;
+    });
   }
 
   Future<void> _submit(bool finish) async {
@@ -107,7 +140,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         });
         return;
       }
-      if (bmi < 10 || bmi > 60) {
+      if (!BodyMeasures.isValidBody(height, weight)) {
         setState(() {
           _submitting = false;
           _error = AppStrings.t('validationHeightWeight', locale);
@@ -247,7 +280,9 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                         child: HpPrimaryButton(
                           label: step == 0 ? AppStrings.t('next', locale) : AppStrings.t('finish', locale),
                           loading: _submitting,
-                          onPressed: () => _submit(step == 1),
+                          onPressed: !_bodyOk
+                              ? null
+                              : () => _submit(step == 1),
                         ),
                       ),
                     ],
@@ -262,6 +297,19 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   }
 
   Widget _basics(BuildContext context, String locale) {
+    final heightBounds = BodyMeasures.heightBoundsForWeight(_weightValue);
+    final weightBounds = BodyMeasures.weightBoundsForHeight(_heightValue);
+    final heightMin = _stepCeil(heightBounds.min, 1).clamp(BodyMeasures.minHeightCm, BodyMeasures.maxHeightCm);
+    final heightMax = _stepFloor(heightBounds.max, 1).clamp(BodyMeasures.minHeightCm, BodyMeasures.maxHeightCm);
+    final weightMin = _stepCeil(weightBounds.min, 0.5).clamp(BodyMeasures.minWeightKg, BodyMeasures.maxWeightKg);
+    final weightMax = _stepFloor(weightBounds.max, 0.5).clamp(BodyMeasures.minWeightKg, BodyMeasures.maxWeightKg);
+    final safeHeightMin = heightMin <= heightMax ? heightMin : BodyMeasures.minHeightCm;
+    final safeHeightMax = heightMin <= heightMax ? heightMax : BodyMeasures.maxHeightCm;
+    final safeWeightMin = weightMin <= weightMax ? weightMin : BodyMeasures.minWeightKg;
+    final safeWeightMax = weightMin <= weightMax ? weightMax : BodyMeasures.maxWeightKg;
+    final liveBmi = BodyMeasures.roundBmi(_heightValue, _weightValue);
+    final bodyOk = _bodyOk;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -326,32 +374,52 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
         const SizedBox(height: 8),
         ScrollNumberField(
           label: AppStrings.t('heightCm', locale),
-          value: _heightValue,
-          min: 100,
-          max: 250,
+          value: _heightValue.clamp(safeHeightMin, safeHeightMax),
+          min: safeHeightMin,
+          max: safeHeightMax,
           step: 1,
           suffix: 'cm',
-          onChanged: (v) => setState(() => _heightValue = v),
+          onChanged: _onHeightChanged,
           validator: (v) {
-            if (v < 100 || v > 250) return AppStrings.t('validationHeightRange', locale);
+            if (v < BodyMeasures.minHeightCm || v > BodyMeasures.maxHeightCm) {
+              return AppStrings.t('validationHeightRange', locale);
+            }
             return null;
           },
         ),
         const SizedBox(height: 14),
         ScrollNumberField(
           label: AppStrings.t('weightKg', locale),
-          value: _weightValue,
-          min: 30,
-          max: 250,
+          value: _weightValue.clamp(safeWeightMin, safeWeightMax),
+          min: safeWeightMin,
+          max: safeWeightMax,
           step: 0.5,
           decimals: 1,
           suffix: 'kg',
-          onChanged: (v) => setState(() => _weightValue = v),
+          onChanged: _onWeightChanged,
           validator: (v) {
-            if (v < 30 || v > 250) return AppStrings.t('validationWeightRange', locale);
+            if (v < BodyMeasures.minWeightKg || v > BodyMeasures.maxWeightKg) {
+              return AppStrings.t('validationWeightRange', locale);
+            }
             return null;
           },
         ),
+        const SizedBox(height: 10),
+        Text(
+          '${AppStrings.t('bmiLiveLabel', locale)}: ${liveBmi.toStringAsFixed(1)}',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: bodyOk ? AppTheme.foreground : AppTheme.riskHigh,
+          ),
+        ),
+        if (!bodyOk) ...[
+          const SizedBox(height: 4),
+          Text(
+            AppStrings.t('validationHeightWeight', locale),
+            style: const TextStyle(color: AppTheme.riskHigh, fontSize: 13),
+          ),
+        ],
       ],
     );
   }

@@ -680,14 +680,14 @@ class AppStrings {
       'zh': '请输入 10 至 60 之间的 BMI',
     },
     'validationHeightRange': {
-      'en': 'Enter height between 100 and 250 cm',
-      'bm': 'Masukkan ketinggian antara 100 dan 250 cm',
-      'zh': '请输入 100 至 250 厘米的身高',
+      'en': 'Enter height between 120 and 220 cm',
+      'bm': 'Masukkan ketinggian antara 120 dan 220 cm',
+      'zh': '请输入 120 至 220 厘米的身高',
     },
     'validationWeightRange': {
-      'en': 'Enter weight between 30 and 250 kg',
-      'bm': 'Masukkan berat antara 30 dan 250 kg',
-      'zh': '请输入 30 至 250 公斤的体重',
+      'en': 'Enter weight between 35 and 200 kg',
+      'bm': 'Masukkan berat antara 35 dan 200 kg',
+      'zh': '请输入 35 至 200 公斤的体重',
     },
     'validationSleepRange': {
       'en': 'Enter sleep between 3 and 14 hours',
@@ -695,9 +695,14 @@ class AppStrings {
       'zh': '请输入 3 至 14 小时的睡眠',
     },
     'validationHeightWeight': {
-      'en': 'Height and weight must produce a BMI between 10 and 60',
-      'bm': 'Ketinggian dan berat mesti menghasilkan BMI antara 10 dan 60',
-      'zh': '身高与体重须使 BMI 落在 10 至 60 之间',
+      'en': 'Height and weight do not make a realistic BMI. Adjust one of them.',
+      'bm': 'Ketinggian dan berat tidak menghasilkan BMI yang realistik. Laraskan salah satu.',
+      'zh': '身高与体重无法得出合理的 BMI，请调整其中一项。',
+    },
+    'bmiLiveLabel': {
+      'en': 'BMI',
+      'bm': 'BMI',
+      'zh': 'BMI',
     },
     'validationEmail': {
       'en': 'Enter a valid email',
