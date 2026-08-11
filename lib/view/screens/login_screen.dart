@@ -71,27 +71,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   BlocBuilder<AuthCubit, AuthState>(
                     buildWhen: (previous, current) => previous.busy != current.busy,
                     builder: (context, state) {
-                      return Column(
-                        children: [
-                          HpPrimaryButton(
-                            label: AppStrings.t('login', locale),
-                            loading: state.busy,
-                            onPressed: _submit,
-                          ),
-                          const SizedBox(height: 12),
-                          HpPrimaryButton(
-                            label: AppStrings.t('demoLogin', locale),
-                            loading: state.busy,
-                            icon: Icons.play_circle_outline,
-                            onPressed: () async {
-                              try {
-                                await context.read<AuthCubit>().demoLogin();
-                              } catch (_) {
-                                // Error surfaced via AuthState.errorMessage.
-                              }
-                            },
-                          ),
-                        ],
+                      return HpPrimaryButton(
+                        label: AppStrings.t('login', locale),
+                        loading: state.busy,
+                        onPressed: _submit,
                       );
                     },
                   ),

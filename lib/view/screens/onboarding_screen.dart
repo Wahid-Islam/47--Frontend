@@ -33,7 +33,7 @@ class OnboardingScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: PopupMenuButton<String>(
                     initialValue: locale,
                     onSelected: (value) => context.read<LocaleCubit>().setLocale(value),
@@ -66,12 +66,28 @@ class OnboardingScreen extends StatelessWidget {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final isDesktop = constraints.maxWidth >= Breakpoints.desktop;
+                    final width = constraints.maxWidth;
+                    final isDesktop = width >= Breakpoints.desktop;
+                    final isTablet = width >= Breakpoints.tablet;
+                    final maxContentWidth = isDesktop
+                        ? CenteredPane.wideWidth
+                        : isTablet
+                        ? 640.0
+                        : CenteredPane.formWidth;
+                    final horizontalPad = width < 360 ? 16.0 : 24.0;
+
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      child: CenteredPane(
-                        maxWidth: isDesktop ? CenteredPane.wideWidth : CenteredPane.formWidth,
-                        child: isDesktop ? const _DesktopHero() : const _StackedHero(),
+                      padding: EdgeInsets.symmetric(horizontal: horizontalPad, vertical: 12),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: constraints.maxHeight - 24),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: maxContentWidth),
+                            child: isDesktop
+                                ? const _DesktopHero()
+                                : _StackedHero(compact: width < 400),
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -91,16 +107,19 @@ class _DesktopHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 48),
+      padding: const EdgeInsets.symmetric(vertical: 24),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Expanded(flex: 6, child: _Pitch(large: true)),
-          const SizedBox(width: 56),
+          const Expanded(flex: 6, child: _Pitch(large: true, centered: false)),
+          const SizedBox(width: 48),
           Expanded(
             flex: 5,
-            child: const Card(
-              child: Padding(padding: EdgeInsets.all(28), child: _Actions()),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(28),
+                child: const _Actions(),
+              ),
             ),
           ),
         ],
@@ -110,51 +129,63 @@ class _DesktopHero extends StatelessWidget {
 }
 
 class _StackedHero extends StatelessWidget {
-  const _StackedHero();
+  const _StackedHero({this.compact = false});
+
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 32),
+      padding: EdgeInsets.symmetric(vertical: compact ? 16 : 28),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [const _Pitch(large: false), const SizedBox(height: 40), const _Actions()],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _Pitch(large: false, centered: true, compact: compact),
+          SizedBox(height: compact ? 28 : 36),
+          const _Actions(),
+        ],
       ),
     );
   }
 }
 
 class _Pitch extends StatelessWidget {
-  const _Pitch({required this.large});
+  const _Pitch({
+    required this.large,
+    required this.centered,
+    this.compact = false,
+  });
 
   final bool large;
+  final bool centered;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final locale = context.watch<LocaleCubit>().state;
     final theme = Theme.of(context);
+    final align = centered ? TextAlign.center : TextAlign.start;
+    final cross = centered ? CrossAxisAlignment.center : CrossAxisAlignment.start;
+
+    final titleStyle = large
+        ? theme.textTheme.headlineMedium?.copyWith(fontSize: 52)
+        : theme.textTheme.headlineMedium?.copyWith(fontSize: compact ? 32 : 36);
+    final taglineStyle = (large ? theme.textTheme.headlineSmall : theme.textTheme.titleMedium)
+        ?.copyWith(color: AppTheme.primary);
+    final bodyStyle = theme.textTheme.bodyLarge?.copyWith(
+      color: AppTheme.textSecondary,
+      height: 1.45,
+    );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: cross,
       children: [
-        Text(
-          AppStrings.t('appName', locale),
-          style: large
-              ? theme.textTheme.headlineMedium?.copyWith(fontSize: 56)
-              : theme.textTheme.headlineMedium,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          AppStrings.t('tagline', locale),
-          style: (large ? theme.textTheme.headlineSmall : theme.textTheme.titleMedium)?.copyWith(
-            color: AppTheme.primary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          AppStrings.t('onboardingSubtitle', locale),
-          style: theme.textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondary),
-        ),
+        Text(AppStrings.t('appName', locale), style: titleStyle, textAlign: align),
+        SizedBox(height: compact ? 8 : 12),
+        Text(AppStrings.t('tagline', locale), style: taglineStyle, textAlign: align),
+        SizedBox(height: compact ? 12 : 16),
+        Text(AppStrings.t('onboardingSubtitle', locale), style: bodyStyle, textAlign: align),
       ],
     );
   }
@@ -168,8 +199,7 @@ class _Actions extends StatelessWidget {
     final locale = context.watch<LocaleCubit>().state;
 
     return BlocBuilder<AuthCubit, AuthState>(
-      buildWhen: (previous, current) =>
-          previous.errorMessage != current.errorMessage || previous.busy != current.busy,
+      buildWhen: (previous, current) => previous.errorMessage != current.errorMessage,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -185,25 +215,6 @@ class _Actions extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: () => context.push('/login'),
                 child: Text(AppStrings.t('haveAccount', locale)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 52,
-              child: TextButton.icon(
-                onPressed: state.busy
-                    ? null
-                    : () async {
-                        try {
-                          await context.read<AuthCubit>().demoLogin();
-                        } catch (_) {
-                          // Error surfaced via AuthState.errorMessage.
-                        }
-                      },
-                icon: state.busy
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.play_circle_outline),
-                label: Text(AppStrings.t('demoLogin', locale)),
               ),
             ),
           ],
