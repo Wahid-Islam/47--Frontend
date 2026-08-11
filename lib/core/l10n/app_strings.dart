@@ -583,9 +583,9 @@ class AppStrings {
       'zh': '开始您的个性化健康之旅。',
     },
     'onboardingSubtitle': {
-      'en': 'Personalised Health Age and preventive actions for Malaysians aged 40–60.',
-      'bm': 'Umur Kesihatan dan tindakan pencegahan peribadi untuk rakyat Malaysia berumur 40–60.',
-      'zh': '面向 40–60 岁马来西亚人的个性化健康年龄与预防行动。',
+      'en': 'Personalised Health Age and preventive actions for Malaysians of all ages.',
+      'bm': 'Umur Kesihatan dan tindakan pencegahan peribadi untuk rakyat Malaysia semua peringkat umur.',
+      'zh': '面向所有年龄马来西亚人的个性化健康年龄与预防行动。',
     },
     'noInsights': {
       'en': 'Complete your profile to see insights.',

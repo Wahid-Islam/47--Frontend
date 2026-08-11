@@ -6,7 +6,7 @@
     "display": "standalone",
     "background_color": "#F7FBF8",
     "theme_color": "#1B7A4E",
-    "description": "A personalised Health Age and preventive action roadmap for Malaysians aged 40-60, grounded in national mortality statistics.",
+    "description": "A personalised Health Age and preventive action roadmap for Malaysians of all ages, grounded in national mortality statistics.",
     "orientation": "any",
     "lang": "en-MY",
     "prefer_related_applications": false,
