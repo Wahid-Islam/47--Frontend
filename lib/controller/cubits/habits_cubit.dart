@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../model/habit.dart';
 import '../../model/insights.dart';
@@ -9,7 +10,9 @@ import '../repositories/profile_repository.dart';
 import '../repositories/recommendations_repository.dart';
 import '../services/habit_progress.dart';
 import '../services/habit_reminder_service.dart';
+import '../services/notification_inbox.dart';
 import '../services/recommendation_engine.dart';
+import '../../core/l10n/app_strings.dart';
 import 'habits_state.dart';
 
 export 'habits_state.dart';
@@ -67,9 +70,29 @@ class HabitsCubit extends Cubit<HabitsState> {
         reminderMinute: reminder.minute,
       );
       await _loadRecommendations();
+      await _ensureDailyHabitsNotification();
     } catch (e) {
       emit(state.copyWith(status: HabitsStatus.error, errorMessage: e.toString()));
     }
+  }
+
+  Future<String> _locale() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('hp_locale') ?? 'en';
+  }
+
+  Future<void> _ensureDailyHabitsNotification() async {
+    final dayKey = DateTime.now().toIso8601String().substring(0, 10);
+    final prefs = await SharedPreferences.getInstance();
+    final marker = prefs.getString('hp_habits_ready_notified');
+    if (marker == dayKey) return;
+    final locale = await _locale();
+    await NotificationInbox.add(
+      id: 'habits_ready_$dayKey',
+      title: AppStrings.t('habitsReadyTitle', locale),
+      body: AppStrings.t('habitsReadyBody', locale),
+    );
+    await prefs.setString('hp_habits_ready_notified', dayKey);
   }
 
   Future<void> refreshToday() async {
@@ -116,6 +139,21 @@ class HabitsCubit extends Cubit<HabitsState> {
         ),
       ];
       _emit(updated);
+      if (shouldComplete &&
+          updated.completedHabitIds.length >= RecommendationEngine.dailyHabitCount) {
+        final dayKey = DateTime.now().toIso8601String().substring(0, 10);
+        final prefs = await SharedPreferences.getInstance();
+        final marker = prefs.getString('hp_habits_done_notified');
+        if (marker != dayKey) {
+          final locale = await _locale();
+          await NotificationInbox.add(
+            id: 'habits_done_$dayKey',
+            title: AppStrings.t('habitsDoneTitle', locale),
+            body: AppStrings.t('habitsDoneBody', locale),
+          );
+          await prefs.setString('hp_habits_done_notified', dayKey);
+        }
+      }
     } catch (e) {
       emit(state.copyWith(errorMessage: e.toString()));
     }

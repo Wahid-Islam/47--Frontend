@@ -427,6 +427,51 @@ class AppStrings {
     'notifications': {'en': 'Notifications', 'bm': 'Pemberitahuan',
       'zh': '通知',
     },
+    'noNotifications': {
+      'en': 'No notifications yet',
+      'bm': 'Tiada pemberitahuan lagi',
+      'zh': '暂无通知',
+    },
+    'notificationJustNow': {
+      'en': 'Just now',
+      'bm': 'Baru sahaja',
+      'zh': '刚刚',
+    },
+    'notificationMinutesAgo': {
+      'en': '{n} min ago',
+      'bm': '{n} min lalu',
+      'zh': '{n} 分钟前',
+    },
+    'notificationHoursAgo': {
+      'en': '{n} h ago',
+      'bm': '{n} jam lalu',
+      'zh': '{n} 小时前',
+    },
+    'notificationDaysAgo': {
+      'en': '{n} d ago',
+      'bm': '{n} hari lalu',
+      'zh': '{n} 天前',
+    },
+    'habitsReadyTitle': {
+      'en': 'Today’s habits are ready',
+      'bm': 'Tabiat hari ini sudah sedia',
+      'zh': '今日习惯已准备好',
+    },
+    'habitsReadyBody': {
+      'en': 'Complete your 4 roadmap actions to lower today’s risk signal.',
+      'bm': 'Lengkapkan 4 tindakan pelan anda untuk turunkan isyarat risiko hari ini.',
+      'zh': '完成今天的 4 项计划行动，降低今日风险信号。',
+    },
+    'habitsDoneTitle': {
+      'en': 'All habits done',
+      'bm': 'Semua tabiat selesai',
+      'zh': '习惯全部完成',
+    },
+    'habitsDoneBody': {
+      'en': 'Nice work — you finished today’s 4 health actions.',
+      'bm': 'Syabas — anda telah selesaikan 4 tindakan kesihatan hari ini.',
+      'zh': '做得好 — 您已完成今天的 4 项健康行动。',
+    },
     'welcome': {'en': 'Welcome', 'bm': 'Selamat datang',
       'zh': '欢迎',
     },

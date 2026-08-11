@@ -3,6 +3,8 @@
 import 'dart:async';
 import 'dart:html' as html;
 
+import 'notification_inbox.dart';
+
 /// Browser Notification-based daily reminder for Flutter web.
 class HabitReminderNotify {
   static Timer? _timer;
@@ -28,7 +30,8 @@ class HabitReminderNotify {
       var next = DateTime(now.year, now.month, now.day, hour, minute);
       if (!next.isAfter(now)) next = next.add(const Duration(days: 1));
       final wait = next.difference(now);
-      _timer = Timer(wait, () {
+      _timer = Timer(wait, () async {
+        await NotificationInbox.add(title: title, body: body);
         if (html.Notification.permission == 'granted') {
           html.Notification(title, body: body);
         }
