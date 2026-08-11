@@ -361,7 +361,7 @@ class _HabitChecklist extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              item.category,
+                              AppStrings.categoryLabel(item.category, locale),
                               style: const TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,

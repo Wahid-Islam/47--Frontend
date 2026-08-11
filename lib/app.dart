@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import 'controller/cubits/auth_cubit.dart';
@@ -65,8 +66,21 @@ class _HealthPathAppViewState extends State<_HealthPathAppView> {
     }
   }
 
+  Locale _materialLocale(String code) {
+    switch (code) {
+      case 'bm':
+        return const Locale('ms');
+      case 'zh':
+        return const Locale('zh');
+      default:
+        return const Locale('en');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final appLocale = context.watch<LocaleCubit>().state;
+
     return BlocListener<AuthCubit, AuthState>(
       listenWhen: (previous, current) =>
           previous.userId != current.userId || previous.status != current.status,
@@ -75,6 +89,17 @@ class _HealthPathAppViewState extends State<_HealthPathAppView> {
         title: 'MySihat',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
+        locale: _materialLocale(appLocale),
+        supportedLocales: const [
+          Locale('en'),
+          Locale('ms'),
+          Locale('zh'),
+        ],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         routerConfig: _router,
         builder: (context, child) {
           return Stack(

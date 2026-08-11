@@ -155,8 +155,8 @@ class AppStrings {
       'en':
           'Source: Department of Statistics Malaysia (DOSM), Statistics on Causes of Death, Malaysia 2025 — data refer to 2024.',
       'bm':
-          'Sumber: Jabatan Perangkaan Malaysia (DOSM), Statistics on Causes of Death, Malaysia 2025 — data merujuk kepada 2024.',
-      'zh': '来源：马来西亚统计局（DOSM），Statistics on Causes of Death, Malaysia 2025 — 数据对应 2024 年。',
+          'Sumber: Jabatan Perangkaan Malaysia (DOSM), Perangkaan Punca Kematian, Malaysia 2025 — data merujuk kepada 2024.',
+      'zh': '来源：马来西亚统计局（DOSM），马来西亚死亡原因统计，2025 — 数据对应 2024 年。',
     },
     'killerHeartTitle': {'en': 'Ischaemic Heart Disease', 'bm': 'Penyakit Jantung Iskemik',
       'zh': '缺血性心脏病',
@@ -169,7 +169,7 @@ class AppStrings {
     'killerHeartMeta': {'en': '5,380 deaths', 'bm': '5,380 kematian',
       'zh': '5,380 例死亡',
     },
-    'killerPneumoniaTitle': {'en': 'Pneumonia', 'bm': 'Pneumonia',
+    'killerPneumoniaTitle': {'en': 'Pneumonia', 'bm': 'Radang paru-paru',
       'zh': '肺炎',
     },
     'killerPneumoniaBody': {
@@ -180,7 +180,7 @@ class AppStrings {
     'killerPneumoniaMeta': {'en': 'national share', 'bm': 'bahagian kebangsaan',
       'zh': '全国占比',
     },
-    'killerDiabetesTitle': {'en': 'Diabetes Mellitus', 'bm': 'Diabetes Mellitus',
+    'killerDiabetesTitle': {'en': 'Diabetes Mellitus', 'bm': 'Kencing manis',
       'zh': '糖尿病',
     },
     'killerDiabetesBody': {
@@ -290,8 +290,8 @@ class AppStrings {
     },
     'learnCard1Source': {
       'en': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
-      'bm': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
-      'zh': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
+      'bm': 'DOSM · Perangkaan Punca Kematian, Malaysia 2025',
+      'zh': 'DOSM · 马来西亚死亡原因统计，2025',
     },
     'learnCard2Eyebrow': {'en': 'Malaysia · 2024', 'bm': 'Malaysia · 2024',
       'zh': '马来西亚 · 2024',
@@ -330,8 +330,8 @@ class AppStrings {
     },
     'learnCard3Source': {
       'en': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
-      'bm': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
-      'zh': 'DOSM · Statistics on Causes of Death, Malaysia 2025',
+      'bm': 'DOSM · Perangkaan Punca Kematian, Malaysia 2025',
+      'zh': 'DOSM · 马来西亚死亡原因统计，2025',
     },
     'learnCard4Eyebrow': {'en': 'How to read this', 'bm': 'Cara membaca ini',
       'zh': '如何解读',
@@ -709,7 +709,61 @@ class AppStrings {
       'bm': 'Masukkan e-mel yang sah',
       'zh': '请输入有效的电子邮箱',
     },
-    'vsLabel': {'en': 'VS', 'bm': 'VS', 'zh': '对比'},
+    'validationPasswordMin': {
+      'en': 'At least 6 characters',
+      'bm': 'Sekurang-kurangnya 6 aksara',
+      'zh': '至少 6 个字符',
+    },
+    'categoryActivity': {'en': 'ACTIVITY', 'bm': 'AKTIVITI', 'zh': '活动'},
+    'categorySleep': {'en': 'SLEEP', 'bm': 'TIDUR', 'zh': '睡眠'},
+    'categoryDiet': {'en': 'DIET', 'bm': 'PEMAKANAN', 'zh': '饮食'},
+    'categorySmoking': {'en': 'SMOKING', 'bm': 'MEROKOK', 'zh': '吸烟'},
+    'categoryScreening': {'en': 'SCREENING', 'bm': 'SARINGAN', 'zh': '筛查'},
+    'categoryHabit': {'en': 'HABIT', 'bm': 'TABIAT', 'zh': '习惯'},
+    'monthShort': {'en': '{n}m', 'bm': '{n}bln', 'zh': '{n}月'},
+    'reminderNotifyTitle': {
+      'en': 'MySihat — daily habits',
+      'bm': 'MySihat — tabiat harian',
+      'zh': 'MySihat — 每日习惯',
+    },
+    'reminderNotifyBody': {
+      'en': 'Time for today’s 4 health actions. Small steps lower your Health Age.',
+      'bm': 'Masa untuk 4 tindakan kesihatan hari ini. Langkah kecil menurunkan Umur Kesihatan anda.',
+      'zh': '该完成今天的 4 项健康行动了。小步骤有助于降低健康年龄。',
+    },
+    'errorCannotReachApi': {
+      'en': 'Cannot reach the server. Check your connection and try again.',
+      'bm': 'Tidak dapat menghubungi pelayan. Semak sambungan anda dan cuba lagi.',
+      'zh': '无法连接服务器。请检查网络后重试。',
+    },
+    'errorRequestFailed': {
+      'en': 'Request failed. Please try again.',
+      'bm': 'Permintaan gagal. Sila cuba lagi.',
+      'zh': '请求失败。请重试。',
+    },
+    'errorEmptyAuth': {
+      'en': 'Empty sign-in response. Please try again.',
+      'bm': 'Respons log masuk kosong. Sila cuba lagi.',
+      'zh': '登录响应为空。请重试。',
+    },
+    'lifestyleNeedsSignificant': {
+      'en': 'Needs significant improvement',
+      'bm': 'Perlu penambahbaikan ketara',
+      'zh': '需要大幅改善',
+    },
+    'lifestyleNeedsImprovement': {
+      'en': 'Needs improvement',
+      'bm': 'Perlu penambahbaikan',
+      'zh': '需要改善',
+    },
+    'lifestyleFair': {'en': 'Fair', 'bm': 'Sederhana', 'zh': '一般'},
+    'lifestyleGood': {'en': 'Good', 'bm': 'Baik', 'zh': '良好'},
+    'lifestyleExcellent': {'en': 'Excellent', 'bm': 'Cemerlang', 'zh': '优秀'},
+    'riskHigh': {'en': 'HIGH', 'bm': 'TINGGI', 'zh': '高'},
+    'riskMedium': {'en': 'MEDIUM', 'bm': 'SEDERHANA', 'zh': '中'},
+    'riskLow': {'en': 'LOW', 'bm': 'RENDAH', 'zh': '低'},
+    'riskModerate': {'en': 'MODERATE', 'bm': 'SEDERHANA', 'zh': '中等'},
+    'vsLabel': {'en': 'VS', 'bm': 'LAWAN', 'zh': '对比'},
   };
 
   static String t(String key, String locale) {
@@ -720,6 +774,83 @@ class AppStrings {
 
   static String tn(String key, String locale, num n) {
     return t(key, locale).replaceAll('{n}', n.toString());
+  }
+
+  /// Map Material / API English error text into the active locale.
+  static String localizeError(String message, String locale) {
+    final lower = message.toLowerCase();
+    if (lower.contains('cannot reach') || lower.contains('socketexception') || lower.contains('failed host lookup')) {
+      return t('errorCannotReachApi', locale);
+    }
+    if (lower.contains('empty auth') || lower.contains('empty sign')) {
+      return t('errorEmptyAuth', locale);
+    }
+    if (lower.contains('request failed') || lower.contains('expected a json')) {
+      return t('errorRequestFailed', locale);
+    }
+    if (lower.contains('unsupported http')) {
+      return t('errorGeneric', locale);
+    }
+    // Prefer a localized generic message over raw English backend text.
+    if (locale != 'en' && _looksEnglish(message)) {
+      return t('errorGeneric', locale);
+    }
+    return message;
+  }
+
+  static bool _looksEnglish(String message) {
+    final letters = message.replaceAll(RegExp(r'[^A-Za-z]'), '');
+    if (letters.length < 8) return false;
+    return RegExp(r'^[A-Za-z]+$').hasMatch(letters);
+  }
+
+  static String categoryLabel(String category, String locale) {
+    switch (category.toUpperCase()) {
+      case 'ACTIVITY':
+        return t('categoryActivity', locale);
+      case 'SLEEP':
+        return t('categorySleep', locale);
+      case 'DIET':
+        return t('categoryDiet', locale);
+      case 'SMOKING':
+        return t('categorySmoking', locale);
+      case 'SCREENING':
+        return t('categoryScreening', locale);
+      default:
+        return t('categoryHabit', locale);
+    }
+  }
+
+  static String riskLevelLabel(String level, String locale) {
+    switch (level.toLowerCase()) {
+      case 'high':
+        return t('riskHigh', locale);
+      case 'medium':
+        return t('riskMedium', locale);
+      case 'moderate':
+        return t('riskModerate', locale);
+      case 'low':
+        return t('riskLow', locale);
+      default:
+        return level.toUpperCase();
+    }
+  }
+
+  static String lifestyleLabel(String englishLabel, String locale) {
+    switch (englishLabel) {
+      case 'Needs significant improvement':
+        return t('lifestyleNeedsSignificant', locale);
+      case 'Needs improvement':
+        return t('lifestyleNeedsImprovement', locale);
+      case 'Fair':
+        return t('lifestyleFair', locale);
+      case 'Good':
+        return t('lifestyleGood', locale);
+      case 'Excellent':
+        return t('lifestyleExcellent', locale);
+      default:
+        return englishLabel;
+    }
   }
 }
 

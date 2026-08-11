@@ -142,7 +142,10 @@ class HealthAgeProjectionChart extends StatelessWidget {
                     interval: 3,
                     getTitlesWidget: (value, meta) => Padding(
                       padding: const EdgeInsets.only(top: 6),
-                      child: Text('${value.toInt()}m', style: const TextStyle(fontSize: 11)),
+                      child: Text(
+                        AppStrings.tn('monthShort', locale, value.toInt()),
+                        style: const TextStyle(fontSize: 11),
+                      ),
                     ),
                   ),
                 ),

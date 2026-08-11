@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../controller/cubits/locale_cubit.dart';
+import '../l10n/app_strings.dart';
 import '../theme/app_theme.dart';
 
 class RiskChip extends StatelessWidget {
@@ -9,6 +12,7 @@ class RiskChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.watch<LocaleCubit>().state;
     final color = AppTheme.riskColor(level);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -18,7 +22,7 @@ class RiskChip extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(
-        level.toUpperCase(),
+        AppStrings.riskLevelLabel(level, locale),
         style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 13, letterSpacing: 0.4),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/l10n/app_strings.dart';
 import 'habit_reminder_notify.dart';
 
 /// Stores and applies a daily reminder for roadmap habits.
@@ -9,6 +10,7 @@ class HabitReminderService {
   static const _enabledKey = 'habit_reminder_enabled';
   static const _hourKey = 'habit_reminder_hour';
   static const _minuteKey = 'habit_reminder_minute';
+  static const _localeKey = 'hp_locale';
 
   static Future<({bool enabled, int hour, int minute})> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -25,8 +27,14 @@ class HabitReminderService {
     await prefs.setInt(_hourKey, hour);
     await prefs.setInt(_minuteKey, minute);
     if (enabled) {
+      final locale = prefs.getString(_localeKey) ?? 'en';
       await HabitReminderNotify.requestPermission();
-      await HabitReminderNotify.scheduleDaily(hour: hour, minute: minute);
+      await HabitReminderNotify.scheduleDaily(
+        hour: hour,
+        minute: minute,
+        title: AppStrings.t('reminderNotifyTitle', locale),
+        body: AppStrings.t('reminderNotifyBody', locale),
+      );
     } else {
       await HabitReminderNotify.cancel();
     }

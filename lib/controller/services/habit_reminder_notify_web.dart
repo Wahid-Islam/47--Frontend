@@ -16,7 +16,12 @@ class HabitReminderNotify {
     return result == 'granted';
   }
 
-  static Future<void> scheduleDaily({required int hour, required int minute}) async {
+  static Future<void> scheduleDaily({
+    required int hour,
+    required int minute,
+    String title = 'MySihat',
+    String body = '',
+  }) async {
     _timer?.cancel();
     void tick() {
       final now = DateTime.now();
@@ -25,13 +30,10 @@ class HabitReminderNotify {
       final wait = next.difference(now);
       _timer = Timer(wait, () {
         if (html.Notification.permission == 'granted') {
-          html.Notification(
-            'MySihat — daily habits',
-            body: 'Time for today’s 4 health actions. Small steps lower your Health Age.',
-          );
+          html.Notification(title, body: body);
         }
         // Reschedule for the following day.
-        scheduleDaily(hour: hour, minute: minute);
+        scheduleDaily(hour: hour, minute: minute, title: title, body: body);
       });
     }
 

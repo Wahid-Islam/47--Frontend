@@ -64,7 +64,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     obscureText: true,
                     autofillHints: const [AutofillHints.password],
                     decoration: InputDecoration(labelText: AppStrings.t('password', locale)),
-                    validator: (v) => (v == null || v.length < 6) ? 'Min 6 characters' : null,
+                    validator: (v) => (v == null || v.length < 6)
+                        ? AppStrings.t('validationPasswordMin', locale)
+                        : null,
                     onFieldSubmitted: (_) => _submit(),
                   ),
                   const SizedBox(height: 24),

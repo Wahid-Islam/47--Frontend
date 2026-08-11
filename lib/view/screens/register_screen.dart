@@ -60,7 +60,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textCapitalization: TextCapitalization.words,
                     autofillHints: const [AutofillHints.name],
                     decoration: InputDecoration(labelText: AppStrings.t('fullName', locale)),
-                    validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty) ? AppStrings.t('validationRequired', locale) : null,
                   ),
                   const SizedBox(height: 14),
                   TextFormField(
@@ -77,7 +78,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     obscureText: true,
                     autofillHints: const [AutofillHints.newPassword],
                     decoration: InputDecoration(labelText: AppStrings.t('password', locale)),
-                    validator: (v) => (v == null || v.length < 6) ? 'Min 6 characters' : null,
+                    validator: (v) => (v == null || v.length < 6)
+                        ? AppStrings.t('validationPasswordMin', locale)
+                        : null,
                     onFieldSubmitted: (_) => _submit(),
                   ),
                   const SizedBox(height: 24),

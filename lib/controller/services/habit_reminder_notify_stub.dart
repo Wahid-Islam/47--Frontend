@@ -2,7 +2,12 @@
 class HabitReminderNotify {
   static Future<bool> requestPermission() async => false;
 
-  static Future<void> scheduleDaily({required int hour, required int minute}) async {}
+  static Future<void> scheduleDaily({
+    required int hour,
+    required int minute,
+    String title = 'MySihat',
+    String body = '',
+  }) async {}
 
   static Future<void> cancel() async {}
 }
