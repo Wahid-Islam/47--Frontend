@@ -31,7 +31,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
   late int _ageValue;
   late double _heightValue;
   late double _weightValue;
-  late final TextEditingController _sleep;
+  late double _sleepValue;
   String? gender;
   String activity = 'moderate';
   String diet = 'average';
@@ -60,9 +60,8 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     _weightValue = BodyMeasures.clampWeightForHeight(_heightValue, _weightValue);
     _weightValue = (_weightValue * 2).round() / 2;
     _heightValue = BodyMeasures.clampHeightForWeight(_heightValue, _weightValue).roundToDouble();
-    _sleep = TextEditingController(
-      text: editing ? seed.sleepHours.toString() : '',
-    );
+    final seedSleep = editing ? seed.sleepHours.clamp(3.0, 14.0) : 7.0;
+    _sleepValue = (seedSleep * 2).roundToDouble() / 2;
     gender = editing ? seed.gender : null;
     activity = seed?.activityLevel ?? 'moderate';
     diet = seed?.dietHabit ?? 'average';
@@ -70,18 +69,6 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     smoking = seed?.smoking ?? false;
     highBloodPressure = seed?.highBloodPressure ?? false;
     diabetes = seed?.diabetes ?? false;
-  }
-
-  @override
-  void dispose() {
-    _sleep.dispose();
-    super.dispose();
-  }
-
-  double? _parseDecimal(String raw) {
-    final text = raw.trim().replaceAll(',', '.');
-    if (text.isEmpty) return null;
-    return double.tryParse(text);
   }
 
   bool get _bodyOk => BodyMeasures.isValidBody(_heightValue, _weightValue);
@@ -128,7 +115,7 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
     final age = _ageValue;
     final height = _heightValue;
     final weight = _weightValue;
-    final sleep = _parseDecimal(_sleep.text) ?? current.sleepHours;
+    final sleep = _sleepValue;
     final bmi = Profile.bmiFromHeightWeight(height, weight) ?? current.bmi;
 
     if (finish) {
@@ -269,9 +256,12 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
                     children: [
                       if (step > 0)
                         Expanded(
-                          child: OutlinedButton(
-                            onPressed: _submitting ? null : () => setState(() => step = 0),
-                            child: Text(AppStrings.t('back', locale)),
+                          child: SizedBox(
+                            height: 52,
+                            child: OutlinedButton(
+                              onPressed: _submitting ? null : () => setState(() => step = 0),
+                              child: Text(AppStrings.t('back', locale)),
+                            ),
                           ),
                         ),
                       if (step > 0) const SizedBox(width: 12),
@@ -516,14 +506,17 @@ class _ProfileWizardScreenState extends State<ProfileWizardScreen> {
           },
         ),
         const SizedBox(height: 16),
-        TextFormField(
-          controller: _sleep,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(labelText: AppStrings.t('sleepHours', locale)),
+        ScrollNumberField(
+          label: AppStrings.t('sleepHours', locale),
+          value: _sleepValue,
+          min: 3,
+          max: 14,
+          step: 0.5,
+          decimals: 1,
+          suffix: 'h',
+          onChanged: (v) => setState(() => _sleepValue = (v * 2).roundToDouble() / 2),
           validator: (v) {
-            final parsed = _parseDecimal(v ?? '');
-            if (parsed == null) return AppStrings.t('validationRequired', locale);
-            if (parsed < 3 || parsed > 14) return AppStrings.t('validationSleepRange', locale);
+            if (v < 3 || v > 14) return AppStrings.t('validationSleepRange', locale);
             return null;
           },
         ),
